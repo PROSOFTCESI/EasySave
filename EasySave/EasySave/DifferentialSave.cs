@@ -18,10 +18,6 @@ namespace EasySave
         }
 
         //METHODS
-        public override bool CreateSave(string name, string sourcePath, string targetPath)
-        {
-            return true;
-        }
 
         public override bool UpdateSave(string name)
         {
