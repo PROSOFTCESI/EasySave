@@ -19,17 +19,12 @@ namespace EasySave
 
         //METHODS
 
-        public override bool UpdateSave(string name)
+        public override bool Save()
         {
             return true;
         }
 
-        public override bool RestoreSave(string name)
-        {
-            return true;
-        }
-
-        public override bool DeleteSave(string name)
+        public override bool RestoreSave()
         {
             return true;
         }
