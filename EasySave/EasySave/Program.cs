@@ -2,4 +2,5 @@
 
 
 Logger.Initialize();
-Logger.GetInstance().Log(new FullSave("guigui", "LoLo", "Tom"));
+
+Logger.GetInstance().Log(new FullSave("guigui", "PathRandom", "PathRandom"));
