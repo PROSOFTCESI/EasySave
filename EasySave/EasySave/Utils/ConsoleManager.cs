@@ -9,13 +9,9 @@ using System.Globalization;
 namespace EasySave.Utils;
 internal class ConsoleManager
 {
-    private bool isRunning;
-    private Messages messages; // To switch between languages
-    public ConsoleManager()
-    {
-        isRunning = true;
-        messages = new(Messages.FR);
-    }
+    private bool isRunning = true;
+    private readonly Messages messages = new(Messages.FR); // To switch between languages
+
     public void Launch()
     {
         while(isRunning)
