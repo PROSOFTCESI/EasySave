@@ -109,7 +109,7 @@ internal class ConsoleManager
     {
         WriteCyan(messages.GetMessage("DELETE_SAVE_JOB_MENU_LABEL"));
         ShowAvailableSaveJobs();
-        string name = GetUserInput("ASK_SAVE_JOB_TO_DELETE_MESSAGE");
+        int jobToDelete = Int32.Parse(GetUserInput("ASK_SAVE_JOB_TO_DELETE_MESSAGE"));
 
         // TODO : Delete the save job
         bool jobDeleted = true;
@@ -118,7 +118,7 @@ internal class ConsoleManager
             WriteRed(messages.GetMessage("SAVE_JOB_DELETION_FAILED_MESSAGE"));
             return;
         }
-        WriteGreen(string.Format(messages.GetMessage("SAVE_JOB_DELETED_SUCCESSFULLY"), name));
+        WriteGreen(string.Format(messages.GetMessage("SAVE_JOB_DELETED_SUCCESSFULLY"), jobToDelete));
     }
 
     private void LanguageSelectionMenu()
