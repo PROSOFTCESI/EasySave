@@ -60,7 +60,6 @@ namespace EasySave
             // TODO We need to andle the case of an inexistant directory. Currently, it crashes
             if (!dir.Exists)
                 throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
-
             // Cache directories before we start copying
             DirectoryInfo[] dirs = dir.GetDirectories();
 
@@ -83,6 +82,7 @@ namespace EasySave
             
             return true;
         }
+
 
         public abstract bool Save();
 
