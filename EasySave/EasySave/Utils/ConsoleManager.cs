@@ -82,7 +82,8 @@ internal class ConsoleManager
     {
         WriteCyan(messages.GetMessage("UPDATE_SAVE_JOB_MENU_LABEL"));
         ShowAvailableSaveJobs();
-        string jobsToUpdate = GetUserInput("ASK_JOBS_TO_UPDATE");
+        string jobsToUpdateInput = GetUserInput("ASK_JOBS_TO_UPDATE");
+        List<int>? jobsToUpdateTab = GetJobsToUpdate(jobsToUpdateInput);
 
         WriteYellow(messages.GetMessage("UPDATING_JOBS_MESSAGE"));
 
@@ -167,6 +168,52 @@ internal class ConsoleManager
         }
         return Console.ReadLine();
     }
+    private static List<int>? GetJobsToUpdate(string? userInput)
+    {
+        if (userInput == null)
+        {
+            return null;
+        }
+
+        List<int> jobsToUpdate = [];
+        userInput = userInput.Trim();
+        int[] numbers;
+
+        if (!userInput.Contains("-") && !userInput.Contains(";"))
+        {
+            jobsToUpdate.Add(Int32.Parse(userInput));
+            return jobsToUpdate;
+        }
+
+        if (userInput.Contains("-"))
+        {
+            numbers = userInput.Split('-').Select(int.Parse).ToArray();
+            int firstNumber = numbers[0];
+            int secondNumber = numbers[1];
+
+            if (firstNumber > secondNumber)
+            {
+                return null;
+            }
+
+            for (int i = firstNumber; i <= secondNumber; i++)
+            {
+                jobsToUpdate.Add(i);
+            }
+
+            return jobsToUpdate;
+        }
+
+        numbers = userInput.Split(';').Select(int.Parse).ToArray();
+
+        foreach (int number in numbers)
+        {
+            jobsToUpdate.Add(number);
+        }
+
+        return jobsToUpdate;
+    }
+
     private static void ClearConsole()
     {
         Console.Clear();
