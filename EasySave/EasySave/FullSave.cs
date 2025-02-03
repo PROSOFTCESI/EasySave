@@ -18,22 +18,14 @@ namespace EasySave
         }
 
         //METHODS
-        public override bool CreateSave(string name, string sourcePath, string targetPath)
+
+        public override bool Save()
         {
+            FullSave(SourcePath, TargetPath);
             return true;
         }
 
-        public override bool UpdateSave(string name)
-        {
-            return true;
-        }
-
-        public override bool RestoreSave(string name)
-        {
-            return true;
-        }
-
-        public override bool DeleteSave(string name)
+        public override bool RestoreSave()
         {
             return true;
         }

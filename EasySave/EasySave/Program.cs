@@ -1,5 +1,4 @@
-﻿using EasySave;
-
+using EasySave;
 
 Logger.Initialize();
 
