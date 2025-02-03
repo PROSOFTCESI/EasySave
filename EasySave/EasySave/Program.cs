@@ -1,1 +1,3 @@
-﻿Console.WriteLine("Hello, World!");
+﻿using EasySave.Utils;
+
+new ConsoleManager().Launch();
