@@ -97,7 +97,7 @@ internal class ConsoleManager
             return;
         }
 
-        WriteGreen(string.Format(messages.GetMessage("SAVE_JOB_UPDATED_SUCCESSFULLY"), jobsToUpdate));
+        WriteGreen(string.Format(messages.GetMessage("SAVE_JOB_UPDATED_SUCCESSFULLY"), string.Join(",", jobsToUpdateTab)));
     }
 
     private void ReadSaveJobsMenu()
