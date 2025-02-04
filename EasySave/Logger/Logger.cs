@@ -2,24 +2,44 @@
 
 namespace LoggerLib;
 
-public  class Logger
-{
 
-    private static string LogDirectory = GetLogDirectory();
+/// <summary>
+/// Class to write dated json logs in the Application Data Foldor Repertory custom Repertory 
+/// Depend of Newtonsoft.Json
+/// </summary>
+///
+public class Logger
+{
+    private string LogDirectory;
 
     private static Logger? Instance = null;
 
-    private Logger() {
-    
+    private Logger() 
+    {
+        LogDirectory = GetLogDirectory();
     }
 
+    /// <summary>
+    /// Singleton of the Logger.
+    /// Plese use Initialize before using this instance.
+    /// </summary>
+    /// <returns>
+    /// Unique Instance of the logger.
+    /// </returns>
     public static Logger GetInstance()
     {
         Instance ??= new Logger();
         return Instance;
     }
 
-    public static void Initialize(string projectName = "LogLib", string? projectsPath= null)
+    /// <summary>
+    /// Initialisze the Logs Repos
+    /// You can choose between initialization by project name (saving Logs in the OS's application Data folder : AppData\Roaming\[projectName] for windows
+    /// Or initialize directly with projectsPath and a Project Name with will create 
+    /// </summary>
+    /// <param name="projectName">Project Name for the Sub directory</param>
+    /// <param name="projectsPath">Custom parth for all your application folder</param>
+    public void Initialize(string projectName = "LogLib", string? projectsPath= null)
     {
         LogDirectory = GetLogDirectory(projectName, projectsPath);
         if (!Path.Exists(LogDirectory))
@@ -27,13 +47,13 @@ public  class Logger
             Directory.CreateDirectory(LogDirectory);
         }
     }
-    private static string GetLogDirectory(string projectName = "LogLib", string? projectsPath = null)
+  
+    private string GetLogDirectory(string projectName = "LogLib", string? projectsPath = null)
     {
         return Path.Combine(string.IsNullOrWhiteSpace(projectsPath) ? Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) : projectsPath, projectName, "logs");
-
     }
 
-    private static string GetLogPath()
+    private string GetLogPath()
     {
         return Path.Combine(LogDirectory,DateTime.Now.Date.ToString("yyyy-MM-dd") + ".json");
     }
@@ -51,6 +71,9 @@ public  class Logger
         }
     }
 
+    ///<summary>
+    ///Log any Object on a Dated log file 
+    ///</summary>
     public bool Log(Object toWrite)
     {
         try
@@ -63,4 +86,6 @@ public  class Logger
             return false; 
         }
     }
+
 }
+
