@@ -43,16 +43,16 @@ namespace EasySave
             Directory.CreateDirectory(TargetPath);
 
             // Create a default FULL SAVE
-            FullSave(SourcePath, TargetPath);
+            string saveTargetPath = Path.Combine(TargetPath, ("FullSave_" + DateTime.Now.ToString("dd_MM_yyyy-HH_mm_ss")));
+            CreateFullSave(SourcePath, saveTargetPath);
             
             return true;
         }
 
-        protected bool FullSave(string sourcePath, string targetPath)
+        protected bool CreateFullSave(string sourcePath, string saveTargetPath)
         {
-            // Create save path with type and date
-            string saveTargetPath = Path.Combine(targetPath, ("FullSave_" + DateTime.Now.ToString("dd_MM_yyyy-HH_mm_ss")));
 
+            
             // Get information about the source directory
             var dir = new DirectoryInfo(sourcePath);
 
@@ -78,7 +78,7 @@ namespace EasySave
             foreach (DirectoryInfo subDir in dirs)
             {
                 string newDestinationDir = Path.Combine(saveTargetPath, subDir.Name);
-                FullSave(subDir.FullName, newDestinationDir);
+                CreateFullSave(subDir.FullName, newDestinationDir);
             }
             
             return true;
