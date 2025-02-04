@@ -6,7 +6,7 @@ namespace EasySave.Utils.JobStates;
 
 internal class JobsManager
 {
-    private static readonly string FilePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\EasySave\\state.json";
+    private static readonly string FilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"EasySave","state.json");
 
     private static JobsManager? instance;
 
@@ -28,7 +28,7 @@ internal class JobsManager
     {
         if (!File.Exists(FilePath))
         {
-            throw new FileNotFoundException($"Le fichier {FilePath} est introuvable.");
+            File.WriteAllText(FilePath, "[]");
         }
 
         string jsonContent = File.ReadAllText(FilePath);
