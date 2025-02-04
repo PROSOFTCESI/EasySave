@@ -4,10 +4,9 @@ namespace LoggerLib;
 
 
 /// <summary>
-/// Class to write dated json logs in the Application Data Foldor Repertory custom Repertory 
-/// Depend of Newtonsoft.Json
+/// Class to write dated JSON logs in the Application Data folder or a custom directory.
+/// Depends on Newtonsoft.Json.
 /// </summary>
-///
 public class Logger
 {
     private string LogDirectory;
@@ -20,11 +19,11 @@ public class Logger
     }
 
     /// <summary>
-    /// Singleton of the Logger.
-    /// Plese use Initialize before using this instance.
+    /// Singleton instance of the Logger.
+    /// Please use Initialize before using this instance.
     /// </summary>
     /// <returns>
-    /// Unique Instance of the logger.
+    /// Unique instance of the Logger.
     /// </returns>
     public static Logger GetInstance()
     {
@@ -33,12 +32,12 @@ public class Logger
     }
 
     /// <summary>
-    /// Initialisze the Logs Repos
-    /// You can choose between initialization by project name (saving Logs in the OS's application Data folder : AppData\Roaming\[projectName] for windows
-    /// Or initialize directly with projectsPath and a Project Name with will create 
+    /// Initializes the logs repository.
+    /// You can choose between initialization by project name (saving logs in the OS's application data folder: AppData\Roaming\[projectName] for Windows)  
+    /// or initializing directly with a custom path and a project name, which will create the logs in the specified directory.
     /// </summary>
-    /// <param name="projectName">Project Name for the Sub directory</param>
-    /// <param name="projectsPath">Custom parth for all your application folder</param>
+    /// <param name="projectName">Project name for the subdirectory.</param>
+    /// <param name="projectsPath">Custom path for the application folder.</param>
     public void Initialize(string projectName = "LogLib", string? projectsPath= null)
     {
         LogDirectory = GetLogDirectory(projectName, projectsPath);
@@ -71,9 +70,11 @@ public class Logger
         }
     }
 
-    ///<summary>
-    ///Log any Object on a Dated log file 
-    ///</summary>
+    /// <summary>
+    /// Logs any object in a dated log file.
+    /// </summary>
+    /// <param name="toWrite">Object to log.</param>
+    /// <returns>True if the log was successfully written, otherwise false.</returns>
     public bool Log(Object toWrite)
     {
         try
