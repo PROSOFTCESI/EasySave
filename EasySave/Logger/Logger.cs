@@ -5,11 +5,13 @@ namespace LoggerLib;
 public  class Logger
 {
 
-    private static string LogDirectory = "EasySave";
+    private static string LogDirectory = GetLogDirectory();
 
     private static Logger? Instance = null;
 
-    private Logger() {}
+    private Logger() {
+    
+    }
 
     public static Logger GetInstance()
     {
@@ -17,13 +19,18 @@ public  class Logger
         return Instance;
     }
 
-    public static void Initialize(string projectName = "EasySave", string? projectsPath= null)
+    public static void Initialize(string projectName = "LogLib", string? projectsPath= null)
     {
-        LogDirectory = Path.Combine(string.IsNullOrWhiteSpace(projectsPath) ? Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) : projectsPath, projectName, "logs");
+        LogDirectory = GetLogDirectory(projectName, projectsPath);
         if (!Path.Exists(LogDirectory))
         {
             Directory.CreateDirectory(LogDirectory);
         }
+    }
+    private static string GetLogDirectory(string projectName = "LogLib", string? projectsPath = null)
+    {
+        return Path.Combine(string.IsNullOrWhiteSpace(projectsPath) ? Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) : projectsPath, projectName, "logs");
+
     }
 
     private static string GetLogPath()
