@@ -1,12 +1,13 @@
-﻿using System.Net.Http.Json;
+﻿using System.IO.Enumeration;
+using System.Net.Http.Json;
 using System.Text.Json;
 
 namespace EasySave.Utils.JobStates;
 
 internal class JobsManager
 {
-    //private static string filePath = Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory), "state.json");
-    private static string filePath = "C:\\Users\\33641\\Documents\\EasySave\\EasySave\\EasySave\\state.json";
+    private static readonly string FilePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\EasySave\\state.json";
+
     private static JobsManager? instance;
 
     public const string FullSaveType = "FullSave";
@@ -25,12 +26,12 @@ internal class JobsManager
     }
     private List<JobsJson> ReadJson()
     {
-        if (!File.Exists(filePath))
+        if (!File.Exists(FilePath))
         {
-            throw new FileNotFoundException($"Le fichier {filePath} est introuvable.");
+            throw new FileNotFoundException($"Le fichier {FilePath} est introuvable.");
         }
 
-        string jsonContent = File.ReadAllText(filePath);
+        string jsonContent = File.ReadAllText(FilePath);
         return JsonSerializer.Deserialize<List<JobsJson>>(jsonContent)
                        ?? throw new Exception("Le fichier JSON est vide ou invalide.");
     }
@@ -82,6 +83,12 @@ internal class JobsManager
     {
         try
         {
+            // Limit of 5 save jobs
+            if (GetJobs().Count >= 5)
+            {
+                return false;
+            }
+
             JobsJson jobJson = new();
             jobJson.Name = job.Name;
             switch (job)
@@ -125,10 +132,15 @@ internal class JobsManager
         try
         {
             List<JobsJson> jobsJson = ReadJson();
+            if (jobsJson.Any(job => job.Name == job.Name && job.State != DeletedState))
+            {
+                return false;
+            }
+
             jobsJson.Add(job);
             var options = new JsonSerializerOptions { WriteIndented = true };
             string json = JsonSerializer.Serialize(jobsJson, options);
-            File.WriteAllText(filePath, json);
+            File.WriteAllText(FilePath, json);
             return true;
         }
         catch (Exception)
@@ -149,10 +161,10 @@ internal class JobsManager
         try
         {
             List<JobsJson> jobsJson = ReadJson();
-            jobsJson[jobsJson.FindIndex(job => job.Name == job.Name)] = job;
+            jobsJson[jobsJson.FindIndex(job => job.Name == job.Name && job.State != DeletedState)] = job;
             var options = new JsonSerializerOptions { WriteIndented = true };
             string json = JsonSerializer.Serialize(jobsJson, options);
-            File.WriteAllText(filePath, json);
+            File.WriteAllText(FilePath, json);
             return true;
         }
         catch (Exception)
