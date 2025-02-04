@@ -8,6 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Update="state.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Utils\Localization\Messages\messages.en.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
