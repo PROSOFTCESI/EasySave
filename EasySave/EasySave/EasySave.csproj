@@ -8,10 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Logger\Logger.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="Logger">
       <HintPath>..\Logger\bin\Debug\net8.0\Logger.dll</HintPath>
     </Reference>
