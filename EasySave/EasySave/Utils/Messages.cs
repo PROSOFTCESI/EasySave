@@ -11,7 +11,7 @@ namespace EasySave.Utils
     internal class Messages
     {
         private CultureInfo selectedCulture;
-        private JsonReader jsonMessagesReader;
+        private MessagesReader jsonMessagesReader;
 
         public static readonly CultureInfo FR = new("fr-FR");
         public static readonly CultureInfo EN = new("en-EN");
@@ -44,7 +44,7 @@ namespace EasySave.Utils
                 throw new CultureNotFoundException("Culture not supported");
             }
             selectedCulture = culture;
-            jsonMessagesReader = new JsonReader(
+            jsonMessagesReader = new MessagesReader(
                 Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Utils", "Localization", "Messages"),
                 GetJsonName(selectedCulture)
             );
