@@ -94,8 +94,7 @@ internal class ConsoleManager
                 WriteRed(messages.GetMessage("INVALID_INPUT_MESSAGE"));
                 return;
         }
-
-        saveJob.CreateSave();
+        
         isCreated = StateJsonReader.GetInstance().AddJob(saveJob);
 
         if (!isCreated)
@@ -103,6 +102,8 @@ internal class ConsoleManager
             WriteRed(messages.GetMessage("SAVE_JOB_CREATION_FAILED_MESSAGE"));
             return;
         }
+        
+        saveJob.CreateSave();
         WriteGreen(string.Format(messages.GetMessage("SAVE_JOB_CREATED_SUCCESSFULLY"), name));
     }
 
