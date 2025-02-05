@@ -132,7 +132,7 @@ internal class ConsoleManager
         {
             foreach (int jobIndex in jobsToUpdateTab)
             {
-                SaveJob job = availableJobs[jobIndex];
+                SaveJob job = availableJobs[jobIndex-1];
                 job.Save();
             }
             jobsUpdated = true;
