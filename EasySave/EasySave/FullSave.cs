@@ -10,8 +10,6 @@ namespace EasySave
     {
         //ATTRIBUTES
 
-
-
         //CONTRUCTOR
         public FullSave(string name, string sourcePath, string targetPath) : base(name, sourcePath, targetPath)
         {

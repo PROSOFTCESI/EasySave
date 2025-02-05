@@ -1,3 +1,4 @@
+
 using EasySave.Utils;
 using EasySave;
 using EasySave.Utils.JobStates;
@@ -22,3 +23,4 @@ Console.WriteLine("Hello, World!");
 //var test = JobsManager.GetInstance().GetJobs();
 
 new ConsoleManager().Launch();
+
