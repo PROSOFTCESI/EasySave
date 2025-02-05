@@ -83,7 +83,6 @@ namespace EasySave
             return true;
         }
 
-
         public abstract bool Save();
 
         public abstract bool RestoreSave();

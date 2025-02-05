@@ -1,8 +1,10 @@
+
+using EasySave.Utils;
 using EasySave;
-using LoggerLib;
 
+Console.WriteLine("Hello, World!");
+//FullSave save = new FullSave("TEST1", "C:\\Users\\33641\\Documents\\TestSource", "C:\\Users\\33641\\Documents\\TestDestination");
+//save.CreateSave();
 
-Logger.GetInstance().Initialize();
-Logger.GetInstance().Initialize();
+new ConsoleManager().Launch();
 
-Logger.GetInstance().Log(new FullSave("guigui", "PathRandom", "PathRandom"));
