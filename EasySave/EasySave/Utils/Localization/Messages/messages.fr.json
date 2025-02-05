@@ -29,7 +29,7 @@
   "SAVE_JOB_DELETED_SUCCESSFULLY": "Le travail de sauvegarde '{0}' a été supprimé avec succès !",
   "SAVE_JOB_DELETION_FAILED_MESSAGE": "Une erreur s'est produite lors de la suppression du travail de sauvegarde...'",
   "UNKNOWN_ERROR_MESSAGE": "Une erreur innatendue est survenue...",
-  "NO_SAVE_JOBS_MESSAGE": "Aucun travail de sauvegarde n'a été trouvé",
+  "NO_SAVE_JOB_MESSAGE": "Aucun travail de sauvegarde n'a été trouvé",
   "": "",
   "": "",
   "": "",

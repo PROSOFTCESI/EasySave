@@ -23,7 +23,7 @@
     "SourceFilePath": "C:\\progSys\\Projet\\gr6_save\\EasySave_Group6_1.1\\api-ms-win-core-errorhandling-l1-1-0.dll",
     "TargetFilePath": "D:\\save\\Projet\\gr6_save\\EasySave_Group6_1.1\\api-ms-win-core-errorhandling-l1-1-0.dll"
   },
-  {
+  { 
     "Name": "Save3",
     "Type": "FullSave",
     "LastUpdate": "2025-02-03T12:30:45.123Z",

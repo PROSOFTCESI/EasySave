@@ -25,7 +25,7 @@ public abstract class SaveJob
         SetTargetPath(targetPath);
         CreationDate = DateTime.Now;
         LastUpdate = DateTime.Now;
-        State = JobsManager.SavedState;
+        State = StateJsonReader.SavedState;
     }
 
     //METHODS

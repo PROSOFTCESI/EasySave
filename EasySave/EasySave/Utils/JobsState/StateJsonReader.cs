@@ -4,11 +4,11 @@ using System.Text.Json;
 
 namespace EasySave.Utils.JobStates;
 
-internal class JobsManager
+internal class StateJsonReader
 {
     private static readonly string FilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"EasySave","state.json");
 
-    private static JobsManager? instance;
+    private static StateJsonReader? instance;
 
     public const string FullSaveType = "FullSave";
     public const string DifferentialSaveType = "DifferentialSave";
@@ -17,14 +17,14 @@ internal class JobsManager
     public const string SavingState = "SAVING";
     public const string DeletedState = "DELETED";
 
-    private JobsManager() { }
+    private StateJsonReader() { }
 
-    public static JobsManager GetInstance()
+    public static StateJsonReader GetInstance()
     {
-        instance ??= new JobsManager();
+        instance ??= new StateJsonReader();
         return instance;
     }
-    private List<JobsJson> ReadJson()
+    private List<JobStateJsonDefinition> ReadJson()
     {
         if (!File.Exists(FilePath))
         {
@@ -32,7 +32,7 @@ internal class JobsManager
         }
 
         string jsonContent = File.ReadAllText(FilePath);
-        return JsonSerializer.Deserialize<List<JobsJson>>(jsonContent)
+        return JsonSerializer.Deserialize<List<JobStateJsonDefinition>>(jsonContent)
                        ?? throw new Exception("Le fichier JSON est vide ou invalide.");
     }
 
@@ -40,9 +40,9 @@ internal class JobsManager
     {
 
         List<SaveJob> jobsList = [];
-        List<JobsJson> jobs = ReadJson();
+        List<JobStateJsonDefinition> jobs = ReadJson();
 
-        foreach (JobsJson job in jobs)
+        foreach (JobStateJsonDefinition job in jobs)
         {
             // Ignore the deleted jobs
             if (job.State == DeletedState)
@@ -62,9 +62,9 @@ internal class JobsManager
         return jobsList;
     }
 
-    public bool UpdateJob(string jobName, JobsJson infos)
+    public bool UpdateJob(string jobName, JobStateJsonDefinition infos)
     {
-        JobsJson jobToUpdate = GetJob(jobName);
+        JobStateJsonDefinition jobToUpdate = GetJob(jobName);
 
         jobToUpdate.LastUpdate = DateTime.Now;
         jobToUpdate.State = infos.State;
@@ -79,7 +79,7 @@ internal class JobsManager
         
     }
 
-    public bool SaveJob(SaveJob job)
+    public bool AddJob(SaveJob job)
     {
         try
         {
@@ -89,7 +89,7 @@ internal class JobsManager
                 return false;
             }
 
-            JobsJson jobJson = new();
+            JobStateJsonDefinition jobJson = new();
             jobJson.Name = job.Name;
             switch (job)
             {
@@ -117,7 +117,7 @@ internal class JobsManager
     {
         try
         {
-            JobsJson jobToDelete = GetJob(job.Name);
+            JobStateJsonDefinition jobToDelete = GetJob(job.Name);
             jobToDelete.State = DeletedState;
             return UpdateJob(jobToDelete);
         }
@@ -127,11 +127,11 @@ internal class JobsManager
         }
     }
 
-    private bool SaveJob(JobsJson job)
+    private bool SaveJob(JobStateJsonDefinition job)
     {
         try
         {
-            List<JobsJson> jobsJson = ReadJson();
+            List<JobStateJsonDefinition> jobsJson = ReadJson();
             if (jobsJson.Any(job => job.Name == job.Name && job.State != DeletedState))
             {
                 return false;
@@ -149,18 +149,18 @@ internal class JobsManager
         }
     }
 
-    private JobsJson GetJob(string jobName)
+    private JobStateJsonDefinition GetJob(string jobName)
     {
-        List<JobsJson> jobsJson = ReadJson();
-        JobsJson job = jobsJson.Find(job => job.Name == jobName) ?? throw new KeyNotFoundException($"Job {jobName} not found");
+        List<JobStateJsonDefinition> jobsJson = ReadJson();
+        JobStateJsonDefinition job = jobsJson.Find(job => job.Name == jobName) ?? throw new KeyNotFoundException($"Job {jobName} not found");
         return job;
     }
 
-    private bool UpdateJob(JobsJson job)
+    private bool UpdateJob(JobStateJsonDefinition job)
     {
         try
         {
-            List<JobsJson> jobsJson = ReadJson();
+            List<JobStateJsonDefinition> jobsJson = ReadJson();
             jobsJson[jobsJson.FindIndex(job => job.Name == job.Name && job.State != DeletedState)] = job;
             var options = new JsonSerializerOptions { WriteIndented = true };
             string json = JsonSerializer.Serialize(jobsJson, options);
@@ -175,7 +175,7 @@ internal class JobsManager
     }
 }
 
-public class JobsJson
+public class JobStateJsonDefinition
 {
     public string Name { get; set; }
     public string Type { get; set; }
@@ -190,5 +190,4 @@ public class JobsJson
     public int? TotalSizeLeftToDo { get; set; } = null;
     public string? SourceFilePath { get; set; } = null;
     public string? TargetFilePath { get; set; } = null;
-
 }

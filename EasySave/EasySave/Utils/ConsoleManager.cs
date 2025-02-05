@@ -96,7 +96,7 @@ internal class ConsoleManager
         }
 
         saveJob.CreateSave();
-        isCreated = JobsManager.GetInstance().SaveJob(saveJob);
+        isCreated = StateJsonReader.GetInstance().AddJob(saveJob);
 
         if (!isCreated)
         {
@@ -109,8 +109,11 @@ internal class ConsoleManager
     private void UpdateSaveJobMenu()
     {
         WriteCyan(messages.GetMessage("UPDATE_SAVE_JOB_MENU_LABEL"));
-        var availableJobs = JobsManager.GetInstance().GetJobs();
-        ShowAvailableSaveJobs(availableJobs);
+        List<SaveJob> availableJobs = StateJsonReader.GetInstance().GetJobs();
+        if (!ShowAvailableSaveJobs(availableJobs))
+        {
+            return;
+        }
         string jobsToUpdateInput = GetUserInput("ASK_JOBS_TO_UPDATE");
         List<int>? jobsToUpdateTab = GetJobsToUpdate(jobsToUpdateInput);
 
@@ -150,20 +153,23 @@ internal class ConsoleManager
     private void ReadSaveJobsMenu()
     {
         WriteCyan(messages.GetMessage("READ_SAVE_JOBS_MENU_LABEL"));
-        var availableJobs = JobsManager.GetInstance().GetJobs();
+        List<SaveJob> availableJobs = StateJsonReader.GetInstance().GetJobs();
         ShowAvailableSaveJobs(availableJobs);
     }
 
     private void DeleteSaveJobMenu()
     {
         WriteCyan(messages.GetMessage("DELETE_SAVE_JOB_MENU_LABEL"));
-        var availableJobs = JobsManager.GetInstance().GetJobs();
-        ShowAvailableSaveJobs(availableJobs);
+        List<SaveJob> availableJobs = StateJsonReader.GetInstance().GetJobs();
+        if (!ShowAvailableSaveJobs(availableJobs))
+        {
+            return;
+        }
         int jobToDeleteIndex = Int32.Parse(GetUserInput("ASK_SAVE_JOB_TO_DELETE_MESSAGE"));
         SaveJob jobToDelete = availableJobs[jobToDeleteIndex];
 
         // TODO : Delete the save job
-        JobsManager.GetInstance().DeleteJob(jobToDelete);
+        StateJsonReader.GetInstance().DeleteJob(jobToDelete);
 
         bool jobDeleted = true;
         if (!jobDeleted)
@@ -194,18 +200,19 @@ internal class ConsoleManager
         }
     }
 
-    private void ShowAvailableSaveJobs(List<SaveJob>? jobs)
+    private bool ShowAvailableSaveJobs(List<SaveJob> jobs)
     {
-        if (jobs == null)
+        if (jobs.Count == 0)
         {
-            WriteYellow("NO_SAVE_JOBS_MESSAGE");
-            return;
+            WriteYellow(messages.GetMessage("NO_SAVE_JOB_MESSAGE"));
+            return false;
         }
 
         for (int i = 0; i < jobs.Count; i++)
         {
             WriteCyan($"{i} - {jobs[i]}");
         }
+        return true;
     }
 
     private string GetUserInput(string? inputInfoMessage = null)
