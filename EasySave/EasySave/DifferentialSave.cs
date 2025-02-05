@@ -41,7 +41,7 @@ namespace EasySave
         }
         
 
-        private void CreateDiffSave(string source, string fullsave, string diffsave)
+        private void CreateDifferentialSave(string source, string fullsave, string diffsave)
         {
             Directory.CreateDirectory(diffsave);
 
@@ -73,7 +73,7 @@ namespace EasySave
         {
             string fullSave = Path.Combine(TargetPath, GetLastFullSavePath());
             string diffsave = Path.Combine(TargetPath, "DiffenrentialSave_" + DateTime.Now.ToString("dd_MM_yyyy-HH_mm_ss"));
-            CreateDiffSave(SourcePath, fullSave, diffsave);
+            CreateDifferentialSave(SourcePath, fullSave, diffsave);
             return true;
         }
 
