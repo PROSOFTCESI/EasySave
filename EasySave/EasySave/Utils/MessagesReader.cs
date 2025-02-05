@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace EasySave.Utils
 {
-    public class JsonReader
+    public class MessagesReader
     {
         private string basePath;
         private Dictionary<string, string>? messages;
 
-        public JsonReader(string basePath, string fileName)
+        public MessagesReader(string basePath, string fileName)
         {
             this.basePath = basePath;
             LoadMessages(fileName);
