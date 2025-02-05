@@ -65,7 +65,7 @@ namespace EasySave
             // Recursivity
             foreach(DirectoryInfo dir in sourceDir.GetDirectories())
             {                
-                CreateDiffSave(Path.Combine(source, dir.Name), Path.Combine(fullsave, dir.Name), Path.Combine(diffsave, dir.Name));
+                CreateDifferentialSave(Path.Combine(source, dir.Name), Path.Combine(fullsave, dir.Name), Path.Combine(diffsave, dir.Name));
             }    
         }
 
