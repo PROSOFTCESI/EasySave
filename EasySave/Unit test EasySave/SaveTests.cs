@@ -49,27 +49,131 @@ public class SaveTests
                                      .Sum(file => new FileInfo(file).Length);
     }
 
-    [Fact]
-    public void Save_ShouldReturnTrue()
-    {   string SourcePath = CreateFakeInformationFolder();
-        string TargetPath = Path.Combine(Path.GetTempPath(), "EasySaveTestTemp");
-        
-        var differentialSave = new DifferentialSave("TestSave", SourcePath, TargetPath);
+    private void Cleanup()
+    {
+        string SourcePath = CreateFakeInformationFolder();
+        string TargetPathFull = Path.Combine(Path.GetTempPath(), "EasySaveFullTestTemp");
+        string TargetPathDiff = Path.Combine(Path.GetTempPath(), "EasySaveDiffTestTemp");
 
-        
-        var result = differentialSave.Save();
+        List<string> pathsToDelete = [SourcePath, TargetPathFull, TargetPathDiff];
+
+        foreach (string path in pathsToDelete){
+            if (IsPathExist(path))
+            {
+                Directory.Delete(path, true);
+            }
+        }
+       
+
+    }
+
+
+    [Fact]
+    public void FullSave_CreateSave()
+    {
+        Cleanup();
+        string SourcePath = CreateFakeInformationFolder();
+        string TargetPath = Path.Combine(Path.GetTempPath(), "EasySaveFullTestTemp");
+
+        var FullSave = new FullSave("TestSave", SourcePath, TargetPath);
+
+
+        var result = FullSave.CreateSave();
 
 
         Assert.True(result);
-        Console.WriteLine(TargetPath);
         Assert.True(IsPathExist(TargetPath));
         Assert.Equal(GetDirSize(TargetPath), GetDirSize(SourcePath));
+        
     }
-
 
     [Fact]
-    public void Test1()
+    public void FullSave_Save()
     {
-            
+        Cleanup();
+        string SourcePath = CreateFakeInformationFolder();
+        string TargetPath = Path.Combine(Path.GetTempPath(), "EasySaveFullTestTemp");
+
+        var FullSave = new FullSave("TestSave", SourcePath, TargetPath);
+        FullSave.CreateSave();
+        CreateFakeFile(Path.Combine(SourcePath, "NewFileToSee.data"));
+        var result = FullSave.Save();
+
+
+        Assert.True(result);
+        Assert.True(IsPathExist(TargetPath));
+        Assert.Equal(GetDirSize(TargetPath), GetDirSize(SourcePath));
+        Cleanup();
     }
+
+    [Fact]
+    public void FullSave_Delete()
+    {
+        Cleanup();
+        string SourcePath = CreateFakeInformationFolder();
+        string TargetPath = Path.Combine(Path.GetTempPath(), "EasySaveFullTestTemp");
+
+        var FullSave = new FullSave("TestSave", SourcePath, TargetPath);
+        CreateFakeFile(Path.Combine(SourcePath, "NewFileToSee.data"));
+        var result = FullSave.Save();
+
+        Assert.True(result);
+        Assert.False(IsPathExist(TargetPath));
+        Cleanup();
+    }
+
+    [Fact]
+    public void DifferentialSave_CreateSave()
+    {
+        Cleanup();
+        string SourcePath = CreateFakeInformationFolder();
+        string TargetPath = Path.Combine(Path.GetTempPath(), "EasySaveDiffTestTemp");
+
+        var DifferentialSave = new DifferentialSave("TestSave", SourcePath, TargetPath);
+
+
+        var result = DifferentialSave.CreateSave();
+
+
+        Assert.True(result);
+        Assert.True(IsPathExist(TargetPath));
+        Assert.Equal(GetDirSize(TargetPath), GetDirSize(SourcePath));
+        Cleanup();
+    }
+
+    [Fact]
+    public void DifferentialSave_Save()
+    {
+        Cleanup();
+        string SourcePath = CreateFakeInformationFolder();
+        string TargetPath = Path.Combine(Path.GetTempPath(), "EasySaveDiffTestTemp");
+
+        var DifferentialSave = new DifferentialSave("TestSave", SourcePath, TargetPath);
+        DifferentialSave.CreateSave();
+        CreateFakeFile(Path.Combine(SourcePath, "NewFileToSee.data"));
+        var result = DifferentialSave.Save();
+
+        Assert.True(result);
+        Assert.True(IsPathExist(TargetPath));
+        Assert.Equal(GetDirSize(TargetPath), GetDirSize(SourcePath));
+        Cleanup();
+    }
+
+    [Fact]
+    public void DifferentialSave_Delete()
+    {
+        Cleanup();
+        string SourcePath = CreateFakeInformationFolder();
+        string TargetPath = Path.Combine(Path.GetTempPath(), "EasySaveDiffTestTemp");
+
+        var DifferentialSave = new DifferentialSave("TestSave", SourcePath, TargetPath);
+        DifferentialSave.CreateSave();
+        CreateFakeFile(Path.Combine(SourcePath, "NewFileToSee.data"));
+        var result = DifferentialSave.DeleteSave();
+
+        Assert.True(result);
+        Assert.False(IsPathExist(TargetPath));
+        Cleanup();
+    }
+
 }

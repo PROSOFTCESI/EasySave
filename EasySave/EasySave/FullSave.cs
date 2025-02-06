@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EasySave
 {
-    internal class FullSave : SaveJob
+    public class FullSave : SaveJob
     {
         //ATTRIBUTES
 
