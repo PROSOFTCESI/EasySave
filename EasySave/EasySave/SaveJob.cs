@@ -60,8 +60,6 @@ public abstract class SaveJob
         // Create the destination directory
         Directory.CreateDirectory(saveTargetPath);
 
-        // Create a default FULL SAVE
-        string saveTargetPath = Path.Combine(TargetPath, ("FullSave_" + DateTime.Now.ToString("dd_MM_yyyy-HH_mm_ss")));
         CreateFullSave(SourcePath, saveTargetPath);
 
         return true;
