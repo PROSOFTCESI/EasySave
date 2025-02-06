@@ -95,8 +95,7 @@ internal class ConsoleManager
                 return;
         }
 
-        bool isSaved = StateJsonReader.GetInstance().AddJob(saveJob);
-        isCreated = isSaved && saveJob.CreateSave();
+        isCreated = saveJob.CreateSave();
 
         if (!isCreated)
         {
