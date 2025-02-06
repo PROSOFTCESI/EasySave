@@ -14,15 +14,16 @@ EasySave est une application permettant d'effectuer des sauvegardes de fichiers 
 
 ### Étapes d'installation
 
-1. Téléchargez l'application depuis le site officiel ou le dépôt GitHub.
-2. Décompressez l'archive si nécessaire.
-3. Exécutez `EasySave.exe`.
+
+1. Cloner le repos GitHub
+2. Exécutez le programme en lançant la commande 'dotnet run' depuis `<RACINE_DU_REPO>\EasySave\Easysave`
 
 ## Utilisation
 
 ### Lancement de l'application
 
 Lancez `EasySave.exe` depuis votre répertoire d'installation. Une interface en ligne de commande s'affichera avec le menu principal :
+![Menu principal](Doc/1.png)
 
 
 
@@ -32,13 +33,15 @@ Lancez `EasySave.exe` depuis votre répertoire d'installation. Une interface en 
 1. Sélectionnez **1 - Créer un travail de sauvegarde** dans le menu principal.
 2. Remplissez les informations demandées :
    - **Nom du travail de sauvegarde** : entrez un nom pour identifier la sauvegarde.
-   - **Répertoire source** : indiquez le chemin du dossier ou des fichiers à sauvegarder.
-   - **Répertoire cible** : indiquez le chemin où la sauvegarde sera stockée.
+   - **Répertoire source** : indiquez le chemin absolu du dossier ou des fichiers à sauvegarder.
+   - **Répertoire cible** : indiquez le chemin absolu où la sauvegarde sera stockée.
    - **Type de sauvegarde** :
      - `0` pour une sauvegarde complète (copie tous les fichiers).
      - `1` pour une sauvegarde différentielle (copie uniquement les fichiers modifiés).
 
 Exemple d'interface :
+
+![sauvegarde](Doc/2.png)
 
 
 
@@ -47,6 +50,8 @@ Exemple d'interface :
 
 1. Sélectionnez **2 - Mettre à jour un ou plusieurs travaux de sauvegarde**.
 2. Une liste des sauvegardes disponibles s'affiche, par exemple :
+
+![Maj](Doc/3.png)
 
 
 
@@ -58,6 +63,7 @@ Exemple d'interface :
 
 1. Sélectionnez **3 - Voir la liste des travaux de sauvegardes**.
 2. Une liste des sauvegardes existantes s'affiche avec leurs détails, par exemple :
+![List](Doc/4.png)
 
 
 
@@ -66,6 +72,7 @@ Exemple d'interface :
 
 1. Sélectionnez **4 - Supprimer un travail de sauvegarde**.
 2. Une liste des sauvegardes s'affiche, par exemple :
+![delete](Doc/5.png)
 
 
 
