@@ -22,25 +22,13 @@ public abstract class SaveJob
     {
         Name = name;
         SourcePath = sourcePath;
-        SetTargetPath(targetPath);
+        TargetPath = targetPath;
         CreationDate = DateTime.Now;
         LastUpdate = DateTime.Now;
         State = StateJsonReader.SavedState;
     }
 
     //METHODS
-
-    private void SetTargetPath(string targetPath)
-    {
-        TargetPath = Path.Combine(targetPath, Name);
-        string type = "_";
-        if (this is FullSave)
-            type += "FullSave";
-        else if (this is DifferentialSave)
-            type += "DifferentialSave";
-
-        TargetPath = TargetPath + type;
-    }
 
     public bool CreateSave()
     {
