@@ -97,8 +97,8 @@ public abstract class SaveJob
     {
         try
         {
-            // Supprime le job de la bdd
-            StateJsonReader stateDB = new StateJsonReader();
+            // Supprime le job de la bdd            
+            StateJsonReader stateDB=StateJsonReader.GetInstance();
             stateDB.DeleteJob(this);
 
             // Supprimer le dossier de sauvegarde s'il existe
