@@ -115,24 +115,6 @@ EasySave/
 │   └── Logger.cs
 ```
 
-### Ajout de nouvelles fonctionnalités
-
-1. Créer une branche dédiée :
-   ```bash
-   git checkout -b feature/nom-fonctionnalite
-   ```
-2. Développer la fonctionnalité en respectant la structure du projet.
-3. Tester et valider les modifications.
-4. Soumettre une pull request.
-
-## Support et Maintenance
-
-En cas de problème ou de bug, les utilisateurs peuvent :
-
-- Consulter la documentation.
-- Vérifier les logs pour identifier les erreurs.
-- Signaler un problème via le gestionnaire d'issues du dépôt GitHub.
-
 ## Conclusion
 
 EasySave est une solution flexible et efficace pour la sauvegarde de fichiers. Grâce à son architecture modulaire, il est facile de l'étendre et d'ajouter de nouvelles fonctionnalités selon les besoins des utilisateurs.
