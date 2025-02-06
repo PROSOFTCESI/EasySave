@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Globalization;
+using EasySave.Utils.JobStates;
+using System.Text.RegularExpressions;
 
 namespace EasySave.Utils;
 internal class ConsoleManager
@@ -16,33 +18,41 @@ internal class ConsoleManager
     {
         while(isRunning)
         {
-            ShowMainMenu();
-            string input = GetUserInput();
-            ClearConsole();
-
-            switch (input)
+            try
             {
-                case "1":
-                    CreateSaveJobMenu();
-                    break;
-                case "2":
-                    UpdateSaveJobMenu();
-                    break;
-                case "3":
-                    ReadSaveJobsMenu();
-                    break;
-                case "4":
-                    DeleteSaveJobMenu();
-                    break;
-                case "5":
-                    LanguageSelectionMenu();
-                    break;
-                case "6":
-                    isRunning = false;
-                    break;
-                default:
-                    WriteRed(messages.GetMessage("INVALID_INPUT_MESSAGE"));
-                    break;
+                ShowMainMenu();
+                string input = GetUserInput();
+                ClearConsole();
+
+                switch (input)
+                {
+                    case "1":
+                        CreateSaveJobMenu();
+                        break;
+                    case "2":
+                        UpdateSaveJobMenu();
+                        break;
+                    case "3":
+                        ReadSaveJobsMenu();
+                        break;
+                    case "4":
+                        DeleteSaveJobMenu();
+                        break;
+                    case "5":
+                        LanguageSelectionMenu();
+                        break;
+                    case "6":
+                        isRunning = false;
+                        break;
+                    default:
+                        WriteRed(messages.GetMessage("INVALID_INPUT_MESSAGE"));
+                        break;
+                }
+            }
+            catch (Exception)
+            {
+                // TODO log the error
+                WriteRed(messages.GetMessage("UNKNOWN_ERROR_MESSAGE"));
             }
             PressKeyToContinue(isRunning ? null : messages.GetMessage("THANKS_END_MESSAGE"));
         }
@@ -68,28 +78,68 @@ internal class ConsoleManager
         string destination = GetUserInput("ASK_SAVE_JOB_DESTINATION_MESSAGE");
         string type = GetUserInput("ASK_SAVE_JOB_TYPE_MESSAGE");
 
-        // TODO : Create the save job
-        bool isCreated = true;
+        // Create the save job
+        bool isCreated;
+        SaveJob saveJob;
+
+        switch(type)
+        {
+            case "0":
+                saveJob = new FullSave(name, source, destination);
+                break;
+            case "1":
+                saveJob = new DifferentialSave(name, source, destination);
+                break;
+            default:
+                WriteRed(messages.GetMessage("INVALID_INPUT_MESSAGE"));
+                return;
+        }
+
+        isCreated = saveJob.CreateSave();
+
         if (!isCreated)
         {
             WriteRed(messages.GetMessage("SAVE_JOB_CREATION_FAILED_MESSAGE"));
             return;
         }
+        StateJsonReader.GetInstance().AddJob(saveJob);
         WriteGreen(string.Format(messages.GetMessage("SAVE_JOB_CREATED_SUCCESSFULLY"), name));
     }
 
     private void UpdateSaveJobMenu()
     {
         WriteCyan(messages.GetMessage("UPDATE_SAVE_JOB_MENU_LABEL"));
-        ShowAvailableSaveJobs();
+        List<SaveJob> availableJobs = StateJsonReader.GetInstance().GetJobs();
+        if (!ShowAvailableSaveJobs(availableJobs))
+        {
+            return;
+        }
         string jobsToUpdateInput = GetUserInput("ASK_JOBS_TO_UPDATE");
         List<int>? jobsToUpdateTab = GetJobsToUpdate(jobsToUpdateInput);
 
+        if (jobsToUpdateTab == null)
+        {
+            WriteRed(messages.GetMessage("INVALID_INPUT_MESSAGE"));
+            return;
+        }
+
         WriteYellow(messages.GetMessage("UPDATING_JOBS_MESSAGE"));
 
-        // TODO : Update the job(s)
-        Thread.Sleep(2000);
-        bool jobsUpdated = true;
+        bool jobsUpdated = false;
+        // Update the job(s)
+        try
+        {
+            foreach (int jobIndex in jobsToUpdateTab)
+            {
+                SaveJob job = availableJobs[jobIndex];
+                job.Save();
+            }
+            jobsUpdated = true;
+        }
+        catch (Exception)
+        {
+            jobsUpdated = false;
+        }
 
         if (!jobsUpdated)
         {
@@ -103,16 +153,24 @@ internal class ConsoleManager
     private void ReadSaveJobsMenu()
     {
         WriteCyan(messages.GetMessage("READ_SAVE_JOBS_MENU_LABEL"));
-        ShowAvailableSaveJobs();
+        List<SaveJob> availableJobs = StateJsonReader.GetInstance().GetJobs();
+        ShowAvailableSaveJobs(availableJobs);
     }
 
     private void DeleteSaveJobMenu()
     {
         WriteCyan(messages.GetMessage("DELETE_SAVE_JOB_MENU_LABEL"));
-        ShowAvailableSaveJobs();
-        int jobToDelete = Int32.Parse(GetUserInput("ASK_SAVE_JOB_TO_DELETE_MESSAGE"));
+        List<SaveJob> availableJobs = StateJsonReader.GetInstance().GetJobs();
+        if (!ShowAvailableSaveJobs(availableJobs))
+        {
+            return;
+        }
+        int jobToDeleteIndex = Int32.Parse(GetUserInput("ASK_SAVE_JOB_TO_DELETE_MESSAGE"));
+        SaveJob jobToDelete = availableJobs[jobToDeleteIndex];
 
         // TODO : Delete the save job
+        StateJsonReader.GetInstance().DeleteJob(jobToDelete);
+
         bool jobDeleted = true;
         if (!jobDeleted)
         {
@@ -142,18 +200,19 @@ internal class ConsoleManager
         }
     }
 
-    private void ShowAvailableSaveJobs()
+    private bool ShowAvailableSaveJobs(List<SaveJob> jobs)
     {
-        // TODO : Get all the save jobs and use the .toString() method to display them
-        List<string> saveJobs = [
-            "'Base de données' | Source : 'C:/BDD/Prod', Destination : 'C:/BDD/Backup', Sauvegarde totale, Etat : 'SAVING'",
-            "'Dossier perso' | Source : 'C:/Perso':, Destination : 'D:/Perso', Sauvegarde différentielle, Etat : 'SAVED'",
-            "'Dossier pro' | Source : 'C:/Pro', Destination : 'D:/Pro', Sauvegarde totale, Etat : 'SAVED'"
-        ];
-        for (int i = 0; i < saveJobs.Count; i++)
+        if (jobs.Count == 0)
         {
-            WriteCyan($"{i} - {saveJobs[i]}");
+            WriteYellow(messages.GetMessage("NO_SAVE_JOB_MESSAGE"));
+            return false;
         }
+
+        for (int i = 0; i < jobs.Count; i++)
+        {
+            WriteCyan($"{i} - {jobs[i]}");
+        }
+        return true;
     }
 
     private string GetUserInput(string? inputInfoMessage = null)
@@ -170,7 +229,7 @@ internal class ConsoleManager
     }
     private static List<int>? GetJobsToUpdate(string? userInput)
     {
-        if (userInput == null)
+        if (string.IsNullOrEmpty(userInput))
         {
             return null;
         }
@@ -181,13 +240,35 @@ internal class ConsoleManager
 
         if (!userInput.Contains("-") && !userInput.Contains(";"))
         {
-            jobsToUpdate.Add(Int32.Parse(userInput));
+            try
+            {
+                jobsToUpdate.Add(Int32.Parse(userInput));
+            }
+            catch (Exception e)
+            {
+                if (e is FormatException || e is OverflowException)
+                {
+                    return null;
+                }
+                throw;
+            }
             return jobsToUpdate;
         }
 
         if (userInput.Contains("-"))
         {
-            numbers = userInput.Split('-').Select(int.Parse).ToArray();
+            try
+            {
+                numbers = userInput.Split('-').Select(int.Parse).ToArray();
+            }
+            catch (Exception e)
+            {
+                if (e is FormatException || e is OverflowException)
+                {
+                    return null;
+                }
+                throw;
+            }
             int firstNumber = numbers[0];
             int secondNumber = numbers[1];
 
@@ -204,7 +285,18 @@ internal class ConsoleManager
             return jobsToUpdate;
         }
 
-        numbers = userInput.Split(';').Select(int.Parse).ToArray();
+        try
+        {
+            numbers = userInput.Split(';').Select(int.Parse).ToArray();
+        }
+        catch (Exception e)
+        {
+            if (e is FormatException || e is OverflowException)
+            {
+                return null;
+            }
+            throw;
+        }
 
         foreach (int number in numbers)
         {

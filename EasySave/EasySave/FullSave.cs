@@ -10,8 +10,6 @@ namespace EasySave
     {
         //ATTRIBUTES
 
-
-
         //CONTRUCTOR
         public FullSave(string name, string sourcePath, string targetPath) : base(name, sourcePath, targetPath)
         {
@@ -35,9 +33,7 @@ namespace EasySave
 
         public override string ToString()
         {
-            string str = "";
-
-            return str;
+            return base.ToString() + ", Total Save";
         }
     }
 }

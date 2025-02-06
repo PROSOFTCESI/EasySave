@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Logger</name>
+    </assembly>
+    <members>
+        <member name="T:LoggerLib.Logger">
+            <summary>
+            Class to write dated JSON logs in the Application Data folder or a custom directory.
+            Depends on Newtonsoft.Json.
+            </summary>
+        </member>
+        <member name="M:LoggerLib.Logger.GetInstance">
+            <summary>
+            Singleton instance of the Logger.
+            Please use Initialize before using this instance.
+            </summary>
+            <returns>
+            Unique instance of the Logger.
+            </returns>
+        </member>
+        <member name="M:LoggerLib.Logger.Initialize(System.String,System.String)">
+            <summary>
+            Initializes the logs repository.
+            You can choose between initialization by project name (saving logs in the OS's application data folder: AppData\Roaming\[projectName] for Windows)  
+            or initializing directly with a custom path and a project name, which will create the logs in the specified directory.
+            </summary>
+            <param name="projectName">Project name for the subdirectory.</param>
+            <param name="projectsPath">Custom path for the application folder.</param>
+        </member>
+        <member name="M:LoggerLib.Logger.Log(System.Object)">
+            <summary>
+            Logs any object in a dated log file.
+            </summary>
+            <param name="toWrite">Object to log.</param>
+            <returns>True if the log was successfully written, otherwise false.</returns>
+        </member>
+    </members>
+</doc>

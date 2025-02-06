@@ -85,9 +85,7 @@ namespace EasySave
 
         public override string ToString()
         {
-            string str = "";
-
-            return str;
+            return base.ToString() + ", Differential Save";
         }
     }
 }
