@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace EasySave.Utils.JobStates;
 
-internal class StateJsonReader
+public class StateJsonReader
 {
     private static readonly string FolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EasySave");
     private static readonly string FilePath = Path.Combine(FolderPath, "state.json");
