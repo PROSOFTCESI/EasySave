@@ -73,13 +73,14 @@ internal class StateJsonReader
         JobStateJsonDefinition jobToUpdate = GetJob(jobName);
 
         jobToUpdate.LastUpdate = DateTime.Now;
-        jobToUpdate.State = infos.State;
-        jobToUpdate.TotalFilesToCopy = infos.TotalFilesToCopy;
-        jobToUpdate.TotalFilesSize = infos.TotalFilesSize;
-        jobToUpdate.Progression = infos.Progression;
-        jobToUpdate.NbFilesLeftToDo = infos.NbFilesLeftToDo;
-        jobToUpdate.SourceFilePath = infos.SourceFilePath;
-        jobToUpdate.TargetFilePath = infos.TargetFilePath;
+        jobToUpdate.State = infos.State ?? jobToUpdate.State;
+        jobToUpdate.TotalFilesToCopy = infos.TotalFilesToCopy == null && jobToUpdate.State.Equals(SavingState) ? jobToUpdate.TotalFilesToCopy : infos.TotalFilesToCopy;
+        jobToUpdate.TotalFilesSize = infos.TotalFilesSize == null && jobToUpdate.State.Equals(SavingState) ? jobToUpdate.TotalFilesSize : infos.TotalFilesSize;
+        jobToUpdate.Progression = infos.Progression == null && jobToUpdate.State.Equals(SavingState) ? jobToUpdate.Progression : infos.Progression;
+        jobToUpdate.NbFilesLeftToDo = infos.NbFilesLeftToDo == null && jobToUpdate.State.Equals(SavingState) ? jobToUpdate.NbFilesLeftToDo : infos.NbFilesLeftToDo;
+        jobToUpdate.TotalSizeLeftToDo = infos.TotalSizeLeftToDo == null && jobToUpdate.State.Equals(SavingState) ? jobToUpdate.TotalSizeLeftToDo : infos.TotalSizeLeftToDo;
+        jobToUpdate.SourceFilePath = infos.SourceFilePath == null && jobToUpdate.State.Equals(SavingState) ? jobToUpdate.SourceFilePath : infos.SourceFilePath;
+        jobToUpdate.TargetFilePath = infos.TargetFilePath == null && jobToUpdate.State.Equals(SavingState) ? jobToUpdate.TargetFilePath : infos.TargetFilePath;
 
         return UpdateJob(jobToUpdate);
         
@@ -158,7 +159,7 @@ internal class StateJsonReader
     private JobStateJsonDefinition GetJob(string jobName)
     {
         List<JobStateJsonDefinition> jobsJson = ReadJson();
-        JobStateJsonDefinition job = jobsJson.Find(job => job.Name == jobName) ?? throw new KeyNotFoundException($"Job {jobName} not found");
+        JobStateJsonDefinition job = jobsJson.Find(j => j.Name == jobName && j.State != DeletedState) ?? throw new KeyNotFoundException($"Job {jobName} not found");
         return job;
     }
 
@@ -167,7 +168,7 @@ internal class StateJsonReader
         try
         {
             List<JobStateJsonDefinition> jobsJson = ReadJson();
-            jobsJson[jobsJson.FindIndex(job => job.Name == job.Name && job.State != DeletedState)] = job;
+            jobsJson[jobsJson.FindIndex(j => j.Name == job.Name && j.State != DeletedState)] = job;
             var options = new JsonSerializerOptions { WriteIndented = true };
             string json = JsonSerializer.Serialize(jobsJson, options);
             File.WriteAllText(FilePath, json);
@@ -189,11 +190,11 @@ public class JobStateJsonDefinition
     public string SourcePath { get; set; }
     public string TargetPath { get; set; }
     public string State { get; set; }
-    public int? TotalFilesToCopy { get; set; } = null;
-    public int? TotalFilesSize { get; set; } = null;
-    public int? Progression { get; set; } = null;
-    public int? NbFilesLeftToDo { get; set; } = null;
-    public int? TotalSizeLeftToDo { get; set; } = null;
+    public long? TotalFilesToCopy { get; set; } = null;
+    public long? TotalFilesSize { get; set; } = null;
+    public long? Progression { get; set; } = null;
+    public long? NbFilesLeftToDo { get; set; } = null;
+    public long? TotalSizeLeftToDo { get; set; } = null;
     public string? SourceFilePath { get; set; } = null;
     public string? TargetFilePath { get; set; } = null;
 }
