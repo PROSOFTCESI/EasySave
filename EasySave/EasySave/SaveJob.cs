@@ -22,25 +22,13 @@ public abstract class SaveJob
     {
         Name = name;
         SourcePath = sourcePath;
-        SetTargetPath(targetPath);
+        TargetPath = targetPath;
         CreationDate = DateTime.Now;
         LastUpdate = DateTime.Now;
         State = StateJsonReader.SavedState;
     }
 
     //METHODS
-
-    private void SetTargetPath(string targetPath)
-    {
-        TargetPath = Path.Combine(targetPath, Name);
-        string type = "_";
-        if (this is FullSave)
-            type += "FullSave";
-        else if (this is DifferentialSave)
-            type += "DifferentialSave";
-
-        TargetPath = TargetPath + type;
-    }
 
     public bool CreateSave()
     {
@@ -72,6 +60,28 @@ public abstract class SaveJob
         // Create the destination directory
         Directory.CreateDirectory(saveTargetPath);
 
+        CreateFullSave(SourcePath, saveTargetPath);
+
+        return true;
+    }
+
+    protected bool CreateFullSave(string sourcePath, string saveTargetPath)
+    {
+
+        // Get information about the source directory
+        var dir = new DirectoryInfo(sourcePath);
+
+        // Check if the source directory exists
+        // TODO We need to andle the case of an inexistant directory. Currently, it crashes
+        if (!dir.Exists)
+            throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
+
+        // Cache directories before we start copying
+        DirectoryInfo[] dirs = dir.GetDirectories();
+
+        // Create the destination directory
+        Directory.CreateDirectory(saveTargetPath);
+
         // Get the files in the source directory and copy to the destination directory
         foreach (FileInfo file in dir.GetFiles())
         {
@@ -83,9 +93,9 @@ public abstract class SaveJob
         foreach (DirectoryInfo subDir in dirs)
         {
             string newDestinationDir = Path.Combine(saveTargetPath, subDir.Name);
-            FullSave(subDir.FullName, newDestinationDir);
+            CreateFullSave(subDir.FullName, newDestinationDir);
         }
-        
+
         return true;
     }
 
@@ -95,10 +105,25 @@ public abstract class SaveJob
 
     public bool DeleteSave()
     {
-        // Delete directory and all its contents
-        // TODO : call logs
-        Directory.Delete(TargetPath, true);
-        return true;
+        try
+        {
+            // Supprimer le dossier de sauvegarde s'il existe
+            if (Directory.Exists(TargetPath))
+            {
+                Directory.Delete(TargetPath, true);
+            }
+
+            // Supprime le job de la bdd
+            StateJsonReader stateDB = StateJsonReader.GetInstance();
+            stateDB.DeleteJob(this);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Erreur lors de la suppression : " + ex.Message);
+            return false;
+        }
     }
 
     public override string ToString()

@@ -95,14 +95,14 @@ internal class ConsoleManager
                 return;
         }
 
-        saveJob.CreateSave();
-        isCreated = StateJsonReader.GetInstance().AddJob(saveJob);
+        isCreated = saveJob.CreateSave();
 
         if (!isCreated)
         {
             WriteRed(messages.GetMessage("SAVE_JOB_CREATION_FAILED_MESSAGE"));
             return;
         }
+        StateJsonReader.GetInstance().AddJob(saveJob);
         WriteGreen(string.Format(messages.GetMessage("SAVE_JOB_CREATED_SUCCESSFULLY"), name));
     }
 
@@ -168,8 +168,7 @@ internal class ConsoleManager
         int jobToDeleteIndex = Int32.Parse(GetUserInput("ASK_SAVE_JOB_TO_DELETE_MESSAGE"));
         SaveJob jobToDelete = availableJobs[jobToDeleteIndex];
 
-        // TODO : Delete the save job
-        StateJsonReader.GetInstance().DeleteJob(jobToDelete);
+        jobToDelete.DeleteSave();
 
         bool jobDeleted = true;
         if (!jobDeleted)

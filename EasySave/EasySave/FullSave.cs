@@ -10,8 +10,6 @@ namespace EasySave
     {
         //ATTRIBUTES
 
-
-
         //CONTRUCTOR
         public FullSave(string name, string sourcePath, string targetPath) : base(name, sourcePath, targetPath)
         {
@@ -21,12 +19,15 @@ namespace EasySave
 
         public override bool Save()
         {
-            FullSave(SourcePath, TargetPath);
+            string saveTargetPath = Path.Combine(TargetPath, ("FullSave_" + DateTime.Now.ToString("dd_MM_yyyy-HH_mm_ss")));
+            CreateFullSave(SourcePath, saveTargetPath);
             return true;
         }
 
         public override bool RestoreSave()
         {
+            //TODO faire le chemin inverse, supprimer tout dans sourcePath et copier tout de la derniere save
+            //TODO, creer une fonction de recuperation de la dernkiere full save
             return true;
         }
 

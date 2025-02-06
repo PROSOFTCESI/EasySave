@@ -6,7 +6,8 @@ namespace EasySave.Utils.JobStates;
 
 internal class StateJsonReader
 {
-    private static readonly string FilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"EasySave","state.json");
+    private static readonly string FolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EasySave");
+    private static readonly string FilePath = Path.Combine(FolderPath, "state.json");
 
     private static StateJsonReader? instance;
 
@@ -26,6 +27,11 @@ internal class StateJsonReader
     }
     private List<JobStateJsonDefinition> ReadJson()
     {
+        if (!Directory.Exists(FolderPath))
+        {
+            Directory.CreateDirectory(FolderPath);
+        }
+
         if (!File.Exists(FilePath))
         {
             File.WriteAllText(FilePath, "[]");
@@ -132,7 +138,7 @@ internal class StateJsonReader
         try
         {
             List<JobStateJsonDefinition> jobsJson = ReadJson();
-            if (jobsJson.Any(job => job.Name == job.Name && job.State != DeletedState))
+            if (jobsJson.Any(j => j.Name == job.Name && job.State != DeletedState))
             {
                 return false;
             }
