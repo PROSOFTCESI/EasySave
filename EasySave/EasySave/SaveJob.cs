@@ -34,6 +34,11 @@ public abstract class SaveJob
 
     public bool CreateSave()
     {
+        if (SourcePath == TargetPath)
+        {
+            throw new ArgumentException("Source path and Target path can't be equal");
+        }
+
         // Create Target Directory
         Directory.CreateDirectory(TargetPath);
 

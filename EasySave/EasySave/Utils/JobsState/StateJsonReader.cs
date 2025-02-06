@@ -25,6 +25,7 @@ internal class StateJsonReader
         instance ??= new StateJsonReader();
         return instance;
     }
+
     private List<JobStateJsonDefinition> ReadJson()
     {
         if (!Directory.Exists(FolderPath))
@@ -42,6 +43,10 @@ internal class StateJsonReader
                        ?? throw new Exception("Le fichier JSON est vide ou invalide.");
     }
 
+    /// <summary>
+    /// Get the list of actives jobs from the state.json file
+    /// </summary>
+    /// <returns>The list of active jobs</returns>
     public List<SaveJob> GetJobs()
     {
 
@@ -68,9 +73,23 @@ internal class StateJsonReader
         return jobsList;
     }
 
+    /// <summary>
+    /// Update a job in the state.json file
+    /// </summary>
+    /// <param name="jobName"></param>
+    /// <param name="infos"></param>
+    /// <returns>True if the job was successfully updated in the state.json file, false otherwise</returns>
     public bool UpdateJob(string jobName, JobStateJsonDefinition infos)
     {
-        JobStateJsonDefinition jobToUpdate = GetJob(jobName);
+        JobStateJsonDefinition jobToUpdate;
+        try
+        {
+            jobToUpdate = GetJob(jobName);
+        }
+        catch (KeyNotFoundException)
+        {
+            return false;
+        }
 
         jobToUpdate.LastUpdate = DateTime.Now;
         jobToUpdate.State = infos.State ?? jobToUpdate.State;
@@ -86,6 +105,11 @@ internal class StateJsonReader
         
     }
 
+    /// <summary>
+    /// Add a new job in the state.json file
+    /// </summary>
+    /// <param name="job"></param>
+    /// <returns>True if the job was created, false otherwise</returns>
     public bool AddJob(SaveJob job)
     {
         try
@@ -120,6 +144,11 @@ internal class StateJsonReader
         }
     }
 
+    /// <summary>
+    /// Delete the save job in the state.json file
+    /// </summary>
+    /// <param name="job"></param>
+    /// <returns>True if the job was deleted, false otherwise</returns>
     public bool DeleteJob(SaveJob job)
     {
         try
@@ -182,6 +211,9 @@ internal class StateJsonReader
     }
 }
 
+/// <summary>
+/// The json definition of a save job in the state.json file
+/// </summary>
 public class JobStateJsonDefinition
 {
     public string Name { get; set; }
