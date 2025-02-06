@@ -95,14 +95,14 @@ internal class ConsoleManager
                 return;
         }
 
-        saveJob.CreateSave();
-        isCreated = StateJsonReader.GetInstance().AddJob(saveJob);
+        isCreated = saveJob.CreateSave();
 
         if (!isCreated)
         {
             WriteRed(messages.GetMessage("SAVE_JOB_CREATION_FAILED_MESSAGE"));
             return;
         }
+        StateJsonReader.GetInstance().AddJob(saveJob);
         WriteGreen(string.Format(messages.GetMessage("SAVE_JOB_CREATED_SUCCESSFULLY"), name));
     }
 
