@@ -105,10 +105,25 @@ public abstract class SaveJob
 
     public bool DeleteSave()
     {
-        // Delete directory and all its contents
-        // TODO : call logs
-        Directory.Delete(TargetPath, true);
-        return true;
+        try
+        {
+            // Supprimer le dossier de sauvegarde s'il existe
+            if (Directory.Exists(TargetPath))
+            {
+                Directory.Delete(TargetPath, true);
+            }
+
+            // Supprime le job de la bdd
+            StateJsonReader stateDB = StateJsonReader.GetInstance();
+            stateDB.DeleteJob(this);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Erreur lors de la suppression : " + ex.Message);
+            return false;
+        }
     }
 
     public override string ToString()

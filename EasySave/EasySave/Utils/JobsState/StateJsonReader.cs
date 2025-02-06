@@ -138,7 +138,7 @@ internal class StateJsonReader
         try
         {
             List<JobStateJsonDefinition> jobsJson = ReadJson();
-            if (jobsJson.Any(job => job.Name == job.Name && job.State != DeletedState))
+            if (jobsJson.Any(j => j.Name == job.Name && job.State != DeletedState))
             {
                 return false;
             }
