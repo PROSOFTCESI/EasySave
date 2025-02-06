@@ -2,6 +2,7 @@
 using EasySave.Utils;
 using EasySave;
 using EasySave.Utils.JobStates;
+using LoggerLib;
 
 Console.WriteLine("Hello, World!");
 //FullSave save = new FullSave("TEST1", "C:\\Users\\33641\\Documents\\TestSource", "C:\\Users\\33641\\Documents\\TestDestination");
@@ -22,5 +23,5 @@ Console.WriteLine("Hello, World!");
 //JobsManager.GetInstance().UpdateJob("Save2", infos);
 //var test = JobsManager.GetInstance().GetJobs();
 
+Logger.GetInstance().Initialize("EasySave");
 new ConsoleManager().Launch();
-
