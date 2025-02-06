@@ -1,5 +1,7 @@
-﻿using System;
+﻿using LoggerLib;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -55,11 +57,23 @@ namespace EasySave
             foreach(FileInfo sFile in sourceFiles)
             {
                 string savedFile = Path.Combine(fullsave, sFile.Name);
-                if(!File.Exists(savedFile) || File.GetLastWriteTime(sFile.FullName) > File.GetLastWriteTime(savedFile))
+                if (!File.Exists(savedFile) || File.GetLastWriteTime(sFile.FullName) > File.GetLastWriteTime(savedFile))
                 {
                     Console.WriteLine(sFile.Name);
+                    Stopwatch stopwatch = Stopwatch.StartNew();
                     sFile.CopyTo(Path.Combine(diffsave, sFile.Name));
-                }                    
+                    stopwatch.Stop();
+                    Logger.GetInstance().Log(
+                    new
+                    {
+                        SaveJobName = Name,
+                        FileSource = SourcePath + "/" + sFile.Name,
+                        FileTarget = TargetPath + "/" + sFile.Name,
+                        FileSize = sFile.Length,
+                        Time = DateTime.Now,
+                        FileTransferTime = stopwatch.ElapsedMilliseconds
+                    });
+                }
             }
 
             // Recursivity

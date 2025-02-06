@@ -1,6 +1,8 @@
 ﻿using EasySave.Utils.JobStates;
+using LoggerLib;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -67,7 +69,7 @@ public abstract class SaveJob
         return true;
     }
 
-    protected bool CreateFullSave(string sourcePath, string saveTargetPath)
+    protected bool CreateFullSave(string sourcePath, string saveTargetPath, long? leftSizeToCopy = null, long? leftFilesToCopy = null, long? totalSizeToCopy = null)
     {
 
         // Get information about the source directory
@@ -81,6 +83,25 @@ public abstract class SaveJob
         // Cache directories before we start copying
         DirectoryInfo[] dirs = dir.GetDirectories();
 
+        if (leftSizeToCopy == null && leftFilesToCopy == null)
+        {
+            // Compute the total size of the root directory
+            leftSizeToCopy = dir.EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length);
+
+            // Compute the total number of files to copy
+            leftFilesToCopy = dir.EnumerateFiles("*", SearchOption.AllDirectories).Count();
+
+            totalSizeToCopy = leftSizeToCopy;
+
+            StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
+            {
+                State = StateJsonReader.SavingState,
+                LastUpdate = DateTime.Now,
+                TotalFilesToCopy = leftFilesToCopy,
+                TotalFilesSize = totalSizeToCopy
+            });
+        }
+
         // Create the destination directory
         Directory.CreateDirectory(saveTargetPath);
 
@@ -88,15 +109,53 @@ public abstract class SaveJob
         foreach (FileInfo file in dir.GetFiles())
         {
             string targetFilePath = Path.Combine(saveTargetPath, file.Name);
+            Stopwatch stopwatch = Stopwatch.StartNew();
             file.CopyTo(targetFilePath);
+            stopwatch.Stop();
+            Logger.GetInstance().Log(
+                new
+                {
+                    SaveJobName = Name,
+                    FileSource = Path.Combine(SourcePath, file.Name),
+                    FileTarget = targetFilePath,
+                    FileSize = file.Length,
+                    Time = DateTime.Now,
+                    FileTransferTime = stopwatch.ElapsedMilliseconds
+                });
+            leftFilesToCopy--;
+            leftSizeToCopy -= file.Length;
+            leftSizeToCopy = leftSizeToCopy <= 1 ? 1 : leftSizeToCopy;
+            StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
+            {
+                State = StateJsonReader.SavingState,
+                LastUpdate = DateTime.Now,
+                Progression = 100 - (leftSizeToCopy * 100) / totalSizeToCopy,
+                NbFilesLeftToDo = leftFilesToCopy,
+                TotalSizeLeftToDo = leftSizeToCopy,
+                SourceFilePath = Path.Combine(SourcePath, file.Name),
+                TargetFilePath = targetFilePath
+            });
         }
 
         // RECURSIVITY : Copy the files from the sub directories
         foreach (DirectoryInfo subDir in dirs)
         {
             string newDestinationDir = Path.Combine(saveTargetPath, subDir.Name);
-            CreateFullSave(subDir.FullName, newDestinationDir);
+            CreateFullSave(subDir.FullName, newDestinationDir, leftSizeToCopy, leftFilesToCopy, totalSizeToCopy);
         }
+
+        StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
+        {
+            State = StateJsonReader.SavedState,
+            LastUpdate = DateTime.Now,
+            TotalFilesToCopy = null,
+            TotalFilesSize = null,
+            Progression = null,
+            NbFilesLeftToDo = null,
+            TotalSizeLeftToDo = null,
+            SourceFilePath = null,
+            TargetFilePath = null
+        });
 
         return true;
     }
