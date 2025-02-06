@@ -1,19 +1,19 @@
-# EasySave Project English Documentation
+# English Documentation for the EasySave Project
 
 ## Introduction
 
-**EasySave** is a backup application that allows users to copy files and folders effortlessly. This project is developed in **C#** and runs in the **.NET** environment, featuring a modular architecture to ensure easy extensibility and maintenance.
+**EasySave** is a backup application that allows users to copy files and folders easily. This project is developed in **C#** and runs in the **.NET** environment, featuring a modular architecture to enhance extensibility and maintainability.
 
 ---
 
 ## Project Architecture
 
-EasySave is organized into several distinct modules to ensure a clear separation of responsibilities.
+EasySave is organized into several distinct modules to ensure clear separation of responsibilities.
 
 ### Main Modules
 
-- **EasySave**: The core module containing the user interface and business logic.
-- **Logger**: A module dedicated to managing logs and events.
+- **EasySave**: The main module containing the user interface and business logic.
+- **Logger**: A dedicated module for managing logs and events.
 
 ---
 
@@ -25,29 +25,29 @@ EasySave is organized into several distinct modules to ensure a clear separation
 Contains tools and utilities such as:
 - **JobsState**: Manages the state of backup jobs.
 - **StateJsonReader.cs**: Reads and processes state JSON files.
-- **Localization and ConsoleManager**: Handles messages and command-line user interface.
-- **Messages.cs and Utils.cs**: Various helper functions.
+- **ConsoleManager**: Handles messages and the command-line user interface.
+- **Messages.cs and MessagesReader.cs**: Manages multilingual support.
 
 #### **ConsoleManager.cs**
-Manages user interactions through a command-line interface.  
-Its key features include:
+Manages user interaction through a command-line interface.  
+Its main functionalities include:
 
 ##### **Dynamic Menus**
 - **Main Menu**: Create, update, read, or delete backup tasks.
-- **Language Selection Menu**: Supports multiple languages.
+- **Language Selection Menu**: Multilingual support.
 
 ##### **Task Management**
-- **CreateSaveJobMenu**: Allows users to create a new backup job by selecting the name, source path, target path, and type (full or differential).
-- **UpdateSaveJobMenu**: Updates existing backup jobs.
-- **DeleteSaveJobMenu**: Deletes a backup job and its associated files.
-- **ReadSaveJobsMenu**: Displays available backup jobs with details.
+- **CreateSaveJobMenu**: Creates a new backup task with a name, source path, target path, and type (full or differential).
+- **UpdateSaveJobMenu**: Updates existing backup tasks.
+- **DeleteSaveJobMenu**: Deletes a backup task and its associated files.
+- **ReadSaveJobsMenu**: Displays available backup tasks with their details.
 
 ##### **Multilingual Support**
 - Uses the **Messages** class to manage message translations based on the selected language.
-- The **LanguageSelectionMenu** method allows switching between available languages.
+- **LanguageSelectionMenu** method allows switching between available languages.
 
 ##### **Error Handling**
-- Provides clear messages for invalid inputs or system errors.
+- Provides clear messages for invalid input or system errors.
 
 #### **Backup Management**
 - **DifferentialSave.cs**: Implements differential backups.
@@ -58,31 +58,30 @@ Its key features include:
 - `Name`, `SourcePath`, `TargetPath`, `CreationDate`, `LastUpdate`, `State`.
 
 ##### **Key Methods**
-- **CreateSave()**: Creates a full backup by default.
+- **CreateSave()**: Creates a default full backup.
 - **FullSave(sourcePath, targetPath)**: Performs a recursive full backup.
 - **CreateFullSave(sourcePath, saveTargetPath)**: Copies files and folders while managing subdirectories.
-- **DeleteSave()**: Deletes a backup job and its associated files.
+- **DeleteSave()**: Deletes a backup task and its associated files.
 
 #### **JSON Files**
-- **state.json**: Main file storing the current backup state.  
+- **state.json**: The main file storing the current state of backups.  
   📂 **Location**: `C:\Users\[Username]\AppData\Roaming\EasySave`.
 
 ---
 
 ### **Logger**
-- **Logger.cs**: Handles writing logs to files or specific destinations.  
-  📂 **Log file location**: `C:\Users\[Username]\AppData\Roaming\EasySave\Logs`.
+- **Logger.cs**: Responsible for writing logs to files or specific destinations.  
+  📂 **Log File Location**: `C:\Users\[Username]\AppData\Roaming\EasySave\Logs`.
 
 ---
 
-## Main Features
+## Key Features
 
-- **File and folder backup**:
+- **File and Folder Backup**:
   - **Full**: Copies the entire selected content.
-  - **Differential**: Copies only modified files since the last backup.
-- **Log management** to ensure operation traceability.
-- **Custom configuration support** using JSON files.
-- **Intuitive user interface** via command line.
+  - **Differential**: Copies only the files modified since the last backup.
+- **Log Management**: Ensures operation traceability.
+- **Intuitive User Interface**: Command-line based.
 
 ---
 
@@ -90,13 +89,8 @@ Its key features include:
 
 ### **Prerequisites**
 - **Visual Studio 2022** or later.
-- **.NET 8.0** or a compatible version.
+- **.NET 8.0** or compatible version.
 
----
-
-##  Conclusion
-
-EasySave is a flexible and efficient solution for file backup. Thanks to its **modular architecture**, it is easy to extend and add new features according to user needs.
 
 # Documentation Française du projet EasySave
 
@@ -125,8 +119,8 @@ EasySave est organisé en plusieurs modules distincts pour assurer une séparati
 Contient des outils et utilitaires comme :
 - **JobsState** : Gère l'état des travaux de sauvegarde.
 - **StateJsonReader.cs** : Lecture et traitement des fichiers JSON d'état.
-- **Localization et ConsoleManager** : Gestion des messages et de l'interface utilisateur en ligne de commande.
-- **Messages.cs et Utils.cs** : Fonctions d'assistance diverses.
+- **ConsoleManager** : Gestion des messages et de l'interface utilisateur en ligne de commande.
+- **Messages.cs and MessagesReader.cs** : Gestion multilingue.
 
 #### **ConsoleManager.cs**
 Gère l'interaction utilisateur via une interface en ligne de commande.  
@@ -181,7 +175,6 @@ Ses principales fonctionnalités incluent :
   - **Complète** : Copie entière du contenu sélectionné.
   - **Différentielle** : Copie uniquement les fichiers modifiés depuis la dernière sauvegarde.
 - **Gestion des logs** pour assurer la traçabilité des opérations.
-- **Support des configurations personnalisées** à l'aide de fichiers JSON.
 - **Interface utilisateur intuitive** en ligne de commande.
 
 ---
@@ -191,9 +184,3 @@ Ses principales fonctionnalités incluent :
 ### **Prérequis**
 - **Visual Studio 2022** ou supérieur.
 - **.NET 8.0** ou version compatible.
-
----
-
-## Conclusion
-
-EasySave est une solution flexible et efficace pour la sauvegarde de fichiers. Grâce à son **architecture modulaire**, il est facile de l'étendre et d'ajouter de nouvelles fonctionnalités selon les besoins des utilisateurs.
