@@ -96,13 +96,18 @@ public class SaveTests
 
         var FullSave = new FullSave("TestSave", SourcePath, TargetPath);
         FullSave.CreateSave();
+
+        long initalSaveSize = GetDirSize(SourcePath);
+
+
         CreateFakeFile(Path.Combine(SourcePath, "NewFileToSee.data"));
+        Thread.Sleep(2000);
         var result = FullSave.Save();
 
 
         Assert.True(result);
         Assert.True(IsPathExist(TargetPath));
-        Assert.Equal(GetDirSize(TargetPath), GetDirSize(SourcePath));
+        Assert.Equal(GetDirSize(TargetPath), GetDirSize(SourcePath)+ initalSaveSize);
         Cleanup();
     }
 
@@ -115,7 +120,7 @@ public class SaveTests
 
         var FullSave = new FullSave("TestSave", SourcePath, TargetPath);
         CreateFakeFile(Path.Combine(SourcePath, "NewFileToSee.data"));
-        var result = FullSave.Save();
+        var result = FullSave.DeleteSave();
 
         Assert.True(result);
         Assert.False(IsPathExist(TargetPath));
