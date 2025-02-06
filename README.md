@@ -94,7 +94,7 @@ Its key features include:
 
 ---
 
-## Development and Contribution
+##  Conclusion
 
 EasySave is a flexible and efficient solution for file backup. Thanks to its **modular architecture**, it is easy to extend and add new features according to user needs.
 
