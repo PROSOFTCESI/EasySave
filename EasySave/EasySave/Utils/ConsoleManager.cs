@@ -14,6 +14,9 @@ internal class ConsoleManager
     private bool isRunning = true;
     private readonly Messages messages = new(Messages.FR); // To switch between languages
 
+    /// <summary>
+    /// Launch the main menu while the program is running
+    /// </summary>
     public void Launch()
     {
         while(isRunning)
@@ -51,12 +54,15 @@ internal class ConsoleManager
             }
             catch (Exception)
             {
-                // TODO log the error
                 WriteRed(messages.GetMessage("UNKNOWN_ERROR_MESSAGE"));
             }
             PressKeyToContinue(isRunning ? null : messages.GetMessage("THANKS_END_MESSAGE"));
         }
     }
+
+    /// <summary>
+    /// Display the main menu
+    /// </summary>
     private void ShowMainMenu()
     {
         Console.Clear();
@@ -70,6 +76,9 @@ internal class ConsoleManager
         WriteCyan(messages.GetMessage("BOTTOM_MENU_LABEL"));
     }
 
+    /// <summary>
+    /// Display the create job menu and get the user input (job name, source path, destination path...)
+    /// </summary>
     private void CreateSaveJobMenu()
     {
         WriteCyan(messages.GetMessage("CREATE_SAVE_JOB_MENU_LABEL"));
@@ -95,8 +104,7 @@ internal class ConsoleManager
                 return;
         }
 
-        bool isSaved = StateJsonReader.GetInstance().AddJob(saveJob);
-        isCreated = isSaved && saveJob.CreateSave();
+        isCreated = saveJob.CreateSave();
 
         if (!isCreated)
         {
@@ -106,6 +114,9 @@ internal class ConsoleManager
         WriteGreen(string.Format(messages.GetMessage("SAVE_JOB_CREATED_SUCCESSFULLY"), name));
     }
 
+    /// <summary>
+    /// Update one or multiple save jobs
+    /// </summary>
     private void UpdateSaveJobMenu()
     {
         WriteCyan(messages.GetMessage("UPDATE_SAVE_JOB_MENU_LABEL"));
@@ -150,6 +161,9 @@ internal class ConsoleManager
         WriteGreen(string.Format(messages.GetMessage("SAVE_JOB_UPDATED_SUCCESSFULLY"), string.Join(",", jobsToUpdateTab)));
     }
 
+    /// <summary>
+    /// Display all the actives save jobs
+    /// </summary>
     private void ReadSaveJobsMenu()
     {
         WriteCyan(messages.GetMessage("READ_SAVE_JOBS_MENU_LABEL"));
@@ -157,6 +171,9 @@ internal class ConsoleManager
         ShowAvailableSaveJobs(availableJobs);
     }
 
+    /// <summary>
+    /// Display the delete job menu
+    /// </summary>
     private void DeleteSaveJobMenu()
     {
         WriteCyan(messages.GetMessage("DELETE_SAVE_JOB_MENU_LABEL"));
@@ -179,6 +196,9 @@ internal class ConsoleManager
         WriteGreen(string.Format(messages.GetMessage("SAVE_JOB_DELETED_SUCCESSFULLY"), jobToDelete));
     }
 
+    /// <summary>
+    /// Change the language of the program
+    /// </summary>
     private void LanguageSelectionMenu()
     {
         int i = 0;
@@ -199,6 +219,11 @@ internal class ConsoleManager
         }
     }
 
+    /// <summary>
+    /// Display the current save jobs, or a warning message if no save job is available
+    /// </summary>
+    /// <param name="jobs"></param>
+    /// <returns>True if at least one save job is available, false otherwise</returns>
     private bool ShowAvailableSaveJobs(List<SaveJob> jobs)
     {
         if (jobs.Count == 0)
@@ -214,6 +239,11 @@ internal class ConsoleManager
         return true;
     }
 
+    /// <summary>
+    /// Method that ask the user for an input
+    /// </summary>
+    /// <param name="inputInfoMessage">The custom input message for the user</param>
+    /// <returns>The string input of the user</returns>
     private string GetUserInput(string? inputInfoMessage = null)
     {
         if (inputInfoMessage == null)
@@ -226,6 +256,12 @@ internal class ConsoleManager
         }
         return Console.ReadLine();
     }
+
+    /// <summary>
+    /// Used in the update jobs
+    /// </summary>
+    /// <param name="userInput"></param>
+    /// <returns></returns>
     private static List<int>? GetJobsToUpdate(string? userInput)
     {
         if (string.IsNullOrEmpty(userInput))

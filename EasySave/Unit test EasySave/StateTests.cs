@@ -93,8 +93,12 @@ public class StateTests
         FullSave FullsaveJob = new FullSave("testeSave", SourcePath, TargetPathFull);
 
         StateJsonReader.GetInstance().AddJob(FullsaveJob);
-        JobStateJsonDefinition updatedDef = new();
-        updatedDef.TargetPath = TargetPathDiff;
+        JobStateJsonDefinition updatedDef = new()
+        {
+            Type = "FullSave",
+            TargetPath = TargetPathDiff,
+
+        };
         bool result = StateJsonReader.GetInstance().UpdateJob("testeSave", updatedDef);
 
         Assert.True(result);

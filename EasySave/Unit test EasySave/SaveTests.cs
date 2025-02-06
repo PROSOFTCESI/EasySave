@@ -119,7 +119,7 @@ public class SaveTests
         string TargetPath = Path.Combine(Path.GetTempPath(), "EasySaveFullTestTemp");
 
         var FullSave = new FullSave("TestSave", SourcePath, TargetPath);
-        CreateFakeFile(Path.Combine(SourcePath, "NewFileToSee.data"));
+        FullSave.CreateSave();
         var result = FullSave.DeleteSave();
 
         Assert.True(result);
