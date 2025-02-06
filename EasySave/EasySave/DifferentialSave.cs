@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace EasySave
 {
-    internal class DifferentialSave : SaveJob
+    public class DifferentialSave : SaveJob
     {
         //ATTRIBUTES
 
