@@ -1,0 +1,30 @@
+@startuml
+start
+
+:Afficher le menu de création de sauvegarde;
+:Demander le nom de la sauvegarde;
+:Demander le chemin source;
+:Demander le chemin de destination;
+:Demander le type de sauvegarde;
+
+if (Type de sauvegarde == FullSave) then (Oui)
+    :Créer une sauvegarde complète (FullSave);
+else (Non)
+    if (Type de sauvegarde == DifferentialSave) then (Oui)
+        :Créer une sauvegarde différentielle (DifferentialSave);
+    else (Non)
+        :Afficher un message d'erreur;
+        stop
+    endif
+endif
+
+:Créer la sauvegarde;
+:Enregistrer la sauvegarde dans state.json;
+if (Sauvegarde créée avec succès ?) then (Oui)
+    :Afficher un message de confirmation;
+else (Non)
+    :Afficher un message d'erreur;
+endif
+
+stop
+@enduml
