@@ -6,9 +6,11 @@ namespace CryptoSoftLib
 {
     public static class CryptoSoft
     {
-        public static string exePath = "CryptoSoft/CryptoSoft.exe";
+        public static string currentDir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
+
+        public static string exePath = Path.Combine(currentDir, "CryptoSoft/CryptoSoft.exe");
         public static void EncryptDecrypt(string filePath, string key)
-        {
+        {           
             ProcessStartInfo psi = new ProcessStartInfo
             {
                 FileName = exePath,
@@ -25,7 +27,7 @@ namespace CryptoSoftLib
             catch (Exception ex)
             {
                 Console.WriteLine("Erreur lors de l'exécution : " + ex.Message);
-            }
+            }            
         }
     }
 }
