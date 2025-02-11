@@ -14,8 +14,8 @@ public class Messages
 
     public static readonly List<CultureInfo> availableCultures =
     [
-        EN,
-        FR
+        FR,
+        EN
     ];
 
     public string GetMessage(string messageKey)
