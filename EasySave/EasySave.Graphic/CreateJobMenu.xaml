@@ -1,0 +1,42 @@
+﻿<Page x:Class="EasySave.Graphic.CreateJobMenu"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Créer un Travail de Sauvegarde">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Titre -->
+        <TextBlock Name="TitleTextBlock" FontSize="20" FontWeight="Bold"
+                   HorizontalAlignment="Center" Margin="0,0,0,20" />
+
+        <StackPanel Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Width="400">
+            <!-- Nom du travail -->
+            <TextBlock Name="JobNameLabel" FontWeight="Bold" />
+            <TextBox Name="JobNameTextBox" Width="300" Margin="0,5,0,15" />
+
+            <!-- Répertoire source -->
+            <TextBlock Name="SourcePathLabel" FontWeight="Bold" />
+            <TextBox Name="SourcePathTextBox" Width="300" Margin="0,5,0,15" />
+
+            <!-- Répertoire cible -->
+            <TextBlock Name="DestinationPathLabel" FontWeight="Bold" />
+            <TextBox Name="DestinationPathTextBox" Width="300" Margin="0,5,0,15" />
+
+            <!-- Type de sauvegarde -->
+            <TextBlock Name="SaveTypeLabel" FontWeight="Bold" />
+            <StackPanel Orientation="Vertical" Margin="0,5,0,15">
+                <RadioButton Name="FullSaveRadioButton" />
+                <RadioButton Name="DifferentialSaveRadioButton" />
+            </StackPanel>
+
+            <!-- Boutons -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                <Button Name="CreateButton" Width="100" Margin="5" Click="CreateJob_Click" />
+                <Button Name="BackButton" Width="100" Margin="5" Click="GoBack_Click" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Page>

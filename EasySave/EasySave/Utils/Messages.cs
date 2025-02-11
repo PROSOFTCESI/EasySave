@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace EasySave.Utils
 {
-    internal class Messages
+    public class Messages
     {
         private CultureInfo selectedCulture;
         private MessagesReader jsonMessagesReader;

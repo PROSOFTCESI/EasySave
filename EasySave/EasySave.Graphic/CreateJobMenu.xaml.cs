@@ -1,0 +1,55 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using EasySave.Utils;
+    
+
+namespace EasySave.Graphic;
+
+
+/// <summary>
+/// Logique d'interaction pour CreateJobMenu.xaml
+/// </summary>
+public partial class CreateJobMenu : Page
+{
+    private readonly Messages messages = new(Messages.EN);
+    public CreateJobMenu()
+    {
+
+
+        InitializeComponent();
+        TitleTextBlock.Text = messages.GetMessage("CREATE_SAVE_JOB_MENU_LABEL");
+        JobNameLabel.Text = messages.GetMessage("ASK_SAVE_JOB_NAME_MESSAGE");
+        SourcePathLabel.Text = messages.GetMessage("ASK_SAVE_JOB_SOURCE_MESSAGE");
+        DestinationPathLabel.Text = messages.GetMessage("ASK_SAVE_JOB_DESTINATION_MESSAGE");
+        SaveTypeLabel.Text = messages.GetMessage("ASK_SAVE_JOB_TYPE_MESSAGE");
+        FullSaveRadioButton.Content = messages.GetMessage("SAVE_JOB_CREATED_SUCCESSFULLY");
+        DifferentialSaveRadioButton.Content = messages.GetMessage("SAVE_JOB_CREATION_FAILED_MESSAGE");
+        CreateButton.Content = messages.GetMessage("CREATE_SAVE_JOB_MENU_LABEL");
+        BackButton.Content = messages.GetMessage("EXIT_MENU_LABEL");
+    }
+
+    private void CreateJob_Click(object sender, RoutedEventArgs e)
+    {
+        string saveJobName = JobNameTextBox.Text;
+        string sourcePathJob = SourcePathTextBox.Text;
+        string destPathJob = DestinationPathTextBox.Text;
+        string saveType = FullSaveRadioButton.IsChecked == true ? "Totale" : "Différentielle";
+    }
+    private void GoBack_Click(object sender, RoutedEventArgs e)
+    {
+        NavigationService.GoBack();
+
+    }
+}
