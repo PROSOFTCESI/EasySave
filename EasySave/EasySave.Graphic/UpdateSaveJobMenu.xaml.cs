@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
 using EasySave.Utils;
+using EasySave.Utils.JobStates;
 
 namespace EasySave.Graphic
 {
@@ -31,36 +32,40 @@ namespace EasySave.Graphic
             BackButton.Content = messages.GetMessage("BACK");
 
             // Initialisation de la liste des travaux (exemple)
-            saveJobs = new List<string>
-            {
-                "0 - 'SaveULTIME' | Source : 'C:\\Users\\Poirr\\Downloads' | Destination : 'C:\\Users\\Poirr\\Documents\\SAVETEST'",
-                "1 - 'SaveWork' | Source : 'D:\\Projects' | Destination : 'D:\\Backup'",
-                "2 - 'SavePhotos' | Source : 'E:\\Photos' | Destination : 'E:\\Backup\\Photos'",
-                "3 - 'SaveULTIME' | Source : 'C:\\Users\\Poirr\\Downloads' | Destination : 'C:\\Users\\Poirr\\Documents\\SAVETEST'",
-                "4 - 'SaveWork' | Source : 'D:\\Projects' | Destination : 'D:\\Backup'",
-                "5 - 'SavePhotos' | Source : 'E:\\Photos' | Destination : 'E:\\Backup\\Photos'",
-                "6 - 'SaveULTIME' | Source : 'C:\\Users\\Poirr\\Downloads' | Destination : 'C:\\Users\\Poirr\\Documents\\SAVETEST'",
-                "7 - 'SaveWork' | Source : 'D:\\Projects' | Destination : 'D:\\Backup'",
-                "8 - 'SavePhotos' | Source : 'E:\\Photos' | Destination : 'E:\\Backup\\Photos'",
-                "9 - 'SaveULTIME' | Source : 'C:\\Users\\Poirr\\Downloads' | Destination : 'C:\\Users\\Poirr\\Documents\\SAVETEST'",
-                "10 - 'SaveWork' | Source : 'D:\\Projects' | Destination : 'D:\\Backup'",
-                "11 - 'SavePhotos' | Source : 'E:\\Photos' | Destination : 'E:\\Backup\\Photos'",
-                "12 - 'SaveULTIME' | Source : 'C:\\Users\\Poirr\\Downloads' | Destination : 'C:\\Users\\Poirr\\Documents\\SAVETEST'",
-                "13 - 'SaveWork' | Source : 'D:\\Projects' | Destination : 'D:\\Backup'",
-                "14 - 'SavePhotos' | Source : 'E:\\Photos' | Destination : 'E:\\Backup\\Photos'",
-                "15 - 'SaveULTIME' | Source : 'C:\\Users\\Poirr\\Downloads' | Destination : 'C:\\Users\\Poirr\\Documents\\SAVETEST'",
-                "16 - 'SaveWork' | Source : 'D:\\Projects' | Destination : 'D:\\Backup'",
-                "17 - 'SavePhotos' | Source : 'E:\\Photos' | Destination : 'E:\\Backup\\Photos'",
-                "18 - 'SaveULTIME' | Source : 'C:\\Users\\Poirr\\Downloads' | Destination : 'C:\\Users\\Poirr\\Documents\\SAVETEST'",
-                "19 - 'SaveWork' | Source : 'D:\\Projects' | Destination : 'D:\\Backup'",
-                "20 - 'SavePhotos' | Source : 'E:\\Photos' | Destination : 'E:\\Backup\\Photos'",
-                "21 - 'SaveULTIME' | Source : 'C:\\Users\\Poirr\\Downloads' | Destination : 'C:\\Users\\Poirr\\Documents\\SAVETEST'",
-                "22 - 'SaveWork' | Source : 'D:\\Projects' | Destination : 'D:\\Backup'",
-                "23 - 'SavePhotos' | Source : 'E:\\Photos' | Destination : 'E:\\Backup\\Photos'"
-            };
+            //saveJobs = new List<string>
+            //{
+            //    "0 - 'SaveULTIME' | Source : 'C:\\Users\\Poirr\\Downloads' | Destination : 'C:\\Users\\Poirr\\Documents\\SAVETEST'",
+            //    "1 - 'SaveWork' | Source : 'D:\\Projects' | Destination : 'D:\\Backup'",
+            //    "2 - 'SavePhotos' | Source : 'E:\\Photos' | Destination : 'E:\\Backup\\Photos'",
+            //    "3 - 'SaveULTIME' | Source : 'C:\\Users\\Poirr\\Downloads' | Destination : 'C:\\Users\\Poirr\\Documents\\SAVETEST'",
+            //    "4 - 'SaveWork' | Source : 'D:\\Projects' | Destination : 'D:\\Backup'",
+            //    "5 - 'SavePhotos' | Source : 'E:\\Photos' | Destination : 'E:\\Backup\\Photos'",
+            //    "6 - 'SaveULTIME' | Source : 'C:\\Users\\Poirr\\Downloads' | Destination : 'C:\\Users\\Poirr\\Documents\\SAVETEST'",
+            //    "7 - 'SaveWork' | Source : 'D:\\Projects' | Destination : 'D:\\Backup'",
+            //    "8 - 'SavePhotos' | Source : 'E:\\Photos' | Destination : 'E:\\Backup\\Photos'",
+            //    "9 - 'SaveULTIME' | Source : 'C:\\Users\\Poirr\\Downloads' | Destination : 'C:\\Users\\Poirr\\Documents\\SAVETEST'",
+            //    "10 - 'SaveWork' | Source : 'D:\\Projects' | Destination : 'D:\\Backup'",
+            //    "11 - 'SavePhotos' | Source : 'E:\\Photos' | Destination : 'E:\\Backup\\Photos'",
+            //    "12 - 'SaveULTIME' | Source : 'C:\\Users\\Poirr\\Downloads' | Destination : 'C:\\Users\\Poirr\\Documents\\SAVETEST'",
+            //    "13 - 'SaveWork' | Source : 'D:\\Projects' | Destination : 'D:\\Backup'",
+            //    "14 - 'SavePhotos' | Source : 'E:\\Photos' | Destination : 'E:\\Backup\\Photos'",
+            //    "15 - 'SaveULTIME' | Source : 'C:\\Users\\Poirr\\Downloads' | Destination : 'C:\\Users\\Poirr\\Documents\\SAVETEST'",
+            //    "16 - 'SaveWork' | Source : 'D:\\Projects' | Destination : 'D:\\Backup'",
+            //    "17 - 'SavePhotos' | Source : 'E:\\Photos' | Destination : 'E:\\Backup\\Photos'",
+            //    "18 - 'SaveULTIME' | Source : 'C:\\Users\\Poirr\\Downloads' | Destination : 'C:\\Users\\Poirr\\Documents\\SAVETEST'",
+            //    "19 - 'SaveWork' | Source : 'D:\\Projects' | Destination : 'D:\\Backup'",
+            //    "20 - 'SavePhotos' | Source : 'E:\\Photos' | Destination : 'E:\\Backup\\Photos'",
+            //    "21 - 'SaveULTIME' | Source : 'C:\\Users\\Poirr\\Downloads' | Destination : 'C:\\Users\\Poirr\\Documents\\SAVETEST'",
+            //    "22 - 'SaveWork' | Source : 'D:\\Projects' | Destination : 'D:\\Backup'",
+            //    "23 - 'SavePhotos' | Source : 'E:\\Photos' | Destination : 'E:\\Backup\\Photos'"
+            //};
+
+            StateJsonReader stateJsonReader = StateJsonReader.GetInstance();
+
+            List<SaveJob> jobs = stateJsonReader.GetJobs();
 
             // Remplir la ListBox avec les travaux disponibles
-            foreach (var job in saveJobs)
+            foreach (SaveJob job in jobs)
             {
                 SaveJobsListBox.Items.Add(job);
             }
@@ -81,14 +86,22 @@ namespace EasySave.Graphic
                 return;
             }
 
+            foreach(var job in selectedJobs)
+            {
+                SaveJob saveJob = (SaveJob)job;
+                bool updated = saveJob.Save();
+                if (!updated)
+                {
+                    // Message indiquant qu'un travail n'a pas pu être mis à jour
+                    MessageBoxDisplayer.DisplayError("SAVE_JOB_UPDATE_FAILED_MESSAGE");
+                    return;
+                }
+            }
+
             // Concaténer les travaux sélectionnés
-            string jobsToUpdate = string.Join("\n", selectedJobs.Cast<object>());
+            string jobsUpdated = string.Join("\n", selectedJobs.Cast<object>());
             // Affichage d'un message de confirmation avec la liste des travaux (remplacement du placeholder {0})
-            MessageBox.Show(
-                string.Format(messages.GetMessage("SAVE_JOB_UPDATED_SUCCESSFULLY"), jobsToUpdate),
-                "Confirmation",
-                MessageBoxButton.OK,
-                MessageBoxImage.Information);
+            MessageBoxDisplayer.DisplayConfirmation("SAVE_JOB_UPDATED_SUCCESSFULLY", jobsUpdated);
         }
 
         private void GoBack_Click(object sender, RoutedEventArgs e)

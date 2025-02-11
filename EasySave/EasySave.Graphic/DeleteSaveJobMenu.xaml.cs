@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
 using EasySave.Utils;
+using EasySave.Utils.JobStates;
 
 namespace EasySave.Graphic
 {
@@ -25,41 +26,37 @@ namespace EasySave.Graphic
             DeleteButton.Content = messages.GetMessage("DELETE_SAVE_JOB_MENU_LABEL");
             BackButton.Content = messages.GetMessage("BACK");
 
-            saveJobs = new List<string>
-            {
-                "0 - 'SaveULTIME' | Source : 'C:\\Users\\Poirr\\Downloads' | Destination : 'C:\\Users\\Poirr\\Documents\\SAVETEST'",
-                "1 - 'SaveWork' | Source : 'D:\\Projects' | Destination : 'D:\\Backup'",
-                "2 - 'SavePhotos' | Source : 'E:\\Photos' | Destination : 'E:\\Backup\\Photos'",
-            };
+            UpdateList();
+        }
 
-            SaveJobsListBox.ItemsSource = saveJobs;
+        private void UpdateList()
+        {
+            var jobsList = StateJsonReader.GetInstance().GetJobs();
+            SaveJobsListBox.ItemsSource = jobsList;
         }
 
         private void DeleteSelectedJob_Click(object sender, RoutedEventArgs e)
         {
-            if (SaveJobsListBox.SelectedItem != null)
-            {
-                string selectedJob = SaveJobsListBox.SelectedItem.ToString();
-                int jobNumber = int.Parse(selectedJob.Split('-')[0].Trim());
-
-                saveJobs.RemoveAt(jobNumber);
-                SaveJobsListBox.ItemsSource = null;
-                SaveJobsListBox.ItemsSource = saveJobs;
-
-                MessageBox.Show(
-                    string.Format(messages.GetMessage("SAVE_JOB_DELETED_SUCCESSFULLY"), selectedJob),
-                    "Confirmation",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Information);
-            }
-            else
+            if (SaveJobsListBox.SelectedItem == null)
             {
                 MessageBox.Show(
                     messages.GetMessage("INVALID_INPUT_MESSAGE"),
                     "Erreur",
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
+                return;
             }
+
+            SaveJob selectedJob = (SaveJob)SaveJobsListBox.SelectedItem;
+            selectedJob.DeleteSave();
+            UpdateList();
+
+            MessageBox.Show(
+                string.Format(messages.GetMessage("SAVE_JOB_DELETED_SUCCESSFULLY"), selectedJob),
+                "Confirmation",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+
         }
 
         private void GoBack_Click(object sender, RoutedEventArgs e)

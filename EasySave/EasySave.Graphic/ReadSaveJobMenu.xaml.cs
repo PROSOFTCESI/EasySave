@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using EasySave.Utils;
+using EasySave.Utils.JobStates;
 
 namespace EasySave.Graphic
 {
@@ -33,12 +34,7 @@ namespace EasySave.Graphic
             UpdateTitle.Text = messages.GetMessage("READ_SAVE_JOBS_MENU_LABEL");
             BackButton.Content = messages.GetMessage("BACK");
 
-            saveJobs = new List<string>
-            {
-                "0 - 'SaveULTIME' | Source : 'C:\\Users\\Poirr\\Downloads' | Destination : 'C:\\Users\\Poirr\\Documents\\SAVETEST'",
-                "1 - 'SaveWork' | Source : 'D:\\Projects' | Destination : 'D:\\Backup'",
-                "2 - 'SavePhotos' | Source : 'E:\\Photos' | Destination : 'E:\\Backup\\Photos'",
-            };
+            List<SaveJob> saveJobs = StateJsonReader.GetInstance().GetJobs();
 
             SaveJobsListBox.ItemsSource = saveJobs;
         }

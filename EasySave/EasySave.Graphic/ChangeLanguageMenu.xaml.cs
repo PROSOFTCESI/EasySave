@@ -43,7 +43,7 @@ namespace EasySave.Graphic
             messages.SetCulture(culture);
             TitleLabel.Text = Messages.GetInstance().GetMessage("CHANGE_LANGUAGE_MENU_LABEL");
             BackButton.Content = messages.GetMessage("BACK");
-            MessageBox.Show(messages.GetMessage("LANGUAGE_CHANGED_SUCCESSFULLY"), "Confirmation", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBoxDisplayer.DisplayConfirmation("LANGUAGE_CHANGED_SUCCESSFULLY");
         }
 
         private void GoBack_Click(object sender, RoutedEventArgs e)

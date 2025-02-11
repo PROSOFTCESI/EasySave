@@ -13,7 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using EasySave.Utils;
-    
+using EasySave.Utils.JobStates;
+
 
 namespace EasySave.Graphic;
 
@@ -40,11 +41,41 @@ public partial class CreateJobMenu : Page
 
     private void CreateJob_Click(object sender, RoutedEventArgs e)
     {
-        string saveJobName = JobNameTextBox.Text;
-        string sourcePathJob = SourcePathTextBox.Text;
-        string destPathJob = DestinationPathTextBox.Text;
-        string saveType = FullSaveRadioButton.IsChecked == true ? "Totale" : "Différentielle";
+        try
+        {
+            string saveJobName = JobNameTextBox.Text;
+            string sourcePathJob = SourcePathTextBox.Text;
+            string destPathJob = DestinationPathTextBox.Text;
+            string saveType = FullSaveRadioButton.IsChecked == true ? "Totale" : "Différentielle";
+
+            SaveJob newJob;
+
+            if (FullSaveRadioButton.IsChecked ?? false)
+            {
+                newJob = new FullSave(saveJobName, sourcePathJob, destPathJob);
+            }
+            else
+            {
+                newJob = new DifferentialSave(saveJobName, sourcePathJob, destPathJob);
+            }
+
+            bool isCreated = newJob.CreateSave();
+
+            if (isCreated)
+            {
+                MessageBoxDisplayer.DisplayConfirmation("SAVE_JOB_CREATED_SUCCESSFULLY");
+            }
+            else
+            {
+                MessageBoxDisplayer.DisplayError("SAVE_JOB_CREATION_FAILED_MESSAGE");
+            }
+        }
+        catch (Exception)
+        {
+            MessageBoxDisplayer.DisplayError("SAVE_JOB_CREATION_FAILED_MESSAGE");
+        }
     }
+
     private void GoBack_Click(object sender, RoutedEventArgs e)
     {
         NavigationService.GoBack();
