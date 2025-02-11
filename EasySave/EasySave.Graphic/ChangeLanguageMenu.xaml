@@ -8,7 +8,22 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ChangeLanguageMenu">
 
-    <Grid>
-        
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Titre -->
+        <TextBlock x:Name="TitleLabel"
+           FontSize="18" FontWeight="Bold" Margin="0,0,0,10"
+           HorizontalAlignment="Center" Text="Choisissez votre langue" />
+
+        <!-- Conteneur pour les boutons de langue -->
+        <StackPanel x:Name="LanguageStackPanel" Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" />
+
+        <!-- Bouton Retour -->
+        <Button x:Name="BackButton" Grid.Row="2" Width="100" Margin="5" HorizontalAlignment="Center" Click="GoBack_Click" Content="Retour" />
     </Grid>
 </Page>

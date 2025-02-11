@@ -1,68 +1,63 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
 
-namespace EasySave.Utils
+namespace EasySave.Utils;
+
+public class Messages
 {
-    public class Messages
+    private static Messages? Instance = null;
+
+    private CultureInfo selectedCulture;
+    private MessagesReader jsonMessagesReader;
+
+    public static readonly CultureInfo FR = new("fr-FR");
+    public static readonly CultureInfo EN = new("en-EN");
+
+    public static readonly List<CultureInfo> availableCultures =
+    [
+        EN,
+        FR
+    ];
+
+    public string GetMessage(string messageKey)
     {
-        private CultureInfo selectedCulture;
-        private MessagesReader jsonMessagesReader;
+        return jsonMessagesReader.GetMessage(messageKey) ?? messageKey;
+    }
 
-        public static readonly CultureInfo FR = new("fr-FR");
-        public static readonly CultureInfo EN = new("en-EN");
+    public static Messages GetInstance()
+    {
+        Instance ??= new Messages();
+        return Instance;
+    }
+    private Messages()
+    {
+        SetCulture(availableCultures[0]); // English by default
+    }
 
-        public readonly List<CultureInfo> availableCultures =
-        [
-            EN,
-            FR
-        ];
-
-        public string GetMessage(string messageKey)
+    public void SetCulture(CultureInfo culture)
+    {
+        if (!IsCultureSupported(culture))
         {
-            return jsonMessagesReader.GetMessage(messageKey) ?? messageKey;
+            throw new CultureNotFoundException("Culture not supported");
         }
-
-        public Messages()
+        selectedCulture = culture;
+        jsonMessagesReader = new MessagesReader(
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Utils", "Localization", "Messages"),
+            GetJsonName(selectedCulture)
+        );
+    }
+    private bool IsCultureSupported(CultureInfo culture)
+    {
+        return availableCultures.Contains(culture);
+    }
+    private string GetJsonName(CultureInfo culture)
+    {
+        string jsonPath = "messages.{0}.json";
+        jsonPath = selectedCulture.Name switch
         {
-            SetCulture(availableCultures[0]); // English by default
-        }
-
-        public Messages(CultureInfo culture)
-        {
-            SetCulture(culture);
-        }
-
-        public void SetCulture(CultureInfo culture)
-        {
-            if (!IsCultureSupported(culture))
-            {
-                throw new CultureNotFoundException("Culture not supported");
-            }
-            selectedCulture = culture;
-            jsonMessagesReader = new MessagesReader(
-                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Utils", "Localization", "Messages"),
-                GetJsonName(selectedCulture)
-            );
-        }
-        private bool IsCultureSupported(CultureInfo culture)
-        {
-            return availableCultures.Contains(culture);
-        }
-        private string GetJsonName(CultureInfo culture)
-        {
-            string jsonPath = "messages.{0}.json";
-            jsonPath = selectedCulture.Name switch
-            {
-                "en-EN" => string.Format(jsonPath, "en"),
-                "fr-FR" => string.Format(jsonPath, "fr"),
-                _ => throw new CultureNotFoundException("Culture not supported")
-            };
-            return jsonPath;
-        }
+            "en-EN" => string.Format(jsonPath, "en"),
+            "fr-FR" => string.Format(jsonPath, "fr"),
+            _ => throw new CultureNotFoundException("Culture not supported")
+        };
+        return jsonPath;
     }
 }

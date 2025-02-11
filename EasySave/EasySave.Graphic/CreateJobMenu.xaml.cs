@@ -23,11 +23,9 @@ namespace EasySave.Graphic;
 /// </summary>
 public partial class CreateJobMenu : Page
 {
-    private readonly Messages messages = new(Messages.EN);
+    private readonly Messages messages = Messages.GetInstance();
     public CreateJobMenu()
     {
-
-
         InitializeComponent();
         TitleTextBlock.Text = messages.GetMessage("CREATE_SAVE_JOB_MENU_LABEL");
         JobNameLabel.Text = messages.GetMessage("ASK_SAVE_JOB_NAME_MESSAGE");
@@ -37,7 +35,7 @@ public partial class CreateJobMenu : Page
         FullSaveRadioButton.Content = messages.GetMessage("FULL_SAVE_JOB_TITLE");
         DifferentialSaveRadioButton.Content = messages.GetMessage("DIFFERENTIAL_SAVE_JOB_TITLE");
         CreateButton.Content = messages.GetMessage("CREATE_SAVE_JOB_MENU_LABEL");
-        BackButton.Content = messages.GetMessage("EXIT_MENU_LABEL");
+        BackButton.Content = messages.GetMessage("BACK");
     }
 
     private void CreateJob_Click(object sender, RoutedEventArgs e)

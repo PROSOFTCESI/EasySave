@@ -32,5 +32,6 @@
     "NO_SAVE_JOB_MESSAGE": "No save job found",
     "FULL_SAVE_JOB_TITLE": "Full save",
     "DIFFERENTIAL_SAVE_JOB_TITLE": "Differential save",
-    "JUST_SAVE_TITLE": "Save type"
+    "JUST_SAVE_TITLE": "Save type",
+    "BACK" : "Back"
 }

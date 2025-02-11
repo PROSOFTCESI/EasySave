@@ -10,7 +10,7 @@ namespace EasySave.Graphic;
 /// </summary>
 public partial class MainMenu : Page
 {
-    private readonly Messages messages = new(Messages.EN);
+    private readonly Messages messages = Messages.GetInstance();
     public MainMenu()
     {
         InitializeComponent();

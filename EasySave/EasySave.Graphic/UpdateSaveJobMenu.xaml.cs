@@ -14,7 +14,7 @@ namespace EasySave.Graphic
     public partial class UpdateSaveJobMenu : Page
     {
         // Instance de Messages initialisée avec la langue par défaut (ici Messages.EN)
-        private readonly Messages messages = new(Messages.FR);
+        private readonly Messages messages = Messages.GetInstance();
 
         // Liste des travaux de sauvegarde disponibles
         private readonly List<string> saveJobs;
@@ -28,7 +28,7 @@ namespace EasySave.Graphic
             InstructionLabel.Text = messages.GetMessage("ASK_JOBS_TO_UPDATE");
             // Pour ce minimalisme, nous réutilisons la même clé pour le titre et le bouton.
             UpdateButton.Content = messages.GetMessage("UPDATE_SAVE_JOB_MENU_LABEL");
-            BackButton.Content = messages.GetMessage("EXIT_MENU_LABEL");
+            BackButton.Content = messages.GetMessage("BACK");
 
             // Initialisation de la liste des travaux (exemple)
             saveJobs = new List<string>
