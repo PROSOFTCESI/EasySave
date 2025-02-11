@@ -7,36 +7,31 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-
-        <!-- Titre -->
         <TextBlock Name="TitleTextBlock" FontSize="20" FontWeight="Bold"
-                   HorizontalAlignment="Center" Margin="0,0,0,20" />
-
-        <StackPanel Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Width="400">
-            <!-- Nom du travail -->
-            <TextBlock Name="JobNameLabel" FontWeight="Bold" />
-            <TextBox Name="JobNameTextBox" Width="300" Margin="0,5,0,15" />
-
-            <!-- Répertoire source -->
-            <TextBlock Name="SourcePathLabel" FontWeight="Bold" />
-            <TextBox Name="SourcePathTextBox" Width="300" Margin="0,5,0,15" />
-
-            <!-- Répertoire cible -->
-            <TextBlock Name="DestinationPathLabel" FontWeight="Bold" />
-            <TextBox Name="DestinationPathTextBox" Width="300" Margin="0,5,0,15" />
-
-            <!-- Type de sauvegarde -->
-            <TextBlock Name="SaveTypeLabel" FontWeight="Bold" />
-            <StackPanel Orientation="Vertical" Margin="0,5,0,15">
-                <RadioButton Name="FullSaveRadioButton" IsChecked="True" />
-                <RadioButton Name="DifferentialSaveRadioButton" />
+               HorizontalAlignment="Center" Margin="0,0,0,20" />
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Center" MaxWidth="600">
+                <TextBlock Name="JobNameLabel" FontWeight="Bold" Text="Nom du travail :" />
+                <TextBox Name="JobNameTextBox" Margin="0,5,0,15" MinWidth="300" />
+                <TextBlock Name="SourcePathLabel" FontWeight="Bold" Text="Répertoire source :" />
+                <TextBox Name="SourcePathTextBox" Margin="0,5,0,15" MinWidth="300" />
+                <TextBlock Name="DestinationPathLabel" FontWeight="Bold" Text="Répertoire cible :" />
+                <TextBox Name="DestinationPathTextBox" Margin="0,5,0,15" MinWidth="300" />
+                <TextBlock Name="SaveTypeLabel" FontWeight="Bold" Text="Type de sauvegarde :" />
+                <StackPanel Orientation="Vertical" Margin="0,5,0,15">
+                    <RadioButton Name="FullSaveRadioButton" IsChecked="True" Content="Sauvegarde complète" />
+                    <RadioButton Name="DifferentialSaveRadioButton" Content="Sauvegarde différentielle" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                    <Button Name="CreateButton" Width="100" Margin="5" Content="Créer" Click="CreateJob_Click" />
+                    <Button Name="BackButton" Width="100" Margin="5" Content="Retour" Click="GoBack_Click" />
+                </StackPanel>
             </StackPanel>
-
-            <!-- Boutons -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
-                <Button Name="CreateButton" Width="100" Margin="5" Click="CreateJob_Click" />
-                <Button Name="BackButton" Width="100" Margin="5" Click="GoBack_Click" />
-            </StackPanel>
-        </StackPanel>
+        </Grid>
     </Grid>
 </Page>

@@ -22,7 +22,6 @@ namespace EasySave.Graphic
             InitializeComponent();
 
             UpdateTitle.Text = messages.GetMessage("DELETE_SAVE_JOB_MENU_LABEL");
-            InstructionLabel.Text = messages.GetMessage("ASK_SAVE_JOB_TO_DELETE_MESSAGE");
             DeleteButton.Content = messages.GetMessage("DELETE_SAVE_JOB_MENU_LABEL");
             BackButton.Content = messages.GetMessage("BACK");
 

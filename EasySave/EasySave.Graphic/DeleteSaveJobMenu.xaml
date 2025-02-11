@@ -21,12 +21,6 @@
            FontSize="18" FontWeight="Bold" Margin="0,0,0,10"
            HorizontalAlignment="Center" />
 
-        <!-- Instructions -->
-        <TextBlock x:Name="InstructionLabel"
-           Grid.Row="1"
-           FontSize="12" Margin="0,0,0,10"
-           TextWrapping="Wrap" />
-
         <!-- Liste des travaux disponibles -->
         <ListBox x:Name="SaveJobsListBox" Grid.Row="2" SelectionMode="Single" Height="200" />
 

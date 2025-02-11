@@ -26,8 +26,7 @@ namespace EasySave.Graphic
 
             // Mise à jour des libellés en fonction de la langue
             UpdateTitle.Text = messages.GetMessage("UPDATE_SAVE_JOB_MENU_LABEL");
-            InstructionLabel.Text = messages.GetMessage("ASK_JOBS_TO_UPDATE");
-            // Pour ce minimalisme, nous réutilisons la même clé pour le titre et le bouton.
+     
             UpdateButton.Content = messages.GetMessage("UPDATE_SAVE_JOB_MENU_LABEL");
             BackButton.Content = messages.GetMessage("BACK");
 
