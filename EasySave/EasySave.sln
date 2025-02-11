@@ -17,8 +17,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logger", "Logger\Logger.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasySave.Graphic", "EasySave.Graphic\EasySave.Graphic.csproj", "{CABA45A3-E5F3-4240-9B61-EF5E3FC67808}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CryptoSoft", "CryptoSoft\CryptoSoft.csproj", "{EACD5822-118C-42CA-B2AD-139038746B16}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,10 +39,6 @@ Global
 		{CABA45A3-E5F3-4240-9B61-EF5E3FC67808}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CABA45A3-E5F3-4240-9B61-EF5E3FC67808}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CABA45A3-E5F3-4240-9B61-EF5E3FC67808}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EACD5822-118C-42CA-B2AD-139038746B16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EACD5822-118C-42CA-B2AD-139038746B16}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EACD5822-118C-42CA-B2AD-139038746B16}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EACD5822-118C-42CA-B2AD-139038746B16}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

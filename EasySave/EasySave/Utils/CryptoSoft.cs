@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Net.Security;
 using System.Security.Cryptography;
+using EasySave.Utils;
 
 namespace CryptoSoftLib
 {
@@ -8,24 +9,26 @@ namespace CryptoSoftLib
     {
         private static string currentDir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
 
-        private static string exePath = Path.Combine(currentDir, "CryptoSoft/CryptoSoft.exe");
+        private static string exePath = Path.Combine(currentDir, "CryptoSoft/CryptoSoft.exe");        
 
-        private static string key = GetKey();
+        private static string Key()
+        {
+            return SettingsJson.GetInstance().GetContent().EncryptionKey;
+        }
 
-
-        private static string GetKey()
+        public static string GenerateKey()
         {
             // read settings.json dans appdata
             // recup encrypotionKey
-            key = "1245124585";
-            return key;
+            
+            return "1245124585";
         }
         public static void EncryptDecrypt(string filePath)
-        {           
+        {
             ProcessStartInfo psi = new ProcessStartInfo
             {
                 FileName = exePath,
-                Arguments = $"\"{filePath}\" \"{key}\"", // Passer les arguments en les entourant de guillemets
+                Arguments = $"\"{filePath}\" \"{Key()}\"", // Passer les arguments en les entourant de guillemets
                 RedirectStandardOutput = true, // Pour récupérer la sortie si nécessaire
                 RedirectStandardError = true,
                 CreateNoWindow = true
@@ -33,12 +36,12 @@ namespace CryptoSoftLib
 
             try
             {
-               Process.Start(psi);
+                Process.Start(psi);
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Erreur lors de l'exécution : " + ex.Message);
-            }            
+            }
         }
     }
 }
