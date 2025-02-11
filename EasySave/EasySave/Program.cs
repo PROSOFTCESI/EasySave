@@ -2,8 +2,11 @@ using EasySave.Utils;
 using EasySave;
 using EasySave.Utils.JobStates;
 using LoggerLib;
-
+using static System.Net.Mime.MediaTypeNames;
 Console.WriteLine("Hello, World!");
+
+//FullSave save = new FullSave("D", "C:\\Users\\Milan\\Desktop\\projetCESI\\Saves", "C:\\Users\\Milan\\Desktop\\projetCESI\\Tests\\Tests1");
+//save.Save();
 //FullSave save = new FullSave("TEST1", "C:\\Users\\33641\\Documents\\TestSource", "C:\\Users\\33641\\Documents\\TestDestination");
 //save.CreateSave();
 

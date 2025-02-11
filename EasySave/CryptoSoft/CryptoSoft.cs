@@ -6,10 +6,21 @@ namespace CryptoSoftLib
 {
     public static class CryptoSoft
     {
-        public static string currentDir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
+        private static string currentDir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
 
-        public static string exePath = Path.Combine(currentDir, "CryptoSoft/CryptoSoft.exe");
-        public static void EncryptDecrypt(string filePath, string key)
+        private static string exePath = Path.Combine(currentDir, "CryptoSoft/CryptoSoft.exe");
+
+        private static string key = GetKey();
+
+
+        private static string GetKey()
+        {
+            // read settings.json dans appdata
+            // recup encrypotionKey
+            key = "1245124585";
+            return key;
+        }
+        public static void EncryptDecrypt(string filePath)
         {           
             ProcessStartInfo psi = new ProcessStartInfo
             {
