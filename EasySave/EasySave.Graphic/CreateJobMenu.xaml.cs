@@ -33,9 +33,9 @@ public partial class CreateJobMenu : Page
         JobNameLabel.Text = messages.GetMessage("ASK_SAVE_JOB_NAME_MESSAGE");
         SourcePathLabel.Text = messages.GetMessage("ASK_SAVE_JOB_SOURCE_MESSAGE");
         DestinationPathLabel.Text = messages.GetMessage("ASK_SAVE_JOB_DESTINATION_MESSAGE");
-        SaveTypeLabel.Text = messages.GetMessage("ASK_SAVE_JOB_TYPE_MESSAGE");
-        FullSaveRadioButton.Content = messages.GetMessage("SAVE_JOB_CREATED_SUCCESSFULLY");
-        DifferentialSaveRadioButton.Content = messages.GetMessage("SAVE_JOB_CREATION_FAILED_MESSAGE");
+        SaveTypeLabel.Text = messages.GetMessage("JUST_SAVE_TITLE");
+        FullSaveRadioButton.Content = messages.GetMessage("FULL_SAVE_JOB_TITLE");
+        DifferentialSaveRadioButton.Content = messages.GetMessage("DIFFERENTIAL_SAVE_JOB_TITLE");
         CreateButton.Content = messages.GetMessage("CREATE_SAVE_JOB_MENU_LABEL");
         BackButton.Content = messages.GetMessage("EXIT_MENU_LABEL");
     }

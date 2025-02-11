@@ -28,7 +28,7 @@
             <!-- Type de sauvegarde -->
             <TextBlock Name="SaveTypeLabel" FontWeight="Bold" />
             <StackPanel Orientation="Vertical" Margin="0,5,0,15">
-                <RadioButton Name="FullSaveRadioButton" />
+                <RadioButton Name="FullSaveRadioButton" IsChecked="True" />
                 <RadioButton Name="DifferentialSaveRadioButton" />
             </StackPanel>
 
