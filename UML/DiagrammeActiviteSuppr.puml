@@ -1,0 +1,19 @@
+@startuml
+start
+
+:Clear Console;
+:Display "Supprimer une sauvegarde";
+:Display list of SaveJobs;
+:Input "Sélectionnez l'ID/nom de la sauvegarde à supprimer";
+
+:Call StateJsonReader.DeleteJob(jobName);
+
+if (deletion successful?) then (oui)
+  :Display "Sauvegarde supprimée avec succès";
+else (non)
+  :Display "Échec de la suppression de la sauvegarde";
+endif
+
+:Press any key to continue;
+stop
+@enduml

@@ -1,0 +1,18 @@
+@startuml
+start
+
+:Effacer la console;
+:Afficher "Mettre à jour une sauvegarde";
+:Demander "Sélectionnez l'ID/nom de la sauvegarde à mettre à jour";
+:Lire la saisie utilisateur;
+:Pour chaque indice dans la liste :
+   :Récupérer la sauvegarde correspondante;
+   :Comparer le dossier source avec la sauvegarde existante;
+   :Identifier les nouveaux fichiers et dossiers;
+   :Ajouter ces éléments à la sauvegarde;
+   :Fait l'appel de la méthode SaveJob.Save();   
+:Fin de la mise à jour pour chaque sauvegarde;
+:Afficher "Sauvegarde mise à jour avec succès";
+
+stop
+@enduml
