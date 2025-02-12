@@ -6,8 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using CryptoSoftLib;
 using System.Text.Json;
-using Newtonsoft.Json;
 using System.Net.Http.Json;
+using System.IO.Enumeration;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace EasySave.Utils
 {
@@ -18,22 +21,19 @@ namespace EasySave.Utils
 
         private static SettingsJson? instance;
 
-        private static SettingsJsonDefinition content = new SettingsJsonDefinition
-        {
-            Name = "EasySave",
-            EncryptionKey = CryptoSoft.GenerateKey(),
-            selectedCulture = "FR",
-            extensionsToEncrypt = "*",
-            logFormat = "json",
-        };
-        public SettingsJsonDefinition GetContent() { return content; }
-
         public static SettingsJson GetInstance()
         {
             instance ??= new SettingsJson();
             return instance;
         }
       
+        public SettingsJsonDefinition GetContent()
+        {
+            InitContent();
+            SettingsJsonDefinition content = JsonSerializer.Deserialize<SettingsJsonDefinition>(File.ReadAllText(FilePath));
+            return content;
+        }
+
         public void Initialize()
         {
             if (!Directory.Exists(FolderPath))
@@ -44,15 +44,27 @@ namespace EasySave.Utils
             if (!File.Exists(FilePath))
             {
                 File.WriteAllText(FilePath, "[]");
+                InitContent();
             }
+        }
 
-            string json = JsonConvert.SerializeObject(content, Formatting.Indented);
+        private void InitContent()
+        {
+            SettingsJsonDefinition newContent = JsonSerializer.Deserialize<SettingsJsonDefinition>(File.ReadAllText(FilePath));
+
+            newContent.Name = newContent.Name != null ? newContent.Name : "EasySave";
+            newContent.EncryptionKey = newContent.EncryptionKey != null ? newContent.EncryptionKey : CryptoSoft.GenerateKey();
+            newContent.extensionsToEncrypt = newContent.extensionsToEncrypt != null ? newContent.extensionsToEncrypt : "*";
+            newContent.selectedCulture = newContent.selectedCulture != null ? newContent.selectedCulture : "FR";
+            newContent.logFormat = newContent.logFormat != null ? newContent.logFormat : "json";
+
+            string json = JsonConvert.SerializeObject(newContent, Formatting.Indented);
             File.WriteAllText(FilePath, json);
         }
 
         public void Update(SettingsJsonDefinition newContent)
         {
-            content = newContent;
+            
         } 
     }
 

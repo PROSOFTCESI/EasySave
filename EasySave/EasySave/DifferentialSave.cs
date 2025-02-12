@@ -59,7 +59,7 @@ namespace EasySave
                     Stopwatch stopwatch = Stopwatch.StartNew();
                     string newFile = Path.Combine(diffsave, sFile.Name);
                     sFile.CopyTo(newFile);
-                    CryptoSoft.EncryptDecrypt(newFile);
+                    CryptoSoft.EncryptDecryptFile(newFile);
                     stopwatch.Stop();
                     Logger.GetInstance().Log(
                     new
