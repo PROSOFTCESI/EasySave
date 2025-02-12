@@ -1,16 +1,27 @@
 ﻿using Newtonsoft.Json;
-
+using System.Reflection.Metadata;
+using System.Xml.Serialization;
 namespace LoggerLib;
+
+
 
 
 /// <summary>
 /// Class to write dated JSON logs in the Application Data folder or a custom directory.
 /// Depends on Newtonsoft.Json.
 /// </summary>
+/// 
+
 public class Logger
 {
-    private string LogDirectory;
+    public enum LogExportType
+    {
+        json,
+        xml,
+    };
 
+    private string LogDirectory;
+    private LogExportType ExportType;
     private static Logger? Instance = null;
 
     private Logger() 
@@ -37,9 +48,11 @@ public class Logger
     /// or initializing directly with a custom path and a project name, which will create the logs in the specified directory.
     /// </summary>
     /// <param name="projectName">Project name for the subdirectory.</param>
+    /// <param name="exportType">Custom path for the application folder.</param>
     /// <param name="projectsPath">Custom path for the application folder.</param>
-    public void Initialize(string projectName = "LogLib", string? projectsPath= null)
+    public void Initialize(string projectName = "LogLib", LogExportType exportType = LogExportType.json, string? projectsPath = null)
     {
+        ExportType = exportType;
         LogDirectory = GetLogDirectory(projectName, projectsPath);
         if (!Path.Exists(LogDirectory))
         {
@@ -54,7 +67,8 @@ public class Logger
 
     private string GetLogPath()
     {
-        return Path.Combine(LogDirectory,DateTime.Now.Date.ToString("yyyy-MM-dd") + ".json");
+
+        return Path.Combine(LogDirectory,DateTime.Now.Date.ToString("yyyy-MM-dd") +"." + ExportType.ToString());
     }
 
     private bool WriteFile(string text)
@@ -77,16 +91,31 @@ public class Logger
     /// <returns>True if the log was successfully written, otherwise false.</returns>
     public bool Log(Object toWrite)
     {
-        try
-        {
-            string jsonToAdd = JsonConvert.SerializeObject(toWrite, Formatting.Indented) + ",\n";
-            return WriteFile(jsonToAdd);
+   
+            switch (ExportType) {
+                case LogExportType.json:
+                    string jsonToAdd = JsonConvert.SerializeObject(toWrite, Formatting.Indented) + ",\n";
+              
+                    return WriteFile(jsonToAdd);
+                case LogExportType.xml:
+                    XmlSerializer serializer = new XmlSerializer(toWrite.GetType());
+                    using (StringWriter writer = new StringWriter())
+                    {
+                        serializer.Serialize(writer, toWrite);
+                        string xml = writer.ToString();
+                    
+                        return WriteFile(xml+"\n");
+                    }
+                default:
+                    return false;
+
+
+            };
+              
+        
         }
-        catch 
-        { 
-            return false; 
-        }
+
     }
 
-}
+
 

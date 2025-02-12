@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EasySave\EasySave.csproj" />
+    <ProjectReference Include="..\Logger\Logger.csproj" />
   </ItemGroup>
 
   <ItemGroup>
