@@ -228,22 +228,24 @@ internal class ConsoleManager
     /// </summary>
     private void LogTypeSelectionMenu()
     {
-        Logger.LogExportType;
-        int i = 0;
-        foreach (Logger.LogExportType exportTypoe in messages.availableCultures)
-        {
-            WriteCyan($"{i} - {exportTypoe.NativeName}");
-            i++;
-        }
+        WriteCyan("0 - json");
+        WriteCyan("1 - xml");
+
         string input = GetUserInput();
-        if (int.TryParse(input, out int index) && index >= 0 && index < messages.availableCultures.Count)
+        int.TryParse(input, out int index);
+        switch (index)
         {
-            messages.SetCulture(messages.availableCultures[index]);
-            WriteGreen(messages.GetMessage("LANGUAGE_CHANGED_SUCCESSFULLY"));
-        }
-        else
-        {
-            WriteRed(messages.GetMessage("INVALID_INPUT_MESSAGE"));
+            case 0:
+                Logger.GetInstance().Initialize("EasySave", Logger.LogExportType.json);
+                WriteGreen(string.Format(messages.GetMessage("LOGTYPE_CHANGED_SUCCESSFULLY"), "json"));
+                break;
+            case 1:
+                Logger.GetInstance().Initialize("EasySave", Logger.LogExportType.xml);
+                WriteGreen(string.Format(messages.GetMessage("LOGTYPE_CHANGED_SUCCESSFULLY"), "xml"));
+                break;
+            default:
+                WriteRed(messages.GetMessage("INVALID_INPUT_MESSAGE"));
+                return;
         }
     }
 

@@ -1,12 +1,6 @@
 ﻿using LoggerLib;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace EasySave
 {
@@ -90,7 +84,6 @@ namespace EasySave
             CreateDifferentialSave(SourcePath, fullSave, diffsave);
             return true;
         }
-
 
         public override bool RestoreSave()
         {
