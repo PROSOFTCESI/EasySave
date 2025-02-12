@@ -7,7 +7,7 @@ using System.Threading;
 using System.Globalization;
 using EasySave.Utils.JobStates;
 using System.Text.RegularExpressions;
-
+using LoggerLib;
 namespace EasySave.Utils;
 internal class ConsoleManager
 {
@@ -45,6 +45,9 @@ internal class ConsoleManager
                         LanguageSelectionMenu();
                         break;
                     case "6":
+                        LogTypeSelectionMenu();
+                        break;
+                    case "7":
                         isRunning = false;
                         break;
                     default:
@@ -72,7 +75,8 @@ internal class ConsoleManager
         WriteCyan("3 - ", messages.GetMessage("READ_SAVE_JOBS_MENU_LABEL"));
         WriteCyan("4 - ", messages.GetMessage("DELETE_SAVE_JOB_MENU_LABEL"));
         WriteCyan("5 - ", messages.GetMessage("CHANGE_LANGUAGE_MENU_LABEL"));
-        WriteCyan("6 - ", messages.GetMessage("EXIT_MENU_LABEL"));
+        WriteCyan("6 - ", messages.GetMessage("CHANGE_LOGTYPE_MENU_LABEL"));
+        WriteCyan("7 - ", messages.GetMessage("EXIT_MENU_LABEL")); 
         WriteCyan(messages.GetMessage("BOTTOM_MENU_LABEL"));
     }
 
@@ -218,6 +222,31 @@ internal class ConsoleManager
             WriteRed(messages.GetMessage("INVALID_INPUT_MESSAGE"));
         }
     }
+
+    /// <summary>
+    /// Change the Log êxport type
+    /// </summary>
+    private void LogTypeSelectionMenu()
+    {
+        Logger.LogExportType;
+        int i = 0;
+        foreach (Logger.LogExportType exportTypoe in messages.availableCultures)
+        {
+            WriteCyan($"{i} - {exportTypoe.NativeName}");
+            i++;
+        }
+        string input = GetUserInput();
+        if (int.TryParse(input, out int index) && index >= 0 && index < messages.availableCultures.Count)
+        {
+            messages.SetCulture(messages.availableCultures[index]);
+            WriteGreen(messages.GetMessage("LANGUAGE_CHANGED_SUCCESSFULLY"));
+        }
+        else
+        {
+            WriteRed(messages.GetMessage("INVALID_INPUT_MESSAGE"));
+        }
+    }
+
 
     /// <summary>
     /// Display the current save jobs, or a warning message if no save job is available

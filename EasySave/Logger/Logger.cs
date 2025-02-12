@@ -10,7 +10,6 @@ namespace LoggerLib;
 /// Class to write dated JSON logs in the Application Data folder or a custom directory.
 /// Depends on Newtonsoft.Json.
 /// </summary>
-/// 
 
 public class Logger
 {
@@ -103,18 +102,12 @@ public class Logger
                     {
                         serializer.Serialize(writer, toWrite);
                         string xml = writer.ToString();
-                    
                         return WriteFile(xml+"\n");
                     }
                 default:
                     return false;
-
-
             };
-              
-        
         }
-
     }
 
 
