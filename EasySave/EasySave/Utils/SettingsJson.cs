@@ -22,7 +22,9 @@ namespace EasySave.Utils
         {
             Name = "EasySave",
             EncryptionKey = CryptoSoft.GenerateKey(),
-            selectedCulture = "FR"
+            selectedCulture = "FR",
+            extensionsToEncrypt = "*",
+            logFormat = "json",
         };
         public SettingsJsonDefinition GetContent() { return content; }
 
@@ -59,6 +61,8 @@ namespace EasySave.Utils
         public string Name { get; set; }
         public string EncryptionKey { get; set; }
         public string selectedCulture { get; set; }
+        public string extensionsToEncrypt { get; set; }
+        public string logFormat { get; set; }
     }
 }
 
