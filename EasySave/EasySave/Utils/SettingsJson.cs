@@ -64,7 +64,8 @@ namespace EasySave.Utils
 
         public void Update(SettingsJsonDefinition newContent)
         {
-            
+            string json = JsonConvert.SerializeObject(newContent, Formatting.Indented);
+            File.WriteAllText(FilePath, json);
         } 
     }
 

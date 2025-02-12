@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Xml.Linq;
 using EasySave.Utils;
 using EasySave.Utils.JobStates;
+using Newtonsoft.Json.Linq;
 
 namespace CryptoSoftLib
 {
@@ -26,6 +27,11 @@ namespace CryptoSoftLib
         {
             if(key is null){
                 key = Key();
+            }
+
+            if(!ExtentionToEncrypt().Contains(new FileInfo(filePath).Extension ) && ExtentionToEncrypt()[0] != "*") {
+                Console.WriteLine("non");
+                return;
             }
 
             ProcessStartInfo psi = new ProcessStartInfo
@@ -75,6 +81,11 @@ namespace CryptoSoftLib
             {
                 EncryptDecryptFolder(subDir.FullName, key);
             }
+        }
+
+        public static string[] ExtentionToEncrypt()
+        {
+           return SettingsJson.GetInstance().GetContent().extensionsToEncrypt.Split(' ');
         }
     }
 }
