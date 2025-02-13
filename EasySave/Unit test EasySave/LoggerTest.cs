@@ -67,11 +67,13 @@ public class LoggerTest : IDisposable
         {
             // Ajouter la fermeture manquante pour chaque objet JSON
             string validJson = jsonObject.Trim() + "}";
-           
-            var objetRecuperer = JsonConvert.DeserializeObject<ObjetALog>(validJson);
+          
+            var objetRecuperer = Newtonsoft.Json.JsonConvert.DeserializeObject<ObjetALog>(validJson);
+
             Assert.Equal(objetRecuperer.ToString(), objectAStocker.ToString());
         }
     }
+
 
     private ObjetALog XMLDeserialise(string xmlObjetct)
     {
@@ -80,20 +82,27 @@ public class LoggerTest : IDisposable
 
         return (ObjetALog)serializer.Deserialize(reader);
     }
-
+    
     [Fact]
     public void XMLTest()
     {
         Logger.GetInstance().Initialize("LoggerTests",Logger.LogExportType.xml);
         ObjetALog objectInterne = new("teste", 10, null);
         ObjetALog objectAStocker = new("testeObjet a stocker", -10, objectInterne);
-        Logger.GetInstance().Log(objectAStocker);
+
+        Logger.GetInstance().Log(new {var1="qfdqsf", var2=-151, var3 = objectInterne });
         Logger.GetInstance().Log(objectAStocker);
         Logger.GetInstance().Log(objectAStocker);
         string xmlString = File.ReadAllText(Path.Combine(logFoldderPath, "logs", DateTime.Now.Date.ToString("yyyy-MM-dd") + ".xml"));
-        foreach (var xmlObject in xmlString.Split("<?xml version=\"1.0\" encoding=\"utf-16\"?>").Skip(1))
+
+        foreach (var xmlObject in xmlString.Split("<?xml version=\"1.0\" encoding=\"utf-16\"?>").Skip(2))
         {
-            Assert.Equal(objectAStocker.ToString(), XMLDeserialise(xmlObject).ToString());
+            XmlSerializer serializer = new(typeof(Logger.LogClass));
+            using StringReader reader = new(xmlObject);
+
+            var objetRecuperer = serializer.Deserialize(reader);
+            Assert.Equal( objectAStocker.ToString(), objetRecuperer.ToString());
+
         }
     }
 }
