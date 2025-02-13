@@ -31,8 +31,6 @@ public class ObjetALog
 
 public class LoggerTest : IDisposable
 {
-   
-
     private readonly string logFoldderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LoggerTests");
 
     public LoggerTest()
@@ -51,6 +49,7 @@ public class LoggerTest : IDisposable
     {
         Assert.True(Directory.Exists(Path.Combine(logFoldderPath,"logs")));
     }
+
 
     [Fact]
     public void JsonTest()
@@ -76,32 +75,25 @@ public class LoggerTest : IDisposable
         }
     }
 
-    private ObjetALog XMLDeserialise(string xmlObjetct)
-    {
-        XmlSerializer serializer = new XmlSerializer(typeof(ObjetALog));
-        using StringReader reader = new StringReader(xmlObjetct);
-
-        return (ObjetALog)serializer.Deserialize(reader);
-    }
-
     [Fact]
     public void XMLTest()
     {
         Logger.GetInstance().Initialize("LoggerTests",Logger.LogExportType.xml);
         ObjetALog objectInterne = new("teste", 10, null);
         ObjetALog objectAStocker = new("testeObjet a stocker", -10, objectInterne);
-        Logger.GetInstance().Log(objectAStocker);
+
+        Logger.GetInstance().Log(new {var1="qfdqsf", var2=-151, var3 = objectInterne });
         Logger.GetInstance().Log(objectAStocker);
         Logger.GetInstance().Log(objectAStocker);
         string xmlString = File.ReadAllText(Path.Combine(logFoldderPath, "logs", DateTime.Now.Date.ToString("yyyy-MM-dd") + ".xml"));
-        foreach (var xmlObject in xmlString.Split("<?xml version=\"1.0\" encoding=\"utf-16\"?>").Skip(1))
+
+        foreach (var xmlObject in xmlString.Split("<?xml version=\"1.0\" encoding=\"utf-16\"?>").Skip(2))
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(ObjetALog));
-            using StringReader reader = new StringReader(xmlObject);
+            XmlSerializer serializer = new(typeof(Logger.LogClass));
+            using StringReader reader = new(xmlObject);
 
-            ObjetALog objetRecuperer = (ObjetALog)serializer.Deserialize(reader);
-            Assert.Equal(objectAStocker.ToString(), objetRecuperer.ToString());
-
+            var objetRecuperer = serializer.Deserialize(reader);
+            Assert.Equal( objectAStocker.ToString(), objetRecuperer.ToString());
         }
     }
 }
