@@ -1,0 +1,261 @@
+@startuml
+' Optionnel : un style un peu plus lisible
+skinparam classAttributeIconSize 0
+skinparam classFontSize 12
+skinparam classAttributeFontSize 11
+skinparam classBackgroundColor #FEFEFE
+
+'-------------------------------------
+' Business / Utility Classes
+'-------------------------------------
+
+' Remplace l'ancienne JsonReader par MessagesReader
+class MessagesReader {
+    -basePath: string
+    -messages: Dictionary<string, string>?
+    +MessagesReader(basePath: string, fileName: string)
+    -LoadMessages(fileName: string): void
+    +GetMessage(key: string): string?
+}
+
+' Classe Messages (singleton) utilisée par l'interface pour l'internationalisation
+class Messages <<singleton>> {
+    -Instance: Messages?
+    -selectedCulture: CultureInfo
+    -messagesReader: MessagesReader
+    +FR: CultureInfo
+    +EN: CultureInfo
+    +availableCultures: List<CultureInfo>
+    +GetMessage(messageKey: string): string
+    +GetInstance(): Messages
+    -Messages()
+    +SetCulture(culture: CultureInfo): void
+    -IsCultureSupported(culture: CultureInfo): bool
+    -GetMessageReaderFileName(culture: CultureInfo): string
+}
+
+' Classe abstraite SaveJob
+abstract class SaveJob {
+    +name: string
+    +sourcePath: string
+    +targetPath: string
+    +creationDate: DateTime
+    +lastUpdate: DateTime
+    +state: string
+    -CanRun : bool
+    -_businessSoftwaresObserver : ProcessObserver
+
+    
+    #SaveJob(name: string, sourcePath: string, targetPath: string)
+    -SetTargetPath(targetPath: string): void
+    +CreateSave(): bool
+    #FullSave(sourcePath: string, targetPath: string): bool
+    +Save(): bool {abstract}
+    +RestoreSave(): bool {abstract}
+    +DeleteSave(): bool
+    +ToString(): string
+    #CheckIfCanRun : void
+    
+}
+
+' Implémentation complète de SaveJob
+class FullSave extends SaveJob {
+    +FullSave(name: string, sourcePath: string, targetPath: string)
+    +Save(): bool
+    +RestoreSave(): bool
+    +ToString(): string
+}
+
+' Implémentation différentielle de SaveJob
+class DifferentialSave extends SaveJob {
+    +DifferentialSave(name: string, sourcePath: string, targetPath: string)
+    +Save(): bool
+    +RestoreSave(): bool
+    +ToString(): string
+}
+
+' Logger (avec stéréotype <<DLL>>)
+class Logger <<DLL>> {
+    -LogDirectory: string
+    -Instance: Logger?
+    --
+    +GetInstance(): Logger
+    -Logger()
+    -WriteFile(text: string): bool
+    +Initialize(projectName: string, LogExportType, projectsPath: string?): void
+    +Log(toWrite: object): bool
+    -GetLogPath(): string
+    -GetLogDirectory(projectName: string, projectsPath: string?)
+}
+
+' Lecture et gestion de l'état des jobs (anciennement JobsManager)
+class StateJsonReader {
+    -FilePath: string
+    -instance: StateJsonReader?
+    
+    +GetInstance(): StateJsonReader
+    -ReadJson(): List<JobStateJsonDefinition>
+    +GetJobs(): List<SaveJob>
+    +UpdateJob(jobName: string, infos: JobStateJsonDefinition): bool
+    +AddJob(job: SaveJob): bool
+    +DeleteJob(job: SaveJob): bool
+    -SaveJob(job: JobStateJsonDefinition): bool
+    -GetJob(jobName: string): JobStateJsonDefinition
+    -UpdateJob(job: JobStateJsonDefinition): bool
+}
+
+' Définition de la classe décrivant l'état d'un job
+class JobStateJsonDefinition {
+    +name: string
+    +type: string
+    +lastUpdate: DateTime
+    +sourcePath: string
+    +targetPath: string
+    +state: string
+    +totalFilesToCopy: int?
+    +totalFilesSize: int?
+    +progression: int?
+    +nbFilesLeftToDo: int?
+    +totalSizeLeftToDo: int?
+    +sourceFilePath: string?
+    +targetFilePath: string?
+}
+
+'-------------------------------------
+' Interface Graphique (Pages)
+'-------------------------------------
+
+class MainMenu <<Page>> {
+    +MainMenu()
+    +CreateJobMenu_Click(sender: object, e: RoutedEventArgs): void
+    +UpdateSaveJob_Click(sender: object, e: RoutedEventArgs): void
+    +ReadSaveJobs_Click(sender: object, e: RoutedEventArgs): void
+    +DeleteSaveJob_Click(sender: object, e: RoutedEventArgs): void
+    +ChangeLanguage_Click(sender: object, e: RoutedEventArgs): void
+    +Exit_Click(sender: object, e: RoutedEventArgs): void
+    +OpenSettings_Click(sender: object, e: RoutedEventArgs): void
+}
+
+class CreateJobMenu <<Page>> {
+    -messages: Messages
+    +CreateJobMenu()
+    +CreateJob_Click(sender: object, e: RoutedEventArgs): void
+    +GoBack_Click(sender: object, e: RoutedEventArgs): void
+}
+
+class UpdateSaveJobMenu <<Page>> {
+    -messages: Messages
+    +UpdateSaveJobMenu()
+    +UpdateSelectedJobs_Click(sender: object, e: RoutedEventArgs): void
+    +GoBack_Click(sender: object, e: RoutedEventArgs): void
+}
+
+class ReadSaveJobMenu <<Page>> {
+    -messages: Messages
+    +ReadSaveJobMenu()
+    +GoBack_Click(sender: object, e: RoutedEventArgs): void
+}
+
+class DeleteSaveJobMenu <<Page>> {
+    -messages: Messages
+    +DeleteSaveJobMenu()
+    +DeleteSelectedJob_Click(sender: object, e: RoutedEventArgs): void
+    +GoBack_Click(sender: object, e: RoutedEventArgs): void
+}
+
+class ChangeLanguageMenu <<Page>> {
+    -messages: Messages
+    +ChangeLanguageMenu()
+    +PopulateLanguageButtons(): void
+    +SetLanguage(culture: CultureInfo): void
+    +GoBack_Click(sender: object, e: RoutedEventArgs): void
+}
+
+class SettingsMenu<<Page>> {
+    -messages: Messages
+    -Settings : SettingsJsonDefinition
+    +PopulateLanguageButtons(): void
+
+    -OpenSettings(sender : object, e: RoutedEventArgs): void
+    -GoBack_Click(sender: object, e: RoutedEventArgs): void
+    -Save-Click(sender: object, e: RoutedEventArgs): void
+    -Language_Click(sender: object, e: RoutedEventArgs): void
+}
+
+class EncryptDecryptSave<<Page>> {
+    -messages: Messages
+    -Settings : SettingsJsonDefinition
+    +PopulateLanguageButtons(): void
+
+    -EncryptDecrypt(sender: object, e: RoutedEventArgs) : void
+    -GoBack_Click(sender: object, e: RoutedEventArgs): void
+
+}
+class MessageBoxDisplayer <<static>> {
+    +DisplayConfirmation(messageId: string, args: string[]): void
+    +DisplayError(messageId: string): void
+}
+class CryptoSoft{
+    - currentDir : string
+    - exePath : string
+    - Key() : string
+    + GenerateKey() : string
+    + EncryptDecryptFile(filePath : string, key : string = null) : void
+    + EncryptDecryptFolder(folder : string, key : string = null) : void
+}
+
+class _SettingsJson{
+    + Name : string
+    + EncryptionKey : string
+    + selectedCulture : string
+    + extensionsToEncrypt : string
+    + logFormat : string
+    
+}
+class ProcessObserver{
+    - _processNames: string[]
+    - _checkTimer: Timer
+    - _lastState: bool
+
+    -CheckProcess(sender : object, e : ElapsedEventArgs) : void
+    -CheckIfProcessRunning() : bool
+    +Dispose() : void
+
+}
+'-------------------------------------
+' Relations
+'-------------------------------------
+MainMenu ..> _SettingsJson : uses
+CryptoSoft ..>_SettingsJson : uses
+Logger ..> _SettingsJson : uses
+SettingsMenu..> _SettingsJson : uses
+ChangeLanguageMenu ..> _SettingsJson: uses
+EncryptDecryptSave ..> _SettingsJson : uses
+SaveJob ..> ProcessObserver : uses
+
+' StateJsonReader gère l'état des SaveJob et dépend de JobStateJsonDefinition
+StateJsonReader ..> JobStateJsonDefinition : depends on
+StateJsonReader ..> SaveJob : manages
+
+' Les pages de l'interface utilisent la classe Messages pour récupérer les libellés
+MainMenu ..> Messages : uses
+CreateJobMenu ..> Messages : uses
+UpdateSaveJobMenu ..> Messages : uses
+ReadSaveJobMenu ..> Messages : uses
+DeleteSaveJobMenu ..> Messages : uses
+ChangeLanguageMenu ..> Messages : uses
+MessageBoxDisplayer ..> Messages : uses
+SettingsMenu..> Messages : uses
+
+
+' Les pages créent des instances de SaveJob
+CreateJobMenu ..> FullSave : creates
+CreateJobMenu ..> DifferentialSave : creates
+SaveJob ..> Logger : uses
+DifferentialSave ..> Logger : uses
+Messages ..> MessagesReader : uses
+SaveJob ..> CryptoSoft: uses
+DifferentialSave ..> CryptoSoft: uses
+FullSave ..> CryptoSoft : uses
+EncryptDecryptSave ..> CryptoSoft : uses
+@enduml
