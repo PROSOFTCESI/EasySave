@@ -31,23 +31,21 @@ Contains tools and utilities such as:
 #### **ConsoleManager.cs**
 Manages user interaction through a command-line interface.  
 Its main functionalities include:
-
-##### **Dynamic Menus**
-- **Main Menu**: Create, update, read, or delete backup tasks.
-- **Language Selection Menu**: Multilingual support.
-
-##### **Task Management**
-- **CreateSaveJobMenu**: Creates a new backup task with a name, source path, target path, and type (full or differential).
-- **UpdateSaveJobMenu**: Updates existing backup tasks.
-- **DeleteSaveJobMenu**: Deletes a backup task and its associated files.
-- **ReadSaveJobsMenu**: Displays available backup tasks with their details.
-
-##### **Multilingual Support**
-- Uses the **Messages** class to manage message translations based on the selected language.
-- **LanguageSelectionMenu** method allows switching between available languages.
-
-##### **Error Handling**
-- Provides clear messages for invalid input or system errors.
+- **Dynamic Menus**:  
+  - **Main Menu**: Create, update, read, or delete backup tasks.
+  - **Language Selection Menu**: Multilingual support.
+- **Task Management**:  
+  - **CreateSaveJobMenu**: Creates a new backup task with a name, source path, target path, and type (full or differential).
+  - **UpdateSaveJobMenu**: Updates existing backup tasks.
+  - **DeleteSaveJobMenu**: Deletes a backup task and its associated files.
+  - **ReadSaveJobsMenu**: Displays available backup tasks with their details.
+- **Multilingual Support**:  
+  - Uses the **Messages** class to manage message translations based on the selected language.
+  - The **LanguageSelectionMenu** method allows switching between available languages.
+- **Error Handling**:  
+  - Provides clear messages for invalid input or system errors.
+- **Log File Format Configuration**:  
+  - Users can choose the log file format (XML or JSON) directly from the console settings.
 
 #### **Backup Management**
 - **DifferentialSave.cs**: Implements differential backups.
@@ -90,8 +88,6 @@ Its main functionalities include:
 ### **Prerequisites**
 - **Visual Studio 2022** or later.
 - **.NET 8.0** or compatible version.
-
-
 # Documentation Française du projet EasySave
 
 ## Introduction
@@ -102,7 +98,7 @@ Its main functionalities include:
 
 ## Architecture du projet
 
-EasySave est organisé en plusieurs modules distincts pour assurer une séparation des responsabilités claire.
+EasySave est organisé en plusieurs modules distincts pour assurer une séparation claire des responsabilités.
 
 ### Modules principaux
 
@@ -116,32 +112,30 @@ EasySave est organisé en plusieurs modules distincts pour assurer une séparati
 ### **EasySave**
 
 #### **Utils**
-Contient des outils et utilitaires comme :
+Contient des outils et utilitaires tels que :
 - **JobsState** : Gère l'état des travaux de sauvegarde.
 - **StateJsonReader.cs** : Lecture et traitement des fichiers JSON d'état.
 - **ConsoleManager** : Gestion des messages et de l'interface utilisateur en ligne de commande.
-- **Messages.cs and MessagesReader.cs** : Gestion multilingue.
+- **Messages.cs et MessagesReader.cs** : Gestion multilingue.
 
 #### **ConsoleManager.cs**
 Gère l'interaction utilisateur via une interface en ligne de commande.  
 Ses principales fonctionnalités incluent :
-
-##### **Menus dynamiques**
-- **Menu principal** : Créer, mettre à jour, lire ou supprimer des tâches de sauvegarde.
-- **Menu de sélection de langue** : Prise en charge multilingue.
-
-##### **Gestion des tâches**
-- **CreateSaveJobMenu** : Création d'une nouvelle tâche de sauvegarde avec nom, chemin source, chemin cible et type (complète ou différentielle).
-- **UpdateSaveJobMenu** : Mise à jour des tâches de sauvegarde existantes.
-- **DeleteSaveJobMenu** : Suppression d'une tâche de sauvegarde et de ses fichiers associés.
-- **ReadSaveJobsMenu** : Affichage des tâches de sauvegarde disponibles avec leurs détails.
-
-##### **Support multilingue**
-- Utilise la classe **Messages** pour gérer les traductions des messages selon la langue choisie.
-- Méthode **LanguageSelectionMenu** pour basculer entre les langues disponibles.
-
-##### **Gestion des erreurs**
-- Messages clairs en cas d'entrée invalide ou d'erreurs système.
+- **Menus dynamiques** :  
+  - **Menu principal** : Créer, mettre à jour, lire ou supprimer des tâches de sauvegarde.
+  - **Menu de sélection de langue** : Prise en charge multilingue.
+- **Gestion des tâches** :  
+  - **CreateSaveJobMenu** : Création d'une nouvelle tâche de sauvegarde avec nom, chemin source, chemin cible et type (complète ou différentielle).
+  - **UpdateSaveJobMenu** : Mise à jour des tâches de sauvegarde existantes.
+  - **DeleteSaveJobMenu** : Suppression d'une tâche de sauvegarde et de ses fichiers associés.
+  - **ReadSaveJobsMenu** : Affichage des tâches de sauvegarde disponibles avec leurs détails.
+- **Support multilingue** :  
+  - Utilise la classe **Messages** pour gérer les traductions des messages selon la langue choisie.
+  - La méthode **LanguageSelectionMenu** permet de basculer entre les langues disponibles.
+- **Gestion des erreurs** :  
+  - Messages clairs en cas d'entrée invalide ou d'erreurs système.
+- **Configuration du format du fichier log** :  
+  - L'utilisateur peut choisir le format du fichier log (XML ou JSON) directement depuis les paramètres de la console.
 
 #### **Gestion des sauvegardes**
 - **DifferentialSave.cs** : Implémentation des sauvegardes différentielles.
@@ -174,8 +168,8 @@ Ses principales fonctionnalités incluent :
 - **Sauvegarde de fichiers et de dossiers** :
   - **Complète** : Copie entière du contenu sélectionné.
   - **Différentielle** : Copie uniquement les fichiers modifiés depuis la dernière sauvegarde.
-- **Gestion des logs** pour assurer la traçabilité des opérations.
-- **Interface utilisateur intuitive** en ligne de commande.
+- **Gestion des logs** : Assure la traçabilité des opérations.
+- **Interface utilisateur intuitive** : Basée sur une interface en ligne de commande.
 
 ---
 
