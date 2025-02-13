@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CryptoSoftLib;
+using EasySave.CustomExceptions;
 
 namespace EasySave
 {
@@ -17,7 +18,7 @@ namespace EasySave
 
 
         //CONTRUCTOR
-        public DifferentialSave(string name, string sourcePath, string targetPath) : base(name, sourcePath, targetPath)
+        public DifferentialSave(string name, string sourcePath, string targetPath, bool checkBusinessSoftwares = false) : base(name, sourcePath, targetPath, checkBusinessSoftwares)
         {
         }
 
@@ -41,6 +42,11 @@ namespace EasySave
 
         private void CreateDifferentialSave(string source, string fullsave, string diffsave)
         {
+            if (!CanRun)
+            {
+                throw new BusinessSoftwareRunningException();
+            }
+
             Directory.CreateDirectory(diffsave);
 
             DirectoryInfo sourceDir = new DirectoryInfo(source);
@@ -52,6 +58,10 @@ namespace EasySave
             //Copy New and modified Files
             foreach(FileInfo sFile in sourceFiles)
             {
+                if (!CanRun)
+                {
+                    throw new BusinessSoftwareRunningException();
+                }
                 string savedFile = Path.Combine(fullsave, sFile.Name);
                 if (!File.Exists(savedFile) || File.GetLastWriteTime(sFile.FullName) > File.GetLastWriteTime(savedFile))
                 {

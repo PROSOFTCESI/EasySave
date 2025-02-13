@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EasySave.CustomExceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,7 @@ namespace EasySave
         //ATTRIBUTES
 
         //CONTRUCTOR
-        public FullSave(string name, string sourcePath, string targetPath) : base(name, sourcePath, targetPath)
+        public FullSave(string name, string sourcePath, string targetPath, bool checkBusinessSoftwares = false) : base(name, sourcePath, targetPath, checkBusinessSoftwares)
         {
         }
 

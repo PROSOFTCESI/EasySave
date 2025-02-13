@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CryptoSoftLib;
+using EasySave.Utils;
+using EasySave.CustomExceptions;
 
 namespace EasySave;
 
@@ -19,9 +21,12 @@ public abstract class SaveJob
     public DateTime CreationDate { get; set; }
     public DateTime LastUpdate { get; set; }
     public string State { get; set; }
+    protected bool CanRun { get; set; } = true;
+
+    private readonly ProcessObserver _businessSoftwaresObserver;
 
     //CONSTRUCTOR
-    protected SaveJob(string name, string sourcePath, string targetPath)
+    protected SaveJob(string name, string sourcePath, string targetPath, bool checkBusinessSoftwares = false)
     {
         Name = name;
         SourcePath = sourcePath;
@@ -29,12 +34,26 @@ public abstract class SaveJob
         CreationDate = DateTime.Now;
         LastUpdate = DateTime.Now;
         State = StateJsonReader.SavedState;
+
+        if (checkBusinessSoftwares)
+        {
+            _businessSoftwaresObserver = new ProcessObserver(1000);
+            _businessSoftwaresObserver.OnProcessStateChanged += isRunning =>
+            {
+                CanRun = !isRunning;
+            };
+        }
     }
 
     //METHODS
 
     public bool CreateSave()
     {
+        if (!CanRun)
+        {
+            throw new BusinessSoftwareRunningException();
+        }
+
         if (SourcePath == TargetPath)
         {
             throw new ArgumentException("Source path and Target path can't be equal");
@@ -75,7 +94,10 @@ public abstract class SaveJob
 
     protected bool CreateFullSave(string sourcePath, string saveTargetPath, long? leftSizeToCopy = null, long? leftFilesToCopy = null, long? totalSizeToCopy = null)
     {
-
+        if (!CanRun)
+        {
+            throw new BusinessSoftwareRunningException();
+        }
         // Get information about the source directory
         var dir = new DirectoryInfo(sourcePath);
 
@@ -112,6 +134,10 @@ public abstract class SaveJob
         // Get the files in the source directory and copy to the destination directory
         foreach (FileInfo file in dir.GetFiles())
         {
+            if (!CanRun)
+            {
+                throw new BusinessSoftwareRunningException();
+            }
             string targetFilePath = Path.Combine(saveTargetPath, file.Name);
             Stopwatch stopwatch = Stopwatch.StartNew();
             file.CopyTo(targetFilePath);

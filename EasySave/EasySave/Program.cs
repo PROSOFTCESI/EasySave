@@ -25,5 +25,5 @@ Console.WriteLine("Hello, World!");
 //var test = JobsManager.GetInstance().GetJobs();
 
 SettingsJson.GetInstance().Initialize();
-Logger.GetInstance().Initialize("EasySave",Logger.LogExportType.xml);
+Logger.GetInstance().Initialize("EasySave",Logger.LogExportType.json);
 new ConsoleManager().Launch();
