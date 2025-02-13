@@ -125,7 +125,7 @@ public class Logger
     {
         switch (ExportType) {
             case LogExportType.json:
-                string jsonToAdd = JsonConvert.SerializeObject(toWrite, (Newtonsoft.Json.Formatting)Formatting.Indented) + ",\n";
+                string jsonToAdd = JsonConvert.SerializeObject(toWrite, Newtonsoft.Json.Formatting.Indented) + ",\n";
                 return WriteFile(jsonToAdd);
             case LogExportType.xml:
                 var xmlToWrite = new
