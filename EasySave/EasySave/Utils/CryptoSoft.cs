@@ -29,9 +29,13 @@ namespace CryptoSoftLib
                 key = Key();
             }
 
-            if(!ExtentionToEncrypt().Contains(new FileInfo(filePath).Extension ) && ExtentionToEncrypt()[0] != "*") {
-                Console.WriteLine("non");
-                return;
+            if (ExtentionToEncrypt()[0] != "*")
+            {
+                if (!ExtentionToEncrypt().Contains(new FileInfo(filePath).Extension))
+                {
+                    Console.WriteLine("non");
+                    return;
+                }
             }
 
             ProcessStartInfo psi = new ProcessStartInfo
