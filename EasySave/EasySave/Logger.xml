@@ -9,6 +9,7 @@
             Class to write dated JSON logs in the Application Data folder or a custom directory.
             Depends on Newtonsoft.Json.
             </summary>
+            
         </member>
         <member name="M:LoggerLib.Logger.GetInstance">
             <summary>
@@ -19,13 +20,14 @@
             Unique instance of the Logger.
             </returns>
         </member>
-        <member name="M:LoggerLib.Logger.Initialize(System.String,System.String)">
+        <member name="M:LoggerLib.Logger.Initialize(System.String,LoggerLib.Logger.LogExportType,System.String)">
             <summary>
             Initializes the logs repository.
             You can choose between initialization by project name (saving logs in the OS's application data folder: AppData\Roaming\[projectName] for Windows)  
             or initializing directly with a custom path and a project name, which will create the logs in the specified directory.
             </summary>
             <param name="projectName">Project name for the subdirectory.</param>
+            <param name="exportType">Custom path for the application folder.</param>
             <param name="projectsPath">Custom path for the application folder.</param>
         </member>
         <member name="M:LoggerLib.Logger.Log(System.Object)">

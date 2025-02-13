@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
+﻿using System.Security.Cryptography;
 using EasySave;
 using EasySave.Utils.JobStates;
+
+
 namespace Unit_test_EasySave;
 
+using Xunit;
 
 public class StateTests
 {
@@ -17,21 +14,23 @@ public class StateTests
     private readonly string SourcePath = Path.Combine(Path.GetTempPath(), "SourceStateTest");
     private readonly string TargetPathFull = Path.Combine(Path.GetTempPath(), "EasySaveFullTestTemp");
     private readonly string TargetPathDiff = Path.Combine(Path.GetTempPath(), "EasySaveDiffTestTemp");
-    
-    private static void CreateFakeFile(string filePath)
-    {
-        long fileSize = RandomNumberGenerator.GetInt32(30000); 
-        using (FileStream fs = new(filePath, FileMode.Create, FileAccess.Write))
-        {
-            fs.SetLength(fileSize); // Définit la taille du fichier
-        }
-    }
+
+
 
     public StateTests()
     { 
         if(!Path.Exists(SourcePath))
         {
             Directory.CreateDirectory(SourcePath);
+        }
+    }
+
+    private static void CreateFakeFile(string filePath)
+    {
+        long fileSize = RandomNumberGenerator.GetInt32(30000); 
+        using (FileStream fs = new(filePath, FileMode.Create, FileAccess.Write))
+        {
+            fs.SetLength(fileSize); // Définit la taille du fichier
         }
     }
 

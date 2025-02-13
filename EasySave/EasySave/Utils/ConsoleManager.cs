@@ -12,7 +12,7 @@ namespace EasySave.Utils;
 internal class ConsoleManager
 {
     private bool isRunning = true;
-    private readonly Messages messages = new(Messages.FR); // To switch between languages
+    private readonly Messages messages = Messages.GetInstance(); // To switch between languages
 
     /// <summary>
     /// Launch the main menu while the program is running
@@ -202,15 +202,15 @@ internal class ConsoleManager
     private void LanguageSelectionMenu()
     {
         int i = 0;
-        foreach (CultureInfo culture in messages.availableCultures)
+        foreach (CultureInfo culture in Messages.availableCultures)
         {
             WriteCyan($"{i} - {culture.NativeName}");
             i++;
         }
         string input = GetUserInput();
-        if (int.TryParse(input, out int index) && index >= 0 && index < messages.availableCultures.Count)
+        if (int.TryParse(input, out int index) && index >= 0 && index < Messages.availableCultures.Count)
         {
-            messages.SetCulture(messages.availableCultures[index]);
+            messages.SetCulture(Messages.availableCultures[index]);
             WriteGreen(messages.GetMessage("LANGUAGE_CHANGED_SUCCESSFULLY"));
         }
         else

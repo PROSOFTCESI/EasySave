@@ -8,4 +8,16 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Assets\MyIcon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EasySave\EasySave.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\MyIcon.ico" />
+  </ItemGroup>
+
 </Project>
