@@ -26,7 +26,6 @@ public class ObjetALog
     public string Variable1 { get; set; } 
     public int Variable2 { get; set; } 
     public ObjetALog? Varibale3 { get; set; }
- 
 }
 
 public class LoggerTest : IDisposable
@@ -50,7 +49,6 @@ public class LoggerTest : IDisposable
         Assert.True(Directory.Exists(Path.Combine(logFoldderPath,"logs")));
     }
 
-
     [Fact]
     public void JsonTest()
     {
@@ -69,12 +67,22 @@ public class LoggerTest : IDisposable
         {
             // Ajouter la fermeture manquante pour chaque objet JSON
             string validJson = jsonObject.Trim() + "}";
-           
+          
             var objetRecuperer = Newtonsoft.Json.JsonConvert.DeserializeObject<ObjetALog>(validJson);
+
             Assert.Equal(objetRecuperer.ToString(), objectAStocker.ToString());
         }
     }
 
+
+    private ObjetALog XMLDeserialise(string xmlObjetct)
+    {
+        XmlSerializer serializer = new XmlSerializer(typeof(ObjetALog));
+        using StringReader reader = new StringReader(xmlObjetct);
+
+        return (ObjetALog)serializer.Deserialize(reader);
+    }
+    
     [Fact]
     public void XMLTest()
     {
@@ -94,6 +102,7 @@ public class LoggerTest : IDisposable
 
             var objetRecuperer = serializer.Deserialize(reader);
             Assert.Equal( objectAStocker.ToString(), objetRecuperer.ToString());
+
         }
     }
 }

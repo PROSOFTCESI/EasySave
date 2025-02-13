@@ -3,17 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasySave", "EasySave\EasySave.csproj", "{AE2B5108-723B-4738-807D-6E518141C7AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasySave", "EasySave\EasySave.csproj", "{AE2B5108-723B-4738-807D-6E518141C7AA}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C1C0E15D-843A-4443-9F07-AB36F6991544} = {C1C0E15D-843A-4443-9F07-AB36F6991544}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasySave.Test", "Unit test EasySave\EasySave.Test.csproj", "{57593A1E-120B-4F15-89C1-3C8867D8188F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasySave.Test", "Unit test EasySave\EasySave.Test.csproj", "{57593A1E-120B-4F15-89C1-3C8867D8188F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{AE2B5108-723B-4738-807D-6E518141C7AA} = {AE2B5108-723B-4738-807D-6E518141C7AA}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logger", "Logger\Logger.csproj", "{C1C0E15D-843A-4443-9F07-AB36F6991544}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logger", "Logger\Logger.csproj", "{C1C0E15D-843A-4443-9F07-AB36F6991544}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasySave.Graphic", "EasySave.Graphic\EasySave.Graphic.csproj", "{CABA45A3-E5F3-4240-9B61-EF5E3FC67808}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{C1C0E15D-843A-4443-9F07-AB36F6991544}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1C0E15D-843A-4443-9F07-AB36F6991544}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1C0E15D-843A-4443-9F07-AB36F6991544}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CABA45A3-E5F3-4240-9B61-EF5E3FC67808}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CABA45A3-E5F3-4240-9B61-EF5E3FC67808}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CABA45A3-E5F3-4240-9B61-EF5E3FC67808}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CABA45A3-E5F3-4240-9B61-EF5E3FC67808}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
