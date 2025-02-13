@@ -1,0 +1,26 @@
+# Patch Note – EasySave v1.1
+---
+
+## 1. Interface Utilisateur
+
+- **Interface CLI Maintenue :**  
+  - L’interface reste basée sur une ligne de commande, gérée par la classe **ConsoleManager**.
+  - La navigation se fait par saisie numérique (ex. : "1" pour créer une sauvegarde, "2" pour mettre à jour, etc.).
+
+- **Support Multilingue Conservé :**  
+  - La gestion des messages s’appuie sur les classes **Messages** et **MessagesReader**, assurant un affichage en anglais et en français.
+
+---
+
+## 2. Gestion des Travaux de Sauvegarde
+
+- **Limitation à 5 Travaux :**  
+  - Le nombre de travaux de sauvegarde simultanés reste limité à 5, comme dans la version 1.0.
+
+---
+
+## 3. Fichier Log Journalier
+
+- **Choix du Format du Log :**  
+  - **Nouvelle fonctionnalité majeure de v1.1 :**  
+    - L’utilisateur peut désormais choisir le format du fichier log : **XML** ou **JSON**.
