@@ -1,0 +1,33 @@
+﻿<Page x:Class="EasySave.Graphic.DeleteSaveJobMenu"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression.blend/2008" 
+      xmlns:local="clr-namespace:EasySave.Graphic"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="DeleteSaveJobMenu">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Titre -->
+        <TextBlock x:Name="UpdateTitle"
+           FontSize="18" FontWeight="Bold" Margin="0,0,0,10"
+           HorizontalAlignment="Center" />
+
+        <!-- Liste des travaux disponibles -->
+        <ListBox x:Name="SaveJobsListBox" Grid.Row="2" SelectionMode="Single" Height="200" />
+
+        <!-- Boutons d'action -->
+        <StackPanel Orientation="Horizontal" Grid.Row="3" HorizontalAlignment="Center" Margin="0,20,0,0">
+            <Button x:Name="DeleteButton" Width="180" Margin="5" Click="DeleteSelectedJob_Click" Content="Supprimer" />
+            <Button x:Name="BackButton" Width="100" Margin="5" Click="GoBack_Click" Content="Retour" />
+        </StackPanel>
+    </Grid>
+</Page>

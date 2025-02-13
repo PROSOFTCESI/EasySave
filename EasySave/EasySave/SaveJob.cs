@@ -45,9 +45,7 @@ public abstract class SaveJob
         // Create a default FULL SAVE
         FullSave(SourcePath, TargetPath);
 
-        StateJsonReader.GetInstance().AddJob(this);
-
-        return true;
+        return StateJsonReader.GetInstance().AddJob(this);
     }
 
     protected bool FullSave(string sourcePath, string targetPath)

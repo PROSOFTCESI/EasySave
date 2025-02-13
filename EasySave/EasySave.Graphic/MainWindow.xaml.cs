@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using EasySave.Utils;
 
 namespace EasySave.Graphic
 {
@@ -16,9 +17,12 @@ namespace EasySave.Graphic
     /// </summary>
     public partial class MainWindow : Window
     {
+      
         public MainWindow()
         {
             InitializeComponent();
+            MainFrame.Navigate(new MainMenu()); // Charge la page principale
+
         }
     }
 }
