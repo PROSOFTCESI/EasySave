@@ -66,12 +66,12 @@ public class Logger
   
     private string GetLogDirectory(string projectName = "LogLib", string? projectsPath = null)
     {
+
         return Path.Combine(string.IsNullOrWhiteSpace(projectsPath) ? Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) : projectsPath, projectName, "logs");
     }
 
     private string GetLogPath()
     {
-
         return Path.Combine(LogDirectory,DateTime.Now.Date.ToString("yyyy-MM-dd") +"." + ExportType.ToString());
     }
 
