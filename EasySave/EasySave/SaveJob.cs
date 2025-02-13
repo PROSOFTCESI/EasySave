@@ -21,7 +21,7 @@ public abstract class SaveJob
     public DateTime CreationDate { get; set; }
     public DateTime LastUpdate { get; set; }
     public string State { get; set; }
-    protected bool CanRun { get; set; } = true;
+    private bool CanRun { get; set; } = true;
 
     private readonly ProcessObserver _businessSoftwaresObserver;
 
@@ -49,10 +49,7 @@ public abstract class SaveJob
 
     public bool CreateSave()
     {
-        if (!CanRun)
-        {
-            throw new BusinessSoftwareRunningException();
-        }
+        CheckIfCanRun();
 
         if (SourcePath == TargetPath)
         {
@@ -94,10 +91,7 @@ public abstract class SaveJob
 
     protected bool CreateFullSave(string sourcePath, string saveTargetPath, long? leftSizeToCopy = null, long? leftFilesToCopy = null, long? totalSizeToCopy = null)
     {
-        if (!CanRun)
-        {
-            throw new BusinessSoftwareRunningException();
-        }
+        CheckIfCanRun();
         // Get information about the source directory
         var dir = new DirectoryInfo(sourcePath);
 
@@ -134,10 +128,7 @@ public abstract class SaveJob
         // Get the files in the source directory and copy to the destination directory
         foreach (FileInfo file in dir.GetFiles())
         {
-            if (!CanRun)
-            {
-                throw new BusinessSoftwareRunningException();
-            }
+            CheckIfCanRun();
             string targetFilePath = Path.Combine(saveTargetPath, file.Name);
             Stopwatch stopwatch = Stopwatch.StartNew();
             file.CopyTo(targetFilePath);
@@ -215,6 +206,14 @@ public abstract class SaveJob
         {
             Console.WriteLine("Erreur lors de la suppression : " + ex.Message);
             return false;
+        }
+    }
+
+    protected void CheckIfCanRun()
+    {
+        if (!CanRun)
+        {
+            throw new BusinessSoftwareRunningException();
         }
     }
 

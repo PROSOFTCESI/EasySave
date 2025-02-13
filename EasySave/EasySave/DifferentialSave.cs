@@ -42,10 +42,7 @@ namespace EasySave
 
         private void CreateDifferentialSave(string source, string fullsave, string diffsave)
         {
-            if (!CanRun)
-            {
-                throw new BusinessSoftwareRunningException();
-            }
+            CheckIfCanRun();
 
             Directory.CreateDirectory(diffsave);
 
@@ -58,10 +55,7 @@ namespace EasySave
             //Copy New and modified Files
             foreach(FileInfo sFile in sourceFiles)
             {
-                if (!CanRun)
-                {
-                    throw new BusinessSoftwareRunningException();
-                }
+                CheckIfCanRun();
                 string savedFile = Path.Combine(fullsave, sFile.Name);
                 if (!File.Exists(savedFile) || File.GetLastWriteTime(sFile.FullName) > File.GetLastWriteTime(savedFile))
                 {
