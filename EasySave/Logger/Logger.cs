@@ -1,14 +1,11 @@
 ﻿using Newtonsoft.Json;
 using System.Reflection.Metadata;
 using System.Xml.Serialization;
-namespace LoggerLib;
-
-
 
 using System.Reflection;
 using System.Xml;
 using static System.Runtime.InteropServices.JavaScript.JSType;
-
+namespace LoggerLib;
 
 /// <summary>
 /// Class to write dated JSON logs in the Application Data folder or a custom directory.
@@ -103,6 +100,7 @@ public class Logger
             }
         }
         return result;
+
     }
 
     private bool WriteFile(string text)
@@ -141,5 +139,4 @@ public class Logger
                 return false;
         };     
     }
-
 }

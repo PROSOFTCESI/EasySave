@@ -1,0 +1,119 @@
+# Patch Note – EasySave v2.0
+
+**Contexte :**  
+Face aux retours clients et aux évolutions du marché, EasySave 2.0 représente une refonte complète de l'application. Cette version intègre une interface graphique moderne, supprime la limitation du nombre de sauvegardes, et ajoute de nouvelles fonctionnalités majeures telles que l'intégration du chiffrement via CryptoSoft et la détection d'un logiciel métier. La version 2.0 inclut également les améliorations de la version 1.1 (choix du format des logs).
+
+---
+
+## 1. Interface Utilisateur et Navigation
+
+- **Transition vers une Interface Graphique :**
+  - **Suppression du Mode Console :**  
+    - Abandon complet de **ConsoleManager**.
+  - **Nouvelle Interface Graphique (WPF) :**  
+    - Mise en place d'une interface basée sur **WPF** (ou un framework équivalent tel qu’Avalonia).
+    - Implémentation de pages dédiées :
+      - **MainMenu** : Menu principal affichant des boutons pour les actions (Créer, Mettre à jour, Lire, Supprimer, Changer la langue, Ouvrir les paramètres, Quitter).
+      - **CreateJobMenu**, **UpdateSaveJobMenu**, **ReadSaveJobMenu**, **DeleteSaveJobMenu**, **ChangeLanguageMenu** : Pages spécialisées pour chaque fonctionnalité.
+    - Navigation gérée par le **NavigationService**.
+    - **Multilinguisme :**
+      - Utilisation du singleton **Messages** et de **MessagesReader** pour fournir des libellés traduits (anglais et français).
+
+---
+
+## 2. Gestion des Travaux de Sauvegarde
+
+- **Capacité Illimitée :**
+  - **Suppression de la Limitation :**  
+    - Le nombre de travaux de sauvegarde n'est plus limité à 5 ; le système supporte désormais un nombre **illimité** de sauvegardes.
+  - **Adaptation des Classes de Sauvegarde :**
+    - La classe abstraite **SaveJob** a été repensée pour gérer un nombre illimité de travaux.
+---
+
+## 3. Intégration du Cryptage via CryptoSoft
+
+- **Ajout du Module de Chiffrement Externe :**
+  - **CryptoSoft (namespace CryptoSoftLib) :**
+    - Nouvelle classe **CryptoSoft** intégrée pour le chiffrement/déchiffrement des fichiers et dossiers.
+    - **Fonctionnalités clés :**
+      - `GenerateKey() : string` – Génère une clé d’encryption unique (GUID).
+      - `EncryptDecryptFile(filePath : string, key : string = null) : void` – Lance le chiffrement/déchiffrement d’un fichier via un exécutable externe.
+      - `EncryptDecryptFolder(folder : string, key : string = null) : void` – Applique récursivement le chiffrement sur un dossier.
+  - **Sélectivité du Chiffrement :**
+    - Seuls les fichiers dont les extensions sont définies dans **SettingsJson** seront cryptés.
+
+---
+
+## 4. Fichier Log Journalier et Format des Logs
+
+- **Enrichissement des Logs :**
+  - **Informations Supplémentaires :**  
+    - Chaque entrée du fichier log inclut désormais le **temps nécessaire au cryptage** (en ms) :
+      - **0** : Aucun chiffrement effectué.
+      - **> 0** : Temps de chiffrement réel.
+      - **< 0** : Code d’erreur.
+- **Choix du Format du Log :**
+  - Possibilité de choisir entre **XML** et **JSON** pour le fichier log (fonctionnalité également présente en v1.1).
+- **Mise à jour du Module Logger :**
+  - La classe **Logger** a été modifié :
+    - La méthode `Initialize` accepte désormais un paramètre **LogExportType** pour définir le format d’export.
+    - **Logger** est intégré dans **SaveJob** et ses dérivées pour consigner toutes les opérations.
+
+---
+
+## 5. Gestion de la Configuration
+
+- **Réorganisation du Module de Configuration :**
+  - **Nouvelle Classe _SettingsJson :**
+    - La gestion de la configuration est désormais assurée par **_SettingsJson**, qui définit les propriétés essentielles :
+      - `Name`, `EncryptionKey`, `selectedCulture`, `extensionsToEncrypt`, `logFormat`.
+    - Ces paramètres sont utilisés par plusieurs modules (MainMenu, CryptoSoft, Logger, ChangeLanguageMenu) pour adapter le comportement de l’application.
+    - La méthode privée `InitContent()` garantit l'initialisation et la mise à jour des valeurs par défaut.
+
+---
+
+## 6. Détection du Logiciel Métier
+
+- **Nouvelle Fonctionnalité de Sécurité :**
+  - Si un logiciel métier (défini dans les paramètres généraux) est détecté, le lancement d’un nouveau travail de sauvegarde est interdit.
+  - En cas de sauvegarde séquentielle, le système termine la sauvegarde du fichier en cours avant de stopper l’opération.
+  - L’arrêt et le motif sont consignés dans le fichier log pour une traçabilité complète.
+
+---
+
+## 7. Architecture et Réorganisation Inter-modules
+
+- **Architecture Modulaire :**
+  - **Interface Graphique (Pages) :**  
+    - Classes : `MainMenu`, `CreateJobMenu`, `UpdateSaveJobMenu`, `ReadSaveJobMenu`, `DeleteSaveJobMenu`, `ChangeLanguageMenu`, `MessageBoxDisplayer`.
+  - **Logique Métier :**  
+    - Classes : `SaveJob` (abstraite), `FullSave`, `DifferentialSave` (intégrant **Logger** et **CryptoSoft**).
+  - **Utilitaires et Configuration :**  
+    - Classes : `MessagesReader`, `Messages` (singleton), **_SettingsJson**, `StateJsonReader`, `JobStateJsonDefinition`.
+  - **Modules Spécifiques :**  
+    - `CryptoSoft` pour le chiffrement, `Logger` pour la gestion des logs.
+- **Relations Inter-modules :**
+  - Les relations définies dans le diagramme de classe garantissent une faible dépendance et une bonne cohésion entre les composants, facilitant la maintenance et l’extensibilité.
+
+---
+
+## 8. Fonctionnalités Reportées à la Version 3.0
+
+- **Contrôle Interactif des Sauvegardes :**
+  - Bien que des clients aient exprimé le besoin de disposer de contrôles interactifs (Play, Pause, Stop) pour chaque travail de sauvegarde, cette fonctionnalité ne sera pas intégrée dans v2.0 et sera reportée à la version 3.0.
+
+---
+
+**Conclusion :**  
+EasySave v2.0 représente une refonte majeure du produit :
+- Une **interface graphique moderne** remplace l’ancienne CLI, améliorant l’expérience utilisateur.
+- La capacité de sauvegarde passe de 5 à un nombre **illimité**.
+- **CryptoSoft** est intégré pour sécuriser les données par chiffrement.
+- Le fichier log est enrichi avec le temps de chiffrement et offre un format configurable (XML/JSON).
+- La configuration est centralisée via **_SettingsJson**, et une nouvelle fonctionnalité de détection du logiciel métier renforce la sécurité opérationnelle.
+
+Ces évolutions répondent aux besoins actuels des clients et préparent le terrain pour de futures améliorations (v3.0).
+
+---
+
+*N’hésitez pas à contacter l’équipe de développement pour toute question ou demande d’ajustement complémentaire.*
