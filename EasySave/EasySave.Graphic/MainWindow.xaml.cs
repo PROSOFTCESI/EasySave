@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using EasySave.Utils;
+using LoggerLib;
 
 namespace EasySave.Graphic
 {
@@ -22,7 +23,7 @@ namespace EasySave.Graphic
         {
             InitializeComponent();
             MainFrame.Navigate(new MainMenu()); // Charge la page principale
-
+            Logger.GetInstance().Initialize("EasySave", Logger.LogExportType.xml);
         }
     }
 }

@@ -65,6 +65,7 @@ namespace EasySave
                     sFile.CopyTo(newFile);
                     CryptoSoft.EncryptDecryptFile(newFile);
                     stopwatch.Stop();
+                    var test = Logger.GetInstance();
                     Logger.GetInstance().Log(
                     new
                     {
