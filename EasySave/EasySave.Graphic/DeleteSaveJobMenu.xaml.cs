@@ -30,7 +30,7 @@ namespace EasySave.Graphic
 
         private void UpdateList()
         {
-            var jobsList = StateJsonReader.GetInstance().GetJobs();
+            var jobsList = StateJsonReader.GetInstance().GetJobs(true);
             SaveJobsListBox.ItemsSource = jobsList;
         }
 

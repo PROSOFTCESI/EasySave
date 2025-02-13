@@ -25,7 +25,6 @@ Console.WriteLine("Hello, World!");
 //JobsManager.GetInstance().UpdateJob("Save2", infos);
 //var test = JobsManager.GetInstance().GetJobs();
 
-
-CultureInfo test = new("fr-FR");
-Console.WriteLine(test.Name);
-
+SettingsJson.GetInstance().Initialize();
+Logger.GetInstance().Initialize("EasySave",Logger.LogExportType.json);
+new ConsoleManager().Launch();

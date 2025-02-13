@@ -45,5 +45,13 @@
   "EXTENTION_FILES_INT": "Saisir les extentions en les séparant par des espaces ex : .txt .pdf",
   "SAVE": "SAUVEGARDER",
   "NAME": "Nom",
+  "BUSINESS_SOFTWARE_DETECTED_ERROR": "Un logiciel métier a été détecté pendant la mise à jour/création de votre save job. La sauvegarde n'a pas pu aboutir",
+  "": "",
+  "": "",
+  "": "",
+  "": "",
+  "": "",
+  "": "",
+  "": "",
   "": ""
 }
