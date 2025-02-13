@@ -29,5 +29,7 @@
   "SAVE_JOB_DELETED_SUCCESSFULLY": "The backup job '{0}' was deleted successfully!",
   "SAVE_JOB_DELETION_FAILED_MESSAGE": "An error occurred while deleting the backup job...",
   "UNKNOWN_ERROR_MESSAGE": "An unknown error occurred...",
-  "NO_SAVE_JOB_MESSAGE": "No save job found"
+  "NO_SAVE_JOB_MESSAGE": "No save job found",
+  "CHANGE_LOGTYPE_MENU_LABEL": "Change Log export type",
+  "LOGTYPE_CHANGED_SUCCESSFULLY": "You succesfully change the Log Export Type to {0}"
 }

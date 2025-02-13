@@ -14,7 +14,6 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 /// Class to write dated JSON logs in the Application Data folder or a custom directory.
 /// Depends on Newtonsoft.Json.
 /// </summary>
-/// 
 
 public class Logger
 {
@@ -141,7 +140,6 @@ public class Logger
             default:
                 return false;
         };     
-        
     }
 
 }
