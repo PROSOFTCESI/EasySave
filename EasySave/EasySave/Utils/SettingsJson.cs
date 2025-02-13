@@ -1,4 +1,4 @@
-﻿using EasySave.Utils.JobStates;
+using EasySave.Utils.JobStates;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,14 +43,20 @@ namespace EasySave.Utils
 
             if (!File.Exists(FilePath))
             {
-                File.WriteAllText(FilePath, "[]");
-                InitContent();
+                File.WriteAllText(FilePath, "[]");                
             }
+            InitContent();
         }
 
         private void InitContent()
         {
-            SettingsJsonDefinition newContent = JsonSerializer.Deserialize<SettingsJsonDefinition>(File.ReadAllText(FilePath));
+            SettingsJsonDefinition newContent = new SettingsJsonDefinition();
+              
+            try{
+                newContent = JsonSerializer.Deserialize<SettingsJsonDefinition>(File.ReadAllText(FilePath));
+            }
+            catch { }
+                     
 
             newContent.Name = newContent.Name != null ? newContent.Name : "EasySave";
             newContent.EncryptionKey = newContent.EncryptionKey != null ? newContent.EncryptionKey : CryptoSoft.GenerateKey();
