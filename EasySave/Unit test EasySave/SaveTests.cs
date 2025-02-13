@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.VisualBasic.FileIO;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using EasySave.Utils.JobStates;
 namespace Unit_test_EasySave;
 
 public class SaveTests
@@ -51,20 +52,29 @@ public class SaveTests
 
     private void Cleanup()
     {
-        string SourcePath = CreateFakeInformationFolder();
-        string TargetPathFull = Path.Combine(Path.GetTempPath(), "EasySaveFullTestTemp");
-        string TargetPathDiff = Path.Combine(Path.GetTempPath(), "EasySaveDiffTestTemp");
-
-        List<string> pathsToDelete = [SourcePath, TargetPathFull, TargetPathDiff];
-
-        foreach (string path in pathsToDelete){
-            if (IsPathExist(path))
+        try
+        {
+            var jobs = StateJsonReader.GetInstance().GetJobs();
+            foreach (var job in jobs)
             {
-                Directory.Delete(path, true);
+                job.DeleteSave();
             }
         }
-       
+        catch (Exception)
+        {
+            string SourcePath = CreateFakeInformationFolder();
+            string TargetPathFull = Path.Combine(Path.GetTempPath(), "EasySaveFullTestTemp");
+            string TargetPathDiff = Path.Combine(Path.GetTempPath(), "EasySaveDiffTestTemp");
 
+            List<string> pathsToDelete = [SourcePath, TargetPathFull, TargetPathDiff];
+            foreach (string path in pathsToDelete)
+            {
+                if (IsPathExist(path))
+                {
+                    Directory.Delete(path, true);
+                }
+            }
+        }
     }
 
 
@@ -137,7 +147,7 @@ public class SaveTests
         var DifferentialSave = new DifferentialSave("TestSave", SourcePath, TargetPath);
 
 
-        var result = DifferentialSave.CreateSave();
+        bool result = DifferentialSave.CreateSave();
 
 
         Assert.True(result);

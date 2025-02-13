@@ -1,10 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System.Reflection.Metadata;
-using System.Xml.Serialization;
-
-using System.Reflection;
 using System.Xml;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace LoggerLib;
 
 /// <summary>
@@ -71,38 +66,6 @@ public class Logger
         return Path.Combine(LogDirectory,DateTime.Now.Date.ToString("yyyy-MM-dd") +"." + ExportType.ToString());
     }
 
-    public class LogClass{
-        public object Details;
-        public LogClass()
-        {
-            Details = null;
-        }
-
-        public LogClass(object details) 
-        {
-            Details = details; 
-        }
-    };
-
-    public static LogClass ConvertTo<LogClass>(object source) where LogClass : new()
-    {
-        LogClass result = new LogClass();
-        Type sourceType = source.GetType();
-        Type targetType = typeof(LogClass);
-
-        foreach (PropertyInfo sourceProp in sourceType.GetProperties())
-        {
-            PropertyInfo targetProp = targetType.GetProperty(sourceProp.Name);
-            if (targetProp != null && targetProp.CanWrite)
-            {
-                object value = sourceProp.GetValue(source);
-                targetProp.SetValue(result, value);
-            }
-        }
-        return result;
-
-    }
-
     private bool WriteFile(string text)
     {
         try 
@@ -133,8 +96,8 @@ public class Logger
                     Log = toWrite
                 };
                 var jsonText = JsonConvert.SerializeObject(xmlToWrite);           // convert to JSON
-                XmlDocument doc = JsonConvert.DeserializeXmlNode(jsonText); // convert JSON to XML Document
-                return WriteFile(doc.OuterXml + "\n");
+                XmlDocument? doc = JsonConvert.DeserializeXmlNode(jsonText); // convert JSON to XML Document
+                return WriteFile(doc?.OuterXml + "\n");
             default:
                 return false;
         };     

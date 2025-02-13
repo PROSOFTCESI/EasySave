@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 using LoggerLib;
-using Newtonsoft.Json;
 namespace Unit_test_EasySave;
 
 public class ObjetALog
@@ -97,7 +89,7 @@ public class LoggerTest : IDisposable
 
         foreach (var xmlObject in xmlString.Split("<?xml version=\"1.0\" encoding=\"utf-16\"?>").Skip(2))
         {
-            XmlSerializer serializer = new(typeof(Logger.LogClass));
+            XmlSerializer serializer = new(typeof(Object));
             using StringReader reader = new(xmlObject);
 
             var objetRecuperer = serializer.Deserialize(reader);
