@@ -29,7 +29,7 @@ namespace EasySave.Utils
       
         public SettingsJsonDefinition GetContent()
         {
-            InitContent();
+            Initialize();
             SettingsJsonDefinition content = JsonSerializer.Deserialize<SettingsJsonDefinition>(File.ReadAllText(FilePath));
             return content;
         }
