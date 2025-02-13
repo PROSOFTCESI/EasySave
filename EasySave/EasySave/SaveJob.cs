@@ -1,4 +1,4 @@
-﻿using EasySave.Utils.JobStates;
+using EasySave.Utils.JobStates;
 using LoggerLib;
 using System;
 using System.Collections.Generic;
@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CryptoSoftLib;
 
 namespace EasySave;
 
@@ -114,6 +115,7 @@ public abstract class SaveJob
             string targetFilePath = Path.Combine(saveTargetPath, file.Name);
             Stopwatch stopwatch = Stopwatch.StartNew();
             file.CopyTo(targetFilePath);
+            CryptoSoft.EncryptDecryptFile(targetFilePath);
             stopwatch.Stop();
             Logger.GetInstance().Log(
                 new

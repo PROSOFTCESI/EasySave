@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using CryptoSoftLib;
 
 namespace EasySave
 {
@@ -23,12 +24,7 @@ namespace EasySave
         //METHODS
 
         public string GetLastFullSavePath()
-        {
-            if (!Directory.Exists(TargetPath))
-            {
-                Console.WriteLine("Le répertoire spécifié n'existe pas.");
-                return null;
-            }
+        {           
 
             Regex regex = new Regex(@"^FullSave_(\d{2}_\d{2}_\d{4}-\d{2}_\d{2}_\d{2})$");
 
@@ -61,7 +57,9 @@ namespace EasySave
                 {
                     Console.WriteLine(sFile.Name);
                     Stopwatch stopwatch = Stopwatch.StartNew();
-                    sFile.CopyTo(Path.Combine(diffsave, sFile.Name));
+                    string newFile = Path.Combine(diffsave, sFile.Name);
+                    sFile.CopyTo(newFile);
+                    CryptoSoft.EncryptDecryptFile(newFile);
                     stopwatch.Stop();
                     Logger.GetInstance().Log(
                     new
