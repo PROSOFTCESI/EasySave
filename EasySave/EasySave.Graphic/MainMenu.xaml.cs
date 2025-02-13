@@ -58,23 +58,11 @@ public partial class MainMenu : Page
     }
     private void OpenSettings_Click(object sender, RoutedEventArgs e)
     {
-        try
-        {
-            // Obtient le dossier AppData\Roaming de l'utilisateur courant
-            string appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            string easySavePath = Path.Combine(appDataFolder, "EasySave");
-            string fileName = "settings.json";
-            string filePath = Path.Combine(easySavePath, fileName);
-            ProcessStartInfo psi = new ProcessStartInfo(filePath)
-            {
-                UseShellExecute = true
-            };
-            Process.Start(psi);
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show("Erreur lors de l'ouverture du fichier : " + ex.Message);
-        }
+        NavigationService.Navigate(new SettingsMenu());       
     }
 
+    private void MainFrame_Navigated(object sender, NavigationEventArgs e)
+    {
+
+    }
 }

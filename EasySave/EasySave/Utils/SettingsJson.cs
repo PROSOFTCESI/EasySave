@@ -61,7 +61,7 @@ namespace EasySave.Utils
             newContent.Name = newContent.Name != null ? newContent.Name : "EasySave";
             newContent.EncryptionKey = newContent.EncryptionKey != null ? newContent.EncryptionKey : CryptoSoft.GenerateKey();
             newContent.extensionsToEncrypt = newContent.extensionsToEncrypt != null ? newContent.extensionsToEncrypt : "*";
-            newContent.selectedCulture = newContent.selectedCulture != null ? newContent.selectedCulture : "FR";
+            newContent.selectedCulture = newContent.selectedCulture != null ? newContent.selectedCulture : "fr-FR";
             newContent.logFormat = newContent.logFormat != null ? newContent.logFormat : "json";
 
             string json = JsonConvert.SerializeObject(newContent, Formatting.Indented);

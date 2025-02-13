@@ -3,6 +3,7 @@ using EasySave;
 using EasySave.Utils.JobStates;
 using LoggerLib;
 using static System.Net.Mime.MediaTypeNames;
+using System.Globalization;
 Console.WriteLine("Hello, World!");
 
 //FullSave save = new FullSave("D", "C:\\Users\\Milan\\Desktop\\projetCESI\\Saves", "C:\\Users\\Milan\\Desktop\\projetCESI\\Tests\\Tests1");
@@ -24,6 +25,7 @@ Console.WriteLine("Hello, World!");
 //JobsManager.GetInstance().UpdateJob("Save2", infos);
 //var test = JobsManager.GetInstance().GetJobs();
 
-SettingsJson.GetInstance().Initialize();
-Logger.GetInstance().Initialize("EasySave",Logger.LogExportType.xml);
-new ConsoleManager().Launch();
+
+CultureInfo test = new("fr-FR");
+Console.WriteLine(test.Name);
+
