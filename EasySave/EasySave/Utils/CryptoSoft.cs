@@ -1,95 +1,87 @@
-﻿using System.Diagnostics;
-using System.Net.Security;
-using System.Security.Cryptography;
-using System.Xml.Linq;
-using EasySave.Utils;
 using EasySave.Utils.JobStates;
-using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using CryptoSoftLib;
+using System.Text.Json;
+using System.Net.Http.Json;
+using System.IO.Enumeration;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
+using static System.Net.Mime.MediaTypeNames;
 
-namespace CryptoSoftLib
+namespace EasySave.Utils
 {
-    public static class CryptoSoft
+    public class SettingsJson
     {
-        private static string currentDir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
+        private static readonly string FolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EasySave");
+        private static readonly string FilePath = Path.Combine(FolderPath, "settings.json");
 
-        private static string exePath = Path.Combine(currentDir, "CryptoSoft/CryptoSoft.exe");   
-        
-        private static string Key()
+        private static SettingsJson? instance;
+
+        public static SettingsJson GetInstance()
         {
-            return SettingsJson.GetInstance().GetContent().EncryptionKey;
+            instance ??= new SettingsJson();
+            return instance;
         }
-
-        public static string GenerateKey()
-        {              
-            return Guid.NewGuid().ToString();
-        }
-        public static void EncryptDecryptFile(string filePath, string key = null)
+      
+        public SettingsJsonDefinition GetContent()
         {
-            if(key is null){
-                key = Key();
-            }
-
-            if (ExtentionToEncrypt()[0] != "*")
-            {
-                if (!ExtentionToEncrypt().Contains(new FileInfo(filePath).Extension))
-                {
-                    Console.WriteLine("non");
-                    return;
-                }
-            }
-
-            ProcessStartInfo psi = new ProcessStartInfo
-            {
-                FileName = exePath,
-                Arguments = $"\"{filePath}\" \"{key}\"", // Passer les arguments en les entourant de guillemets
-                RedirectStandardOutput = true, // Pour récupérer la sortie si nécessaire
-                RedirectStandardError = true,
-                CreateNoWindow = true
-            };
-
-            try
-            {
-                Process.Start(psi);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Erreur lors de l'exécution : " + ex.Message);
-            }
+            Initialize();
+            SettingsJsonDefinition content = JsonSerializer.Deserialize<SettingsJsonDefinition>(File.ReadAllText(FilePath));
+            return content;
         }
 
-        public static void EncryptDecryptFolder(string folder, string key = null)
+        public void Initialize()
         {
-            if(key is null)
+            if (!Directory.Exists(FolderPath))
             {
-                key = Key();
+                Directory.CreateDirectory(FolderPath);
             }
 
-            // Get information about the source directory
-            var dir = new DirectoryInfo(folder);
-
-            // Check if the source directory exists
-            if (!dir.Exists)
-                throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
-
-            // Cache directories before we start copying
-            DirectoryInfo[] dirs = dir.GetDirectories();
-
-            // Get the files in the source directory and copy to the destination directory
-            foreach (FileInfo file in dir.GetFiles())
-            {                
-                CryptoSoft.EncryptDecryptFile(file.FullName, key);                
-            }
-
-            // RECURSIVITY : Copy the files from the sub directories
-            foreach (DirectoryInfo subDir in dirs)
+            if (!File.Exists(FilePath))
             {
-                EncryptDecryptFolder(subDir.FullName, key);
+                File.WriteAllText(FilePath, "[]");                
             }
+            InitContent();
         }
 
-        public static string[] ExtentionToEncrypt()
+        private void InitContent()
         {
-           return SettingsJson.GetInstance().GetContent().extensionsToEncrypt.Split(' ');
+            SettingsJsonDefinition newContent = new SettingsJsonDefinition();
+              
+            try{
+                newContent = JsonSerializer.Deserialize<SettingsJsonDefinition>(File.ReadAllText(FilePath));
+            }
+            catch { }
+                     
+
+            newContent.Name = newContent.Name != null ? newContent.Name : "EasySave";
+            newContent.EncryptionKey = newContent.EncryptionKey != null ? newContent.EncryptionKey : CryptoSoft.GenerateKey();
+            newContent.extensionsToEncrypt = newContent.extensionsToEncrypt != null ? newContent.extensionsToEncrypt : "*";
+            newContent.selectedCulture = newContent.selectedCulture != null ? newContent.selectedCulture : "FR";
+            newContent.logFormat = newContent.logFormat != null ? newContent.logFormat : "json";
+
+            string json = JsonConvert.SerializeObject(newContent, Formatting.Indented);
+            File.WriteAllText(FilePath, json);
         }
+
+        public void Update(SettingsJsonDefinition newContent)
+        {
+            string json = JsonConvert.SerializeObject(newContent, Formatting.Indented);
+            File.WriteAllText(FilePath, json);
+        } 
+    }
+
+    public class SettingsJsonDefinition
+    {
+        public string Name { get; set; }
+        public string EncryptionKey { get; set; }
+        public string selectedCulture { get; set; }
+        public string extensionsToEncrypt { get; set; }
+        public string logFormat { get; set; }
     }
 }
+
