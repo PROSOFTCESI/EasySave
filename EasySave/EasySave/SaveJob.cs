@@ -1,4 +1,4 @@
-﻿using EasySave.Utils.JobStates;
+using EasySave.Utils.JobStates;
 using LoggerLib;
 using System;
 using System.Collections.Generic;
@@ -6,6 +6,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CryptoSoftLib;
+using EasySave.Utils;
+using EasySave.CustomExceptions;
 
 namespace EasySave;
 
@@ -18,9 +21,12 @@ public abstract class SaveJob
     public DateTime CreationDate { get; set; }
     public DateTime LastUpdate { get; set; }
     public string State { get; set; }
+    private bool CanRun { get; set; } = true;
+
+    private readonly ProcessObserver _businessSoftwaresObserver;
 
     //CONSTRUCTOR
-    protected SaveJob(string name, string sourcePath, string targetPath)
+    protected SaveJob(string name, string sourcePath, string targetPath, bool checkBusinessSoftwares = false)
     {
         Name = name;
         SourcePath = sourcePath;
@@ -28,14 +34,31 @@ public abstract class SaveJob
         CreationDate = DateTime.Now;
         LastUpdate = DateTime.Now;
         State = StateJsonReader.SavedState;
+
+        if (checkBusinessSoftwares)
+        {
+            _businessSoftwaresObserver = new ProcessObserver(1000);
+            _businessSoftwaresObserver.OnProcessStateChanged += isRunning =>
+            {
+                CanRun = !isRunning;
+            };
+        }
     }
 
     //METHODS
 
     public bool CreateSave()
     {
+        CheckIfCanRun();
+
         if (SourcePath == TargetPath)
         {
+            Logger.GetInstance().Log(
+                   new
+                   {
+                       Statue = "Error",
+                       Message = "Source path and Target path can't be equal"
+                   });
             throw new ArgumentException("Source path and Target path can't be equal");
         }
 
@@ -45,9 +68,7 @@ public abstract class SaveJob
         // Create a default FULL SAVE
         FullSave(SourcePath, TargetPath);
 
-        StateJsonReader.GetInstance().AddJob(this);
-
-        return true;
+        return StateJsonReader.GetInstance().AddJob(this);
     }
 
     protected bool FullSave(string sourcePath, string targetPath)
@@ -61,7 +82,15 @@ public abstract class SaveJob
         // Check if the source directory exists
         // TODO We need to andle the case of an inexistant directory. Currently, it crashes
         if (!dir.Exists)
+        {
+            Logger.GetInstance().Log(
+                 new
+                 {
+                     Statue = "Error",
+                     Message = $"Source directory not found: {dir.FullName}"
+                 });
             throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
+        }
 
         // Cache directories before we start copying
         DirectoryInfo[] dirs = dir.GetDirectories();
@@ -76,14 +105,23 @@ public abstract class SaveJob
 
     protected bool CreateFullSave(string sourcePath, string saveTargetPath, long? leftSizeToCopy = null, long? leftFilesToCopy = null, long? totalSizeToCopy = null)
     {
-
+        CheckIfCanRun();
         // Get information about the source directory
         var dir = new DirectoryInfo(sourcePath);
 
         // Check if the source directory exists
         // TODO We need to andle the case of an inexistant directory. Currently, it crashes
         if (!dir.Exists)
+        {
+            Logger.GetInstance().Log(
+               new
+               {
+                   Statue = "Error",
+                   Message = $"Source directory not found: {dir.FullName}"
+               });
             throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
+        }
+          
 
         // Cache directories before we start copying
         DirectoryInfo[] dirs = dir.GetDirectories();
@@ -113,18 +151,27 @@ public abstract class SaveJob
         // Get the files in the source directory and copy to the destination directory
         foreach (FileInfo file in dir.GetFiles())
         {
+            CheckIfCanRun();
             string targetFilePath = Path.Combine(saveTargetPath, file.Name);
+
             Stopwatch stopwatch = Stopwatch.StartNew();
             file.CopyTo(targetFilePath);
             stopwatch.Stop();
+
+            Stopwatch stopwatchCrypt = Stopwatch.StartNew();            
+            bool isEncrypted = CryptoSoft.EncryptDecryptFile(targetFilePath);
+            stopwatchCrypt.Stop();
+
             Logger.GetInstance().Log(
                 new
                 {
+                    type = "Info",
                     SaveJobName = Name,
                     FileSource = Path.Combine(SourcePath, file.Name),
                     FileTarget = targetFilePath,
                     FileSize = file.Length,
                     Time = DateTime.Now,
+                    FileCryptTime = isEncrypted ? stopwatchCrypt.ElapsedMilliseconds : 0,
                     FileTransferTime = stopwatch.ElapsedMilliseconds
                 });
             leftFilesToCopy--;
@@ -140,6 +187,7 @@ public abstract class SaveJob
                 SourceFilePath = Path.Combine(SourcePath, file.Name),
                 TargetFilePath = targetFilePath
             });
+           
         }
 
         // RECURSIVITY : Copy the files from the sub directories
@@ -148,6 +196,7 @@ public abstract class SaveJob
             string newDestinationDir = Path.Combine(saveTargetPath, subDir.Name);
             CreateFullSave(subDir.FullName, newDestinationDir, leftSizeToCopy, leftFilesToCopy, totalSizeToCopy);
         }
+
 
         StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
         {
@@ -161,7 +210,6 @@ public abstract class SaveJob
             SourceFilePath = null,
             TargetFilePath = null
         });
-
         return true;
     }
 
@@ -189,6 +237,14 @@ public abstract class SaveJob
         {
             Console.WriteLine("Erreur lors de la suppression : " + ex.Message);
             return false;
+        }
+    }
+
+    protected void CheckIfCanRun()
+    {
+        if (!CanRun)
+        {
+            throw new BusinessSoftwareRunningException();
         }
     }
 

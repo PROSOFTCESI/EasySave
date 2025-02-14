@@ -1,4 +1,6 @@
-﻿using System;
+﻿using EasySave.CustomExceptions;
+using LoggerLib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +13,7 @@ namespace EasySave
         //ATTRIBUTES
 
         //CONTRUCTOR
-        public FullSave(string name, string sourcePath, string targetPath) : base(name, sourcePath, targetPath)
+        public FullSave(string name, string sourcePath, string targetPath, bool checkBusinessSoftwares = false) : base(name, sourcePath, targetPath, checkBusinessSoftwares)
         {
         }
 
@@ -21,6 +23,15 @@ namespace EasySave
         {
             string saveTargetPath = Path.Combine(TargetPath, ("FullSave_" + DateTime.Now.ToString("dd_MM_yyyy-HH_mm_ss")));
             CreateFullSave(SourcePath, saveTargetPath);
+            Logger.GetInstance().Log(
+                new
+                {
+                    Type = "Update",
+                    Time = DateTime.Now,
+                    statut= "Success",
+                    Name,
+                }
+            );
             return true;
         }
 

@@ -47,7 +47,7 @@ public class StateJsonReader
     /// Get the list of actives jobs from the state.json file
     /// </summary>
     /// <returns>The list of active jobs</returns>
-    public List<SaveJob> GetJobs()
+    public List<SaveJob> GetJobs(bool checkBusinessSoftwares = false)
     {
 
         List<SaveJob> jobsList = [];
@@ -62,10 +62,10 @@ public class StateJsonReader
             switch (job.Type)
             {
                 case FullSaveType:
-                    jobsList.Add(new FullSave(job.Name, job.SourcePath, job.TargetPath));
+                    jobsList.Add(new FullSave(job.Name, job.SourcePath, job.TargetPath, checkBusinessSoftwares));
                     break;
                 case DifferentialSaveType:
-                    jobsList.Add(new DifferentialSave(job.Name, job.SourcePath, job.TargetPath));
+                    jobsList.Add(new DifferentialSave(job.Name, job.SourcePath, job.TargetPath, checkBusinessSoftwares));
                     break;
             }
         }
@@ -114,12 +114,6 @@ public class StateJsonReader
     {
         try
         {
-            // Limit of 5 save jobs
-            if (GetJobs().Count >= 5)
-            {
-                return false;
-            }
-
             JobStateJsonDefinition jobJson = new();
             jobJson.Name = job.Name;
             switch (job)

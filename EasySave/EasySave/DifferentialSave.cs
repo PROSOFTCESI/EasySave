@@ -1,4 +1,4 @@
-﻿using LoggerLib;
+using LoggerLib;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,6 +7,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using CryptoSoftLib;
+using EasySave.CustomExceptions;
 
 namespace EasySave
 {
@@ -16,19 +18,14 @@ namespace EasySave
 
 
         //CONTRUCTOR
-        public DifferentialSave(string name, string sourcePath, string targetPath) : base(name, sourcePath, targetPath)
+        public DifferentialSave(string name, string sourcePath, string targetPath, bool checkBusinessSoftwares = false) : base(name, sourcePath, targetPath, checkBusinessSoftwares)
         {
         }
 
         //METHODS
 
         public string GetLastFullSavePath()
-        {
-            if (!Directory.Exists(TargetPath))
-            {
-                Console.WriteLine("Le répertoire spécifié n'existe pas.");
-                return null;
-            }
+        {           
 
             Regex regex = new Regex(@"^FullSave_(\d{2}_\d{2}_\d{4}-\d{2}_\d{2}_\d{2})$");
 
@@ -45,49 +42,88 @@ namespace EasySave
 
         private void CreateDifferentialSave(string source, string fullsave, string diffsave)
         {
-            Directory.CreateDirectory(diffsave);
+            CheckIfCanRun();            
 
             DirectoryInfo sourceDir = new DirectoryInfo(source);
-            DirectoryInfo fullsaveDir = new DirectoryInfo(fullsave);
 
             FileInfo[] sourceFiles = sourceDir.GetFiles();
-            FileInfo[] fullsaveFiles = fullsaveDir.GetFiles();
 
             //Copy New and modified Files
             foreach(FileInfo sFile in sourceFiles)
             {
-                string savedFile = Path.Combine(fullsave, sFile.Name);
-                if (!File.Exists(savedFile) || File.GetLastWriteTime(sFile.FullName) > File.GetLastWriteTime(savedFile))
+                CheckIfCanRun();
+                if (Directory.Exists(fullsave))
                 {
-                    Console.WriteLine(sFile.Name);
-                    Stopwatch stopwatch = Stopwatch.StartNew();
-                    sFile.CopyTo(Path.Combine(diffsave, sFile.Name));
-                    stopwatch.Stop();
-                    Logger.GetInstance().Log(
-                    new
+                    DirectoryInfo fullsaveDir = new DirectoryInfo(fullsave);
+                    FileInfo[] fullsaveFiles = fullsaveDir.GetFiles();
+                    string savedFile = Path.Combine(fullsave, sFile.Name);
+
+                    if (!File.Exists(savedFile) || File.GetLastWriteTime(sFile.FullName) > File.GetLastWriteTime(savedFile))
                     {
-                        SaveJobName = Name,
-                        FileSource = SourcePath + "/" + sFile.Name,
-                        FileTarget = TargetPath + "/" + sFile.Name,
-                        FileSize = sFile.Length,
-                        Time = DateTime.Now,
-                        FileTransferTime = stopwatch.ElapsedMilliseconds
-                    });
+                        if (!Directory.Exists(diffsave))
+                            Directory.CreateDirectory(diffsave);
+
+                        Copyfile(diffsave, sFile);
+
+                    }
+                }
+                else //directory is new
+                {
+                    Directory.CreateDirectory(diffsave);
+
+                    Copyfile(diffsave, sFile);                    
                 }
             }
+            // new Dir DDD not in FS. 
 
             // Recursivity
             foreach(DirectoryInfo dir in sourceDir.GetDirectories())
             {                
+
                 CreateDifferentialSave(Path.Combine(source, dir.Name), Path.Combine(fullsave, dir.Name), Path.Combine(diffsave, dir.Name));
             }    
+        }
+
+        private void Copyfile(string diffsave,FileInfo sFile)
+        {
+            string newS = Path.Combine(diffsave, sFile.Name);
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            sFile.CopyTo(newS);
+            stopwatch.Stop(); 
+
+            Stopwatch stopwatchCrypt = Stopwatch.StartNew();
+            bool isEncrypted = CryptoSoft.EncryptDecryptFile(newS);
+            stopwatchCrypt.Stop();
+
+            var test = Logger.GetInstance();
+            Logger.GetInstance().Log(
+            new
+            {
+                SaveJobName = Name,
+                FileSource = SourcePath + "/" + sFile,
+                FileTarget = TargetPath + "/" + sFile,
+                FileSize = sFile.Length,
+                Time = DateTime.Now,
+                FileCryptTime = isEncrypted ? stopwatchCrypt.ElapsedMilliseconds : 0,
+                FileTransferTime = stopwatch.ElapsedMilliseconds
+            });
         }
 
         public override bool Save()
         {
             string fullSave = Path.Combine(TargetPath, GetLastFullSavePath());
             string diffsave = Path.Combine(TargetPath, "DiffenrentialSave_" + DateTime.Now.ToString("dd_MM_yyyy-HH_mm_ss"));
+            Directory.CreateDirectory(diffsave);
             CreateDifferentialSave(SourcePath, fullSave, diffsave);
+            Logger.GetInstance().Log(
+               new
+               {
+                   Type = "Update",
+                   Time = DateTime.Now,
+                   statut = "Success",
+                   Name,
+               }
+           );
             return true;
         }
 
