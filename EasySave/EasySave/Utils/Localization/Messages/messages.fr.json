@@ -47,5 +47,6 @@
   "NAME": "Nom",
   "ENCRYPTION": "Chiffrer / Déchiffrer",
   "BUSINESS_SOFTWARE_INT": "Renseigner le nom des applications séparés par des espaces",
-  "BUSINESS_SOFTWARE": "Applications Métier"
+  "BUSINESS_SOFTWARE": "Applications Métier",
+  "BUSINESS_SOFTWARE_DETECTED_ERROR": "Un logiciel métier a été détecté pendant la mise à jour/création de votre save job. La sauvegarde n'a pas pu aboutir"
 }
