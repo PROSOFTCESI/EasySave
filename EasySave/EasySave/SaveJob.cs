@@ -207,13 +207,6 @@ public abstract class SaveJob
             SourceFilePath = null,
             TargetFilePath = null
         });
-        Logger.GetInstance().Log(
-              new
-              {
-                  Type = "Update",
-                  Time = DateTime.Now,
-                  Name = Name,
-              });
         return true;
     }
 

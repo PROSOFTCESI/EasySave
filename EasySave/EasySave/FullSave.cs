@@ -1,4 +1,5 @@
 ﻿using EasySave.CustomExceptions;
+using LoggerLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,15 @@ namespace EasySave
         {
             string saveTargetPath = Path.Combine(TargetPath, ("FullSave_" + DateTime.Now.ToString("dd_MM_yyyy-HH_mm_ss")));
             CreateFullSave(SourcePath, saveTargetPath);
+            Logger.GetInstance().Log(
+                new
+                {
+                    Type = "Update",
+                    Time = DateTime.Now,
+                    statut= "Success",
+                    Name,
+                }
+            );
             return true;
         }
 

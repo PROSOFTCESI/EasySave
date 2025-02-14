@@ -81,7 +81,6 @@ public partial class CreateJobMenu : Page
             bool isCreated = newJob.CreateSave();
             if (!isCreated)
             {
-                MessageBoxDisplayer.DisplayError("SAVE_JOB_CREATION_FAILED_MESSAGE");
                 Logger.GetInstance().Log(
                     new
                     {
@@ -91,10 +90,10 @@ public partial class CreateJobMenu : Page
                         Message = "Save Job creation failed : " + newJob.Name
                     }
                 );
+                MessageBoxDisplayer.DisplayError("SAVE_JOB_CREATION_FAILED_MESSAGE");
                 return;
             }
-            
-            MessageBoxDisplayer.DisplayConfirmation("SAVE_JOB_CREATED_SUCCESSFULLY");
+
             Logger.GetInstance().Log(
                 new
                 {
@@ -104,6 +103,7 @@ public partial class CreateJobMenu : Page
                     Message = "Save Job creation is Success : " + newJob.Name
                 }
             );
+            MessageBoxDisplayer.DisplayConfirmation("SAVE_JOB_CREATED_SUCCESSFULLY", saveJobName);
         }
         catch (Exception ex)
         {
