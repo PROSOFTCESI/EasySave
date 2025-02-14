@@ -25,5 +25,6 @@ Console.WriteLine("Hello, World!");
 //JobsManager.GetInstance().UpdateJob("Save2", infos);
 //var test = JobsManager.GetInstance().GetJobs();
 
+SettingsJson.GetInstance().Initialize();
 Logger.GetInstance().Initialize("EasySave",Logger.LogExportType.json);
 new ConsoleManager().Launch();
