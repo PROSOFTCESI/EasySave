@@ -47,5 +47,7 @@
   "NAME": "Name",
   "ENCRYPTION": "Encrypt / Decrypt",
   "BUSINESS_SOFTWARE_INT": "Enter the business software names by separating them with spaces. ",
-  "BUSINESS_SOFTWARE": "Business Softwares"
+  "BUSINESS_SOFTWARE": "Business Softwares",
+  "BUSINESS_SOFTWARE_DETECTED_ERROR": "A business software was detected during the update/creation of your save job. The save operation failed"
+
 }
