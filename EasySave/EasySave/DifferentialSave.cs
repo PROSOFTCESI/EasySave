@@ -44,7 +44,7 @@ namespace EasySave
         {
             CheckIfCanRun();
 
-            Directory.CreateDirectory(diffsave);
+            
 
             DirectoryInfo sourceDir = new DirectoryInfo(source);
             DirectoryInfo fullsaveDir = new DirectoryInfo(fullsave);
@@ -59,6 +59,8 @@ namespace EasySave
                 string savedFile = Path.Combine(fullsave, sFile.Name);
                 if (!File.Exists(savedFile) || File.GetLastWriteTime(sFile.FullName) > File.GetLastWriteTime(savedFile))
                 {
+                    if(!Directory.Exists(diffsave))
+                        Directory.CreateDirectory(diffsave);
                     Console.WriteLine(sFile.Name);
                     Stopwatch stopwatch = Stopwatch.StartNew();
                     string newFile = Path.Combine(diffsave, sFile.Name);
@@ -90,6 +92,7 @@ namespace EasySave
         {
             string fullSave = Path.Combine(TargetPath, GetLastFullSavePath());
             string diffsave = Path.Combine(TargetPath, "DiffenrentialSave_" + DateTime.Now.ToString("dd_MM_yyyy-HH_mm_ss"));
+            Directory.CreateDirectory(diffsave);
             CreateDifferentialSave(SourcePath, fullSave, diffsave);
             return true;
         }
