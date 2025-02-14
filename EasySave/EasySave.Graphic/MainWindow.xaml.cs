@@ -31,7 +31,14 @@ namespace EasySave.Graphic
           });
             InitializeComponent();
             MainFrame.Navigate(new MainMenu()); // Charge la page principale
-            Logger.GetInstance().Initialize("EasySave", Logger.LogExportType.xml);
+            if (SettingsJson.GetInstance().GetContent().logFormat.Equals("json"))
+            {
+                Logger.GetInstance().Initialize("EasySave", (Logger.LogExportType.json));
+            }
+            else if (SettingsJson.GetInstance().GetContent().logFormat.Equals("xml"))
+            {
+                Logger.GetInstance().Initialize("EasySave", (Logger.LogExportType.xml));
+            }
         }
     }
 }
