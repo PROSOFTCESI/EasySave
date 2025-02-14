@@ -114,12 +114,6 @@ public class StateJsonReader
     {
         try
         {
-            // Limit of 5 save jobs
-            if (GetJobs().Count >= 5)
-            {
-                return false;
-            }
-
             JobStateJsonDefinition jobJson = new();
             jobJson.Name = job.Name;
             switch (job)
