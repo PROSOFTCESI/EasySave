@@ -96,8 +96,11 @@ namespace EasySave.Graphic
             settings.extensionsToEncrypt = ExtentionsTextBox.Text;       
             settings.businessSoftwares = BusinessSoftwareTextBox.Text;
 
-            Logger.GetInstance().Initialize("EasySave", ( (bool)JsonButton.IsChecked ? Logger.LogExportType.json : Logger.LogExportType.xml) );
-
+            if((bool)JsonButton.IsChecked)
+                Logger.GetInstance().Initialize("EasySave", ( Logger.LogExportType.json ));
+            if ((bool)XmlButton.IsChecked)
+                Logger.GetInstance().Initialize("EasySave", (Logger.LogExportType.xml));
+                
             SettingsJson.GetInstance().Update(settings);
         }
 
