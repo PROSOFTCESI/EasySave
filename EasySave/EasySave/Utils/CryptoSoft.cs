@@ -23,7 +23,7 @@ namespace CryptoSoftLib
         {              
             return Guid.NewGuid().ToString();
         }
-        public static void EncryptDecryptFile(string filePath, string key = null)
+        public static bool EncryptDecryptFile(string filePath, string key = null)
         {
             if(key is null){
                 key = Key();
@@ -33,7 +33,7 @@ namespace CryptoSoftLib
             {
                 if (!ExtentionToEncrypt().Contains(new FileInfo(filePath).Extension))
                 {
-                    return;
+                    return false;
                 }
             }
 
@@ -54,6 +54,7 @@ namespace CryptoSoftLib
             {
                 Console.WriteLine("Erreur lors de l'exécution : " + ex.Message);
             }
+            return true;
         }
 
         public static void EncryptDecryptFolder(string folder, string key = null)

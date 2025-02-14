@@ -62,44 +62,16 @@ namespace EasySave
                     {
                         if (!Directory.Exists(diffsave))
                             Directory.CreateDirectory(diffsave);
-                        
-                        Stopwatch stopwatch = Stopwatch.StartNew();
-                        string newFile = Path.Combine(diffsave, sFile.Name);
-                        sFile.CopyTo(newFile);
-                        CryptoSoft.EncryptDecryptFile(newFile);
-                        stopwatch.Stop();
-                        var test = Logger.GetInstance();
-                        Logger.GetInstance().Log(
-                        new
-                        {
-                            SaveJobName = Name,
-                            FileSource = SourcePath + "/" + sFile.Name,
-                            FileTarget = TargetPath + "/" + sFile.Name,
-                            FileSize = sFile.Length,
-                            Time = DateTime.Now,
-                            FileTransferTime = stopwatch.ElapsedMilliseconds
-                        });
+
+                        Copyfile(diffsave, sFile);
+
                     }
                 }
                 else //directory is new
                 {
                     Directory.CreateDirectory(diffsave);
-                    Stopwatch stopwatch = Stopwatch.StartNew();
-                    string newFile = Path.Combine(diffsave, sFile.Name);
-                    sFile.CopyTo(newFile);
-                    CryptoSoft.EncryptDecryptFile(newFile);
-                    stopwatch.Stop();
-                    var test = Logger.GetInstance();
-                    Logger.GetInstance().Log(
-                    new
-                    {
-                        SaveJobName = Name,
-                        FileSource = SourcePath + "/" + sFile.Name,
-                        FileTarget = TargetPath + "/" + sFile.Name,
-                        FileSize = sFile.Length,
-                        Time = DateTime.Now,
-                        FileTransferTime = stopwatch.ElapsedMilliseconds
-                    });
+
+                    Copyfile(diffsave, sFile);                    
                 }
             }
             // new Dir DDD not in FS. 
@@ -110,6 +82,31 @@ namespace EasySave
 
                 CreateDifferentialSave(Path.Combine(source, dir.Name), Path.Combine(fullsave, dir.Name), Path.Combine(diffsave, dir.Name));
             }    
+        }
+
+        private void Copyfile(string diffsave,FileInfo sFile)
+        {
+            string newS = Path.Combine(diffsave, sFile.Name);
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            sFile.CopyTo(newS);
+            stopwatch.Stop(); 
+
+            Stopwatch stopwatchCrypt = Stopwatch.StartNew();
+            bool isEncrypted = CryptoSoft.EncryptDecryptFile(newS);
+            stopwatchCrypt.Stop();
+
+            var test = Logger.GetInstance();
+            Logger.GetInstance().Log(
+            new
+            {
+                SaveJobName = Name,
+                FileSource = SourcePath + "/" + sFile,
+                FileTarget = TargetPath + "/" + sFile,
+                FileSize = sFile.Length,
+                Time = DateTime.Now,
+                FileCryptTime = isEncrypted ? stopwatchCrypt.ElapsedMilliseconds : 0,
+                FileTransferTime = stopwatch.ElapsedMilliseconds
+            });
         }
 
         public override bool Save()

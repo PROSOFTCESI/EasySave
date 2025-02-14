@@ -153,12 +153,15 @@ public abstract class SaveJob
         {
             CheckIfCanRun();
             string targetFilePath = Path.Combine(saveTargetPath, file.Name);
+
             Stopwatch stopwatch = Stopwatch.StartNew();
             file.CopyTo(targetFilePath);
-            Stopwatch stopwatchCrypt = Stopwatch.StartNew();
-            CryptoSoft.EncryptDecryptFile(targetFilePath);
-            stopwatchCrypt.Stop();
             stopwatch.Stop();
+
+            Stopwatch stopwatchCrypt = Stopwatch.StartNew();            
+            bool isEncrypted = CryptoSoft.EncryptDecryptFile(targetFilePath);
+            stopwatchCrypt.Stop();
+
             Logger.GetInstance().Log(
                 new
                 {
@@ -168,7 +171,7 @@ public abstract class SaveJob
                     FileTarget = targetFilePath,
                     FileSize = file.Length,
                     Time = DateTime.Now,
-                    FileCryptTime = stopwatchCrypt.ElapsedMilliseconds,
+                    FileCryptTime = isEncrypted ? stopwatchCrypt.ElapsedMilliseconds : 0,
                     FileTransferTime = stopwatch.ElapsedMilliseconds
                 });
             leftFilesToCopy--;
