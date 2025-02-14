@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -13,13 +13,17 @@ namespace EasySave.Graphic
     {
         private Messages messages = Messages.GetInstance();
 
-        public ChangeLanguageMenu()
+        private string parent;
+
+        public ChangeLanguageMenu(string parent = "MAIN")
         {
             InitializeComponent();
             PopulateLanguageButtons();
             TitleLabel.Text = messages.GetMessage("CHANGE_LANGUAGE_MENU_LABEL");
             BackButton.Content = messages.GetMessage("BACK");
+            this.parent = parent;
         }
+
 
         private void PopulateLanguageButtons()
         {
@@ -57,7 +61,11 @@ namespace EasySave.Graphic
 
         private void GoBack_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new MainMenu());
+            if(parent == "Settings")           
+                NavigationService.Navigate(new SettingsMenu());
+            
+            if(parent == "MAIN")
+                NavigationService.Navigate(new MainMenu());
         }
     }
 }

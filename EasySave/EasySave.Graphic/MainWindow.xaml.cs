@@ -31,7 +31,7 @@ namespace EasySave.Graphic
           });
             InitializeComponent();
             MainFrame.Navigate(new MainMenu()); // Charge la page principale
-
+            Logger.GetInstance().Initialize("EasySave", Logger.LogExportType.xml);
         }
     }
 }

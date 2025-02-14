@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using EasySave.CustomExceptions;
 using EasySave.Utils;
 using EasySave.Utils.JobStates;
 using EasySave;
@@ -70,47 +71,53 @@ public partial class CreateJobMenu : Page
 
             if (FullSaveRadioButton.IsChecked ?? false)
             {
-                newJob = new FullSave(saveJobName, sourcePathJob, destPathJob);
+                newJob = new FullSave(saveJobName, sourcePathJob, destPathJob, true);
             }
             else
             {
-                newJob = new DifferentialSave(saveJobName, sourcePathJob, destPathJob);
+                newJob = new DifferentialSave(saveJobName, sourcePathJob, destPathJob, true);
             }
 
             bool isCreated = newJob.CreateSave();
-
-            if (isCreated)
+            if (!isCreated)
             {
-                MessageBoxDisplayer.DisplayConfirmation("SAVE_JOB_CREATED_SUCCESSFULLY");
+                MessageBoxDisplayer.DisplayError("SAVE_JOB_CREATION_FAILED_MESSAGE");
                 Logger.GetInstance().Log(
+                    new
+                    {
+                        Type = "Create",
+                        Time = DateTime.Now,
+                        Statut = "Error",
+                        Message = "Save Job creation failed : " + newJob.Name
+                    }
+                );
+                return;
+            }
+            
+            MessageBoxDisplayer.DisplayConfirmation("SAVE_JOB_CREATED_SUCCESSFULLY");
+            Logger.GetInstance().Log(
                 new
                 {
                     Type = "Create",
-
                     Time = DateTime.Now,
-                    Statue = "Success",
-                    Message = "Save Job creation is Success : "
-                });
-            }
-            else
-            {
-                MessageBoxDisplayer.DisplayError("SAVE_JOB_CREATION_FAILED_MESSAGE");
-            }
-           
+                    Statut = "Success",
+                    Message = "Save Job creation is Success : " + newJob.Name
+                }
+            );
         }
         catch (Exception ex)
         {
-            Logger.GetInstance().Log(
-               new
-               {
-                   Type = "Create",
-                   Time = DateTime.Now,
-                   Statue = "Error",
-                   Message = "Save Job creation faild",
-                   Error = ex.ToString()
-               });
-            MessageBoxDisplayer.DisplayError("SAVE_JOB_CREATION_FAILED_MESSAGE");
-      
+            if (ex is BusinessSoftwareRunningException)
+            {
+                MessageBoxDisplayer.DisplayError("BUSINESS_SOFTWARE_DETECTED_ERROR");
+                return;
+            }
+
+            if (ex is Exception)
+            {
+                MessageBoxDisplayer.DisplayError("SAVE_JOB_CREATION_FAILED_MESSAGE");
+                return;
+            }
         }
     }
 

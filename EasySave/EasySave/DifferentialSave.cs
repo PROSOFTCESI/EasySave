@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CryptoSoftLib;
+using EasySave.CustomExceptions;
 
 namespace EasySave
 {
@@ -17,7 +18,7 @@ namespace EasySave
 
 
         //CONTRUCTOR
-        public DifferentialSave(string name, string sourcePath, string targetPath) : base(name, sourcePath, targetPath)
+        public DifferentialSave(string name, string sourcePath, string targetPath, bool checkBusinessSoftwares = false) : base(name, sourcePath, targetPath, checkBusinessSoftwares)
         {
         }
 
@@ -41,7 +42,9 @@ namespace EasySave
 
         private void CreateDifferentialSave(string source, string fullsave, string diffsave)
         {
-            Directory.CreateDirectory(diffsave);
+            CheckIfCanRun();
+
+            
 
             DirectoryInfo sourceDir = new DirectoryInfo(source);
             DirectoryInfo fullsaveDir = new DirectoryInfo(fullsave);
@@ -52,15 +55,19 @@ namespace EasySave
             //Copy New and modified Files
             foreach(FileInfo sFile in sourceFiles)
             {
+                CheckIfCanRun();
                 string savedFile = Path.Combine(fullsave, sFile.Name);
                 if (!File.Exists(savedFile) || File.GetLastWriteTime(sFile.FullName) > File.GetLastWriteTime(savedFile))
                 {
+                    if(!Directory.Exists(diffsave))
+                        Directory.CreateDirectory(diffsave);
                     Console.WriteLine(sFile.Name);
                     Stopwatch stopwatch = Stopwatch.StartNew();
                     string newFile = Path.Combine(diffsave, sFile.Name);
                     sFile.CopyTo(newFile);
                     CryptoSoft.EncryptDecryptFile(newFile);
                     stopwatch.Stop();
+                    var test = Logger.GetInstance();
                     Logger.GetInstance().Log(
                     new
                     {
@@ -85,6 +92,7 @@ namespace EasySave
         {
             string fullSave = Path.Combine(TargetPath, GetLastFullSavePath());
             string diffsave = Path.Combine(TargetPath, "DiffenrentialSave_" + DateTime.Now.ToString("dd_MM_yyyy-HH_mm_ss"));
+            Directory.CreateDirectory(diffsave);
             CreateDifferentialSave(SourcePath, fullSave, diffsave);
             return true;
         }

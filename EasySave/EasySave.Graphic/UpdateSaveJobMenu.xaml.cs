@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
+using EasySave.CustomExceptions;
 using EasySave.Utils;
 using EasySave.Utils.JobStates;
 using LoggerLib;
@@ -62,7 +63,7 @@ public partial class UpdateSaveJobMenu : Page
 
         StateJsonReader stateJsonReader = StateJsonReader.GetInstance();
 
-        List<SaveJob> jobs = stateJsonReader.GetJobs();
+        List<SaveJob> jobs = stateJsonReader.GetJobs(true);
 
         // Remplir la ListBox avec les travaux disponibles
         foreach (SaveJob job in jobs)
@@ -73,63 +74,52 @@ public partial class UpdateSaveJobMenu : Page
 
     private void UpdateSelectedJobs_Click(object sender, RoutedEventArgs e)
     {
-        // Récupération des éléments sélectionnés dans la ListBox
-        var selectedJobs = SaveJobsListBox.SelectedItems;
-        if (selectedJobs.Count == 0)
+        try
         {
-            // Message indiquant qu'aucun travail n'a été sélectionné
-            MessageBox.Show(
-                messages.GetMessage("NO_SAVE_JOB_MESSAGE"),
-                messages.GetMessage("INVALID_INPUT_MESSAGE"),
-                MessageBoxButton.OK,
-                MessageBoxImage.Warning);
-            return;
-        }
-
-        foreach (var job in selectedJobs)
-        {
-            Logger.GetInstance().Log(
-               new
-               {
-                   Type = "Update",
-                   Time = DateTime.Now,
-                   Statue = "Start",
-                   Message ="Start updating "+ selectedJobs,
-                   SaveJobs = job
-               });
-            SaveJob saveJob = (SaveJob)job;
-            bool updated = saveJob.Save();
-            if (!updated)
+            // Récupération des éléments sélectionnés dans la ListBox
+            var selectedJobs = SaveJobsListBox.SelectedItems;
+            if (selectedJobs.Count == 0)
             {
-                // Message indiquant qu'un travail n'a pas pu être mis à jour
-                Logger.GetInstance().Log(
-                  new
-                  {
-                      Type = "Update",
-                      Time = DateTime.Now,
-                      Statue = "Error",
-                      Message = "Error updating" + job,
-                      SaveJobs = job
-                  });
+                // Message indiquant qu'aucun travail n'a été sélectionné
+                MessageBox.Show(
+                    messages.GetMessage("NO_SAVE_JOB_MESSAGE"),
+                    messages.GetMessage("INVALID_INPUT_MESSAGE"),
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
+
+            foreach (var job in selectedJobs)
+            {
+                SaveJob saveJob = (SaveJob)job;
+                bool updated = saveJob.Save();
+                if (!updated)
+                {
+                    // Message indiquant qu'un travail n'a pas pu être mis à jour
+                    MessageBoxDisplayer.DisplayError("SAVE_JOB_UPDATE_FAILED_MESSAGE");
+                    return;
+                }
+            }
+
+            // Concaténer les travaux sélectionnés
+            string jobsUpdated = string.Join("\n", selectedJobs.Cast<object>());
+            // Affichage d'un message de confirmation avec la liste des travaux (remplacement du placeholder {0})
+            MessageBoxDisplayer.DisplayConfirmation("SAVE_JOB_UPDATED_SUCCESSFULLY", jobsUpdated);
+        }
+        catch (Exception ex)
+        {
+            if (ex is BusinessSoftwareRunningException)
+            {
+                MessageBoxDisplayer.DisplayError("BUSINESS_SOFTWARE_DETECTED_ERROR");
+                return;
+            }
+
+            if (ex is Exception)
+            {
                 MessageBoxDisplayer.DisplayError("SAVE_JOB_UPDATE_FAILED_MESSAGE");
                 return;
             }
-            Logger.GetInstance().Log(
-            new
-            {
-                Type = "Update",
-                Time = DateTime.Now,
-                Statue = "Success",
-                Message = "Sucessfuly update " + job,
-                SaveJobs = job
-            });
-        }
-
-        // Concaténer les travaux sélectionnés
-        string jobsUpdated = string.Join("\n", selectedJobs.Cast<object>());
-        // Affichage d'un message de confirmation avec la liste des travaux (remplacement du placeholder {0})
-        MessageBoxDisplayer.DisplayConfirmation("SAVE_JOB_UPDATED_SUCCESSFULLY", jobsUpdated);
-       
+        }       
     }
 
     private void GoBack_Click(object sender, RoutedEventArgs e)
