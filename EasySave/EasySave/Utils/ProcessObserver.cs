@@ -14,7 +14,11 @@ public class ProcessObserver : IDisposable
 
     public ProcessObserver(int checkIntervalMs)
     {
-        _processNames = SettingsJson.GetInstance().GetContent().businessSoftwares.Split(" ").Where(name => !string.IsNullOrWhiteSpace(name)).ToArray();
+        _processNames = SettingsJson.GetInstance()
+            .GetContent()
+            .businessSoftwares.Split(" ")
+            .Where(name => !string.IsNullOrWhiteSpace(name))
+            .ToArray();
         _checkTimer = new Timer(checkIntervalMs);
         _checkTimer.Elapsed += CheckProcess;
         _checkTimer.AutoReset = true;

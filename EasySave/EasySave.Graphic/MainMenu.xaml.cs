@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Navigation;
 using EasySave.Utils;
 using System.IO;
+using LoggerLib;
 
 namespace EasySave.Graphic;
 

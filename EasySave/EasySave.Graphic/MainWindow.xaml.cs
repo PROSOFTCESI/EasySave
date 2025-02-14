@@ -21,6 +21,14 @@ namespace EasySave.Graphic
       
         public MainWindow()
         {
+            Logger.GetInstance().Log(
+          new
+          {
+              Type = "Launching",
+              Time = DateTime.Now,
+              Statue = "Start",
+              Message = "Launching Main Window"
+          });
             InitializeComponent();
             MainFrame.Navigate(new MainMenu()); // Charge la page principale
             Logger.GetInstance().Initialize("EasySave", Logger.LogExportType.xml);

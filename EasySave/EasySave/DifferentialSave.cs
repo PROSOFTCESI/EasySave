@@ -118,6 +118,15 @@ namespace EasySave
             string diffsave = Path.Combine(TargetPath, "DiffenrentialSave_" + DateTime.Now.ToString("dd_MM_yyyy-HH_mm_ss"));
             Directory.CreateDirectory(diffsave);
             CreateDifferentialSave(SourcePath, fullSave, diffsave);
+            Logger.GetInstance().Log(
+               new
+               {
+                   Type = "Update",
+                   Time = DateTime.Now,
+                   statut = "Success",
+                   Name,
+               }
+           );
             return true;
         }
 

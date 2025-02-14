@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <Reference Include="Logger">
-      <HintPath>..\EasySave\Logger.dll</HintPath>
+      <HintPath>..\Logger\bin\Debug\net8.0\Logger.dll</HintPath>
     </Reference>
   </ItemGroup>
 

@@ -1,10 +1,11 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
 using EasySave.Utils;
+using LoggerLib;
 
 namespace EasySave.Graphic
 {
@@ -20,8 +21,7 @@ namespace EasySave.Graphic
             PopulateLanguageButtons();
             TitleLabel.Text = messages.GetMessage("CHANGE_LANGUAGE_MENU_LABEL");
             BackButton.Content = messages.GetMessage("BACK");
-
-            this.parent = parent;            
+            this.parent = parent;
         }
 
 
@@ -44,9 +44,19 @@ namespace EasySave.Graphic
 
         private void SetLanguage(CultureInfo culture)
         {
+          
             messages.SetCulture(culture);
             TitleLabel.Text = Messages.GetInstance().GetMessage("CHANGE_LANGUAGE_MENU_LABEL");
             BackButton.Content = messages.GetMessage("BACK");
+            Logger.GetInstance().Log(
+                new
+                {
+                    Type = "Update Language",
+                    Time = DateTime.Now,
+                    Statue = "Success",
+                    Message = "Update language to " + culture.Name,
+                }
+            );
             MessageBoxDisplayer.DisplayConfirmation("LANGUAGE_CHANGED_SUCCESSFULLY");
         }
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +15,11 @@ using System.Windows.Shapes;
 using EasySave.CustomExceptions;
 using EasySave.Utils;
 using EasySave.Utils.JobStates;
+using EasySave;
 
+
+using LoggerLib;
+using System.Security.AccessControl;
 
 namespace EasySave.Graphic;
 
@@ -49,7 +53,21 @@ public partial class CreateJobMenu : Page
             string destPathJob = DestinationPathTextBox.Text;
             string saveType = FullSaveRadioButton.IsChecked == true ? "Totale" : "Différentielle";
 
+            Logger.GetInstance().Log(
+            new
+            {
+                Type = "Create",
+                Statue= "Start",
+                Time = DateTime.Now,
+                Name = saveJobName,
+                SaveType = saveType,
+                SourcePath = sourcePathJob,
+                DestinationPath = destPathJob
+            });
+
             SaveJob newJob;
+
+
 
             if (FullSaveRadioButton.IsChecked ?? false)
             {
@@ -61,15 +79,31 @@ public partial class CreateJobMenu : Page
             }
 
             bool isCreated = newJob.CreateSave();
-
             if (!isCreated)
             {
+                Logger.GetInstance().Log(
+                    new
+                    {
+                        Type = "Create",
+                        Time = DateTime.Now,
+                        Statut = "Error",
+                        Message = "Save Job creation failed : " + newJob.Name
+                    }
+                );
                 MessageBoxDisplayer.DisplayError("SAVE_JOB_CREATION_FAILED_MESSAGE");
                 return;
             }
 
+            Logger.GetInstance().Log(
+                new
+                {
+                    Type = "Create",
+                    Time = DateTime.Now,
+                    Statut = "Success",
+                    Message = "Save Job creation is Success : " + newJob.Name
+                }
+            );
             MessageBoxDisplayer.DisplayConfirmation("SAVE_JOB_CREATED_SUCCESSFULLY", saveJobName);
-
         }
         catch (Exception ex)
         {
