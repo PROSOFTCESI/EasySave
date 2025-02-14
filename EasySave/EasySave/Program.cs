@@ -3,6 +3,7 @@ using EasySave;
 using EasySave.Utils.JobStates;
 using LoggerLib;
 using static System.Net.Mime.MediaTypeNames;
+using System.Globalization;
 Console.WriteLine("Hello, World!");
 
 //FullSave save = new FullSave("D", "C:\\Users\\Milan\\Desktop\\projetCESI\\Saves", "C:\\Users\\Milan\\Desktop\\projetCESI\\Tests\\Tests1");

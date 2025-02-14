@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using EasySave.Utils;
 
 namespace EasySave.Utils;
 
@@ -44,6 +45,10 @@ public class Messages
             Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Utils", "Localization", "Messages"),
             GetJsonName(selectedCulture)
         );
+
+        SettingsJsonDefinition settings = SettingsJson.GetInstance().GetContent();
+        settings.selectedCulture = culture.Name;
+        SettingsJson.GetInstance().Update(settings);
     }
     private bool IsCultureSupported(CultureInfo culture)
     {

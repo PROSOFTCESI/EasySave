@@ -23,6 +23,7 @@ public partial class MainMenu : Page
         ChangeLanguageButton.Content = messages.GetMessage("CHANGE_LANGUAGE_MENU_LABEL");
         ExitButton.Content = messages.GetMessage("EXIT_MENU_LABEL");
         OpenSettingsButton.Content = messages.GetMessage("SETTINGS_BUTTON");
+        ENCRYPT.Content = messages.GetMessage("ENCRYPTION"); 
     }
 
 
@@ -58,23 +59,16 @@ public partial class MainMenu : Page
     }
     private void OpenSettings_Click(object sender, RoutedEventArgs e)
     {
-        try
-        {
-            // Obtient le dossier AppData\Roaming de l'utilisateur courant
-            string appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            string easySavePath = Path.Combine(appDataFolder, "EasySave");
-            string fileName = "settings.json";
-            string filePath = Path.Combine(easySavePath, fileName);
-            ProcessStartInfo psi = new ProcessStartInfo(filePath)
-            {
-                UseShellExecute = true
-            };
-            Process.Start(psi);
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show("Erreur lors de l'ouverture du fichier : " + ex.Message);
-        }
+        NavigationService.Navigate(new SettingsMenu());       
     }
 
+    private void MainFrame_Navigated(object sender, NavigationEventArgs e)
+    {
+
+    }
+
+    private void Encrypt_Click(object sender, RoutedEventArgs e)
+    {
+        NavigationService.Navigate(new EncryptDecryptSave());
+    }
 }

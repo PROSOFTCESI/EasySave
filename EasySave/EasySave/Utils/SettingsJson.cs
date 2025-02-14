@@ -43,27 +43,21 @@ namespace EasySave.Utils
 
             if (!File.Exists(FilePath))
             {
-                File.WriteAllText(FilePath, "[]");                
+                InitContent();
             }
-            InitContent();
+            
         }
 
         private void InitContent()
         {
             SettingsJsonDefinition newContent = new SettingsJsonDefinition();
-              
-            try{
-                newContent = JsonSerializer.Deserialize<SettingsJsonDefinition>(File.ReadAllText(FilePath));
-            }
-            catch { }
-                     
 
-            newContent.Name = newContent.Name != null ? newContent.Name : "EasySave";
-            newContent.EncryptionKey = newContent.EncryptionKey != null ? newContent.EncryptionKey : CryptoSoft.GenerateKey();
-            newContent.extensionsToEncrypt = newContent.extensionsToEncrypt != null ? newContent.extensionsToEncrypt : "*";
-            newContent.selectedCulture = newContent.selectedCulture != null ? newContent.selectedCulture : "FR";
-            newContent.logFormat = newContent.logFormat != null ? newContent.logFormat : "json";
-            newContent.businessSoftwares = newContent.businessSoftwares != null ? newContent.businessSoftwares : "";
+            newContent.Name = "EasySave";
+            newContent.EncryptionKey = CryptoSoft.GenerateKey();
+            newContent.extensionsToEncrypt = "*";
+            newContent.selectedCulture = "fr-FR";
+            newContent.logFormat = "json";
+            newContent.businessSoftwares = "CalculatorApp";
 
             string json = JsonConvert.SerializeObject(newContent, Formatting.Indented);
             File.WriteAllText(FilePath, json);
