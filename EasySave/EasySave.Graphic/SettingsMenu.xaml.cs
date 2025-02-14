@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using EasySave.Utils;
 using System.IO;
 using Path = System.IO.Path;
+using LoggerLib;
 
 namespace EasySave.Graphic
 {
@@ -97,10 +98,10 @@ namespace EasySave.Graphic
             settings.businessSoftwares = BusinessSoftwareTextBox.Text;
 
             if((bool)JsonButton.IsChecked)
-                Logger.GetInstance().Initialize("EasySave", ( Logger.LogExportType.json ));
+                Logger.GetInstance().Initialize("EasySave", (Logger.LogExportType.json ));
             if ((bool)XmlButton.IsChecked)
                 Logger.GetInstance().Initialize("EasySave", (Logger.LogExportType.xml));
-                
+
             SettingsJson.GetInstance().Update(settings);
         }
 
