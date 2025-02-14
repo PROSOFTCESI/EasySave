@@ -92,13 +92,43 @@ public partial class UpdateSaveJobMenu : Page
             foreach (var job in selectedJobs)
             {
                 SaveJob saveJob = (SaveJob)job;
+                Logger.GetInstance().Log(
+                    new
+                    {
+                        Type = "Update",
+                        Time = DateTime.Now,
+                        Statue = "Start",
+                        Message = "Start updating " + saveJob.Name,
+                        SaveJob = saveJob
+                    }
+                );
                 bool updated = saveJob.Save();
                 if (!updated)
                 {
                     // Message indiquant qu'un travail n'a pas pu être mis à jour
+                    Logger.GetInstance().Log(
+                        new
+                        {
+                            Type = "Update",
+                            Time = DateTime.Now,
+                            Statue = "Error",
+                            Message = "Error updating the job " + saveJob.Name,
+                            SaveJob = saveJob
+                        }
+                    );
                     MessageBoxDisplayer.DisplayError("SAVE_JOB_UPDATE_FAILED_MESSAGE");
                     return;
                 }
+                Logger.GetInstance().Log(
+                    new
+                    {
+                        Type = "Update",
+                        Time = DateTime.Now,
+                        Statue = "Success",
+                        Message = "Sucessfuly update " + job,
+                        SaveJobs = job
+                    }
+                );
             }
 
             // Concaténer les travaux sélectionnés
@@ -108,6 +138,17 @@ public partial class UpdateSaveJobMenu : Page
         }
         catch (Exception ex)
         {
+            Logger.GetInstance().Log(
+                new
+                {
+                    Type = "Update",
+                    Time = DateTime.Now,
+                    Statue = "Error",
+                    Message = "Error updating a job",
+                    Error = ex.ToString()
+                }
+            );
+
             if (ex is BusinessSoftwareRunningException)
             {
                 MessageBoxDisplayer.DisplayError("BUSINESS_SOFTWARE_DETECTED_ERROR");
