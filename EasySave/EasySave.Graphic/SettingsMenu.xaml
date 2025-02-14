@@ -47,7 +47,7 @@
             </StackPanel>
         </ScrollViewer>
         <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center" Margin="0,20,0,0">
-            <Button x:Name="SaveButton" Width="100" Margin="5" Content="Sauvegarder" Click="Save_Click"/>
+            <Button x:Name="SaveButton" Width="AUTO" Margin="5" Content="Sauvegarder" Click="Save_Click"/>
             <Button x:Name="BackButton" Width="100" Margin="5" Content="Retour" Click="GoBack_Click"/>
         </StackPanel>
     </Grid>
