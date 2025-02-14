@@ -45,6 +45,7 @@ namespace EasySave.Graphic
                 JsonButton.IsChecked = false;
                 XmlButton.IsChecked = true;
             }
+            //BusinessSoftwareTextBox.Text = settings.BusinessSoftware;
 
             //Labels
             NameLabel.Text = messages.GetMessage("NAME");
@@ -55,6 +56,8 @@ namespace EasySave.Graphic
             LogFormatLabel.Text = messages.GetMessage("LOG_FORMAT");
             LangageButton.Content = messages.GetMessage("CHANGE_LANGUAGE_MENU_LABEL");
             SettingsButton.Content = messages.GetMessage("SETTINGS_BUTTON_OPEN");
+            BusinessSoftwareLabel.Text = messages.GetMessage("BUSINESS_SOFTWARE");
+            BusinessSoftwareIntLabel.Text = messages.GetMessage("BUSINESS_SOFTWARE_INT");            
             SaveButton.Content = messages.GetMessage("SAVE");
             BackButton.Content = messages.GetMessage("BACK");
         }
@@ -90,7 +93,8 @@ namespace EasySave.Graphic
             settings.Name = NameTextBox.Text;
             settings.EncryptionKey = KeyTextBox.Text;            
             settings.logFormat = (bool)JsonButton.IsChecked ? "json" : "xml";
-            settings.extensionsToEncrypt = ExtentionsTextBox.Text;                       
+            settings.extensionsToEncrypt = ExtentionsTextBox.Text;       
+            //settings.BusinessSofware = BusinessSoftwareTextBox.Text;
 
             SettingsJson.GetInstance().Update(settings);
         }

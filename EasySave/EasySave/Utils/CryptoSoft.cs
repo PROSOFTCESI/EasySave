@@ -33,7 +33,6 @@ namespace CryptoSoftLib
             {
                 if (!ExtentionToEncrypt().Contains(new FileInfo(filePath).Extension))
                 {
-                    Console.WriteLine("non");
                     return;
                 }
             }

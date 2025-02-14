@@ -29,7 +29,11 @@
                 <TextBlock x:Name="ExtentionsLabel" FontWeight="Bold" Text="Liste des extentions des fichiers à chiffer :"/>
                 <TextBlock x:Name="ExtentionsIntLabel" FontWeight="Bold" FontSize="10" Text="Saisir les extentions en les séparant par des espaces ex : .txt .pdf"/>
                 <TextBox x:Name="ExtentionsTextBox" Margin="0,5,0,15" MinWidth="300"/>
-                
+
+                <TextBlock x:Name="BusinessSoftwareLabel" FontWeight="Bold" Text="Liste des applications métiers :"/>
+                <TextBlock x:Name="BusinessSoftwareIntLabel" FontWeight="Bold" FontSize="10" Text="Renseigner le nom des applications séparés par des espaces"/>
+                <TextBox x:Name="BusinessSoftwareTextBox" Margin="0,5,0,15" MinWidth="300"/>
+
                 <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center" Margin="0,20,0,0">
                     <Button x:Name="LangageButton" Width="200" Margin="5" Content="Changer de langue" Click="Langage_Click"/>
                     <Button x:Name="SettingsButton" Width="200" Margin="5" Content="Ouvrir le fichier de paramètres" Click="OpenSettings"/>

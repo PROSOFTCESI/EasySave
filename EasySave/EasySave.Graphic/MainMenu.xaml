@@ -10,10 +10,9 @@
             <Button Name="ReadJobsButton" Content="Afficher les travaux de sauvegarde" Margin="0,10,0,0" Click="ReadSaveJobs_Click" />
             <Button Name="DeleteJobButton" Content="Supprimer un travail de sauvegarde" Margin="0,10,0,0" Click="DeleteSaveJob_Click" />
             <Button Name="ChangeLanguageButton" Content="Changer la langue" Margin="0,10,0,0" Click="ChangeLanguage_Click" Cursor="Hand" />
+            <Button Name ="ENCRYPT" Content="Chiffre Decriffrer" Margin="0,10,0,0" Click="Encrypt_Click" />
             <Button Name ="OpenSettingsButton" Content="Paramètres" Margin="0,10,0,0" Click="OpenSettings_Click" />
             <Button Name="ExitButton" Content="Quitter" Margin="0,10,0,0" Click="Exit_Click" Foreground="Red"/>
         </StackPanel>
-        <Frame Name="MainFrame" NavigationUIVisibility="Hidden" Navigated="MainFrame_Navigated" />
-
     </Grid>
 </Page>

@@ -44,5 +44,8 @@
   "EXTENTION_FILES": "List of file extensions to encrypt :",
   "EXTENTION_FILES_INT": "Enter the extensions by separating them with spaces e.g.: .txt .pdf",
   "SAVE": "Save",
-  "NAME": "Name"
+  "NAME": "Name",
+  "ENCRYPTION": "Encrypt / Decrypt",
+  "BUSINESS_SOFTWARE_INT": "Enter the business software names by separating them with spaces. ",
+  "BUSINESS_SOFTWARE": "Business Softwares"
 }

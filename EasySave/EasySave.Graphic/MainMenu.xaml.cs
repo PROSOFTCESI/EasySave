@@ -23,6 +23,7 @@ public partial class MainMenu : Page
         ChangeLanguageButton.Content = messages.GetMessage("CHANGE_LANGUAGE_MENU_LABEL");
         ExitButton.Content = messages.GetMessage("EXIT_MENU_LABEL");
         OpenSettingsButton.Content = messages.GetMessage("SETTINGS_BUTTON");
+        ENCRYPT.Content = messages.GetMessage("ENCRYPTION"); 
     }
 
 
@@ -64,5 +65,10 @@ public partial class MainMenu : Page
     private void MainFrame_Navigated(object sender, NavigationEventArgs e)
     {
 
+    }
+
+    private void Encrypt_Click(object sender, RoutedEventArgs e)
+    {
+        NavigationService.Navigate(new EncryptDecryptSave());
     }
 }

@@ -45,5 +45,7 @@
   "EXTENTION_FILES_INT": "Saisir les extentions en les séparant par des espaces ex : .txt .pdf",
   "SAVE": "SAUVEGARDER",
   "NAME": "Nom",
-  "": ""
+  "ENCRYPTION": "Chiffrer / Déchiffrer",
+  "BUSINESS_SOFTWARE_INT": "Renseigner le nom des applications séparés par des espaces",
+  "BUSINESS_SOFTWARE": "Applications Métier"
 }
