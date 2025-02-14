@@ -1,4 +1,4 @@
-﻿using LoggerLib;
+using LoggerLib;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -42,26 +42,48 @@ namespace EasySave
 
         private void CreateDifferentialSave(string source, string fullsave, string diffsave)
         {
-            CheckIfCanRun();
-
-            
+            CheckIfCanRun();            
 
             DirectoryInfo sourceDir = new DirectoryInfo(source);
-            DirectoryInfo fullsaveDir = new DirectoryInfo(fullsave);
 
             FileInfo[] sourceFiles = sourceDir.GetFiles();
-            FileInfo[] fullsaveFiles = fullsaveDir.GetFiles();
 
             //Copy New and modified Files
             foreach(FileInfo sFile in sourceFiles)
             {
                 CheckIfCanRun();
-                string savedFile = Path.Combine(fullsave, sFile.Name);
-                if (!File.Exists(savedFile) || File.GetLastWriteTime(sFile.FullName) > File.GetLastWriteTime(savedFile))
+                if (Directory.Exists(fullsave))
                 {
-                    if(!Directory.Exists(diffsave))
-                        Directory.CreateDirectory(diffsave);
-                    Console.WriteLine(sFile.Name);
+                    DirectoryInfo fullsaveDir = new DirectoryInfo(fullsave);
+                    FileInfo[] fullsaveFiles = fullsaveDir.GetFiles();
+                    string savedFile = Path.Combine(fullsave, sFile.Name);
+
+                    if (!File.Exists(savedFile) || File.GetLastWriteTime(sFile.FullName) > File.GetLastWriteTime(savedFile))
+                    {
+                        if (!Directory.Exists(diffsave))
+                            Directory.CreateDirectory(diffsave);
+                        
+                        Stopwatch stopwatch = Stopwatch.StartNew();
+                        string newFile = Path.Combine(diffsave, sFile.Name);
+                        sFile.CopyTo(newFile);
+                        CryptoSoft.EncryptDecryptFile(newFile);
+                        stopwatch.Stop();
+                        var test = Logger.GetInstance();
+                        Logger.GetInstance().Log(
+                        new
+                        {
+                            SaveJobName = Name,
+                            FileSource = SourcePath + "/" + sFile.Name,
+                            FileTarget = TargetPath + "/" + sFile.Name,
+                            FileSize = sFile.Length,
+                            Time = DateTime.Now,
+                            FileTransferTime = stopwatch.ElapsedMilliseconds
+                        });
+                    }
+                }
+                else //directory is new
+                {
+                    Directory.CreateDirectory(diffsave);
                     Stopwatch stopwatch = Stopwatch.StartNew();
                     string newFile = Path.Combine(diffsave, sFile.Name);
                     sFile.CopyTo(newFile);
@@ -80,10 +102,12 @@ namespace EasySave
                     });
                 }
             }
+            // new Dir DDD not in FS. 
 
             // Recursivity
             foreach(DirectoryInfo dir in sourceDir.GetDirectories())
             {                
+
                 CreateDifferentialSave(Path.Combine(source, dir.Name), Path.Combine(fullsave, dir.Name), Path.Combine(diffsave, dir.Name));
             }    
         }
