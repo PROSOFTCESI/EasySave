@@ -31,7 +31,7 @@ public class Messages
     }
     private Messages()
     {
-        SetCulture(availableCultures[0]); // English by default
+        SetCulture(new CultureInfo(SettingsJson.GetInstance().GetContent().selectedCulture));
     }
 
     public void SetCulture(CultureInfo culture)
