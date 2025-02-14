@@ -63,8 +63,10 @@ namespace EasySave.Utils
             newContent.extensionsToEncrypt = newContent.extensionsToEncrypt != null ? newContent.extensionsToEncrypt : "*";
             newContent.selectedCulture = newContent.selectedCulture != null ? newContent.selectedCulture : "fr-FR";
             newContent.logFormat = newContent.logFormat != null ? newContent.logFormat : "json";
+            newContent.businessSoftwares = newContent.businessSoftwares != null ? newContent.businessSoftwares : "";
+            
 
-            string json = JsonConvert.SerializeObject(newContent, Formatting.Indented);
+        string json = JsonConvert.SerializeObject(newContent, Formatting.Indented);
             File.WriteAllText(FilePath, json);
         }
 
@@ -82,6 +84,6 @@ namespace EasySave.Utils
         public string selectedCulture { get; set; }
         public string extensionsToEncrypt { get; set; }
         public string logFormat { get; set; }
+        public string businessSoftwares { get; set; }
     }
 }
-
