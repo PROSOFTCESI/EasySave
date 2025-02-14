@@ -26,8 +26,6 @@ Face aux retours clients et aux évolutions du marché, EasySave 2.0 représente
 - **Capacité Illimitée :**
   - **Suppression de la Limitation :**  
     - Le nombre de travaux de sauvegarde n'est plus limité à 5 ; le système supporte désormais un nombre **illimité** de sauvegardes.
-  - **Adaptation des Classes de Sauvegarde :**
-    - La classe abstraite **SaveJob** a été repensée pour gérer un nombre illimité de travaux.
 ---
 
 ## 3. Intégration du Cryptage via CryptoSoft
@@ -41,6 +39,8 @@ Face aux retours clients et aux évolutions du marché, EasySave 2.0 représente
       - `EncryptDecryptFolder(folder : string, key : string = null) : void` – Applique récursivement le chiffrement sur un dossier.
   - **Sélectivité du Chiffrement :**
     - Seuls les fichiers dont les extensions sont définies dans **SettingsJson** seront cryptés.
+  - **Déchiffrement des fichiers**
+    - Les fichiers chiffrés pourront être déchiffrés, simplement en mettant les fichiers chiffrés dans un dossier et en indiquant le chemin de ce dossier dans l'onglet "Chiffer / Déchiffrer"
 
 ---
 
