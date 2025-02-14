@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Navigation;
 using EasySave.Utils;
 using EasySave.Utils.JobStates;
+using LoggerLib;
 
 namespace EasySave.Graphic
 {
@@ -46,9 +47,30 @@ namespace EasySave.Graphic
                 return;
             }
 
+         
+
             SaveJob selectedJob = (SaveJob)SaveJobsListBox.SelectedItem;
+            Logger.GetInstance().Log(
+              new
+              {
+                  Type = "Delete",
+
+                  Time = DateTime.Now,
+                  Statue = "Start",
+                  Message = "Start deleting SaveJobs" + selectedJob.Name
+              });
             selectedJob.DeleteSave();
             UpdateList();
+
+            Logger.GetInstance().Log(
+                new
+                {
+                    Type = "Delete",
+
+                    Time = DateTime.Now,
+                    Statue = "Success",
+                    Message = "Save Job" + selectedJob.Name+ "successfully deleted"
+                });
 
             MessageBox.Show(
                 string.Format(messages.GetMessage("SAVE_JOB_DELETED_SUCCESSFULLY"), selectedJob),

@@ -37,6 +37,12 @@ public abstract class SaveJob
     {
         if (SourcePath == TargetPath)
         {
+            Logger.GetInstance().Log(
+                   new
+                   {
+                       Statue = "Error",
+                       Message = "Source path and Target path can't be equal"
+                   });
             throw new ArgumentException("Source path and Target path can't be equal");
         }
 
@@ -60,7 +66,15 @@ public abstract class SaveJob
         // Check if the source directory exists
         // TODO We need to andle the case of an inexistant directory. Currently, it crashes
         if (!dir.Exists)
+        {
+            Logger.GetInstance().Log(
+                 new
+                 {
+                     Statue = "Error",
+                     Message = $"Source directory not found: {dir.FullName}"
+                 });
             throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
+        }
 
         // Cache directories before we start copying
         DirectoryInfo[] dirs = dir.GetDirectories();
@@ -82,7 +96,16 @@ public abstract class SaveJob
         // Check if the source directory exists
         // TODO We need to andle the case of an inexistant directory. Currently, it crashes
         if (!dir.Exists)
+        {
+            Logger.GetInstance().Log(
+               new
+               {
+                   Statue = "Error",
+                   Message = $"Source directory not found: {dir.FullName}"
+               });
             throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
+        }
+          
 
         // Cache directories before we start copying
         DirectoryInfo[] dirs = dir.GetDirectories();
@@ -115,16 +138,20 @@ public abstract class SaveJob
             string targetFilePath = Path.Combine(saveTargetPath, file.Name);
             Stopwatch stopwatch = Stopwatch.StartNew();
             file.CopyTo(targetFilePath);
+            Stopwatch stopwatchCrypt = Stopwatch.StartNew();
             CryptoSoft.EncryptDecryptFile(targetFilePath);
+            stopwatchCrypt.Stop();
             stopwatch.Stop();
             Logger.GetInstance().Log(
                 new
                 {
+                    type = "Info",
                     SaveJobName = Name,
                     FileSource = Path.Combine(SourcePath, file.Name),
                     FileTarget = targetFilePath,
                     FileSize = file.Length,
                     Time = DateTime.Now,
+                    FileCryptTime = stopwatchCrypt.ElapsedMilliseconds,
                     FileTransferTime = stopwatch.ElapsedMilliseconds
                 });
             leftFilesToCopy--;
@@ -140,6 +167,7 @@ public abstract class SaveJob
                 SourceFilePath = Path.Combine(SourcePath, file.Name),
                 TargetFilePath = targetFilePath
             });
+           
         }
 
         // RECURSIVITY : Copy the files from the sub directories
@@ -148,6 +176,7 @@ public abstract class SaveJob
             string newDestinationDir = Path.Combine(saveTargetPath, subDir.Name);
             CreateFullSave(subDir.FullName, newDestinationDir, leftSizeToCopy, leftFilesToCopy, totalSizeToCopy);
         }
+
 
         StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
         {
@@ -161,7 +190,13 @@ public abstract class SaveJob
             SourceFilePath = null,
             TargetFilePath = null
         });
-
+        Logger.GetInstance().Log(
+              new
+              {
+                  Type = "Update",
+                  Time = DateTime.Now,
+                  Name = Name,
+              });
         return true;
     }
 

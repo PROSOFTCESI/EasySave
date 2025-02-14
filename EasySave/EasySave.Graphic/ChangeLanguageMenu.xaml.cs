@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
 using EasySave.Utils;
+using LoggerLib;
 
 namespace EasySave.Graphic
 {
@@ -18,7 +19,6 @@ namespace EasySave.Graphic
             PopulateLanguageButtons();
             TitleLabel.Text = messages.GetMessage("CHANGE_LANGUAGE_MENU_LABEL");
             BackButton.Content = messages.GetMessage("BACK");
-
         }
 
         private void PopulateLanguageButtons()
@@ -40,10 +40,19 @@ namespace EasySave.Graphic
 
         private void SetLanguage(CultureInfo culture)
         {
+          
             messages.SetCulture(culture);
             TitleLabel.Text = Messages.GetInstance().GetMessage("CHANGE_LANGUAGE_MENU_LABEL");
             BackButton.Content = messages.GetMessage("BACK");
             MessageBoxDisplayer.DisplayConfirmation("LANGUAGE_CHANGED_SUCCESSFULLY");
+            Logger.GetInstance().Log(
+                new
+                {
+                    Type = "Update Language",
+                    Time = DateTime.Now,
+                    Statue = "Success",
+                    Message = "Update language to "+ culture.Name,
+                });
         }
 
         private void GoBack_Click(object sender, RoutedEventArgs e)

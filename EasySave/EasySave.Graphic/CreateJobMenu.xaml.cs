@@ -14,7 +14,11 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using EasySave.Utils;
 using EasySave.Utils.JobStates;
+using EasySave;
 
+
+using LoggerLib;
+using System.Security.AccessControl;
 
 namespace EasySave.Graphic;
 
@@ -48,7 +52,21 @@ public partial class CreateJobMenu : Page
             string destPathJob = DestinationPathTextBox.Text;
             string saveType = FullSaveRadioButton.IsChecked == true ? "Totale" : "Différentielle";
 
+            Logger.GetInstance().Log(
+            new
+            {
+                Type = "Create",
+                Statue= "Start",
+                Time = DateTime.Now,
+                Name = saveJobName,
+                SaveType = saveType,
+                SourcePath = sourcePathJob,
+                DestinationPath = destPathJob
+            });
+
             SaveJob newJob;
+
+
 
             if (FullSaveRadioButton.IsChecked ?? false)
             {
@@ -64,15 +82,35 @@ public partial class CreateJobMenu : Page
             if (isCreated)
             {
                 MessageBoxDisplayer.DisplayConfirmation("SAVE_JOB_CREATED_SUCCESSFULLY");
+                Logger.GetInstance().Log(
+                new
+                {
+                    Type = "Create",
+
+                    Time = DateTime.Now,
+                    Statue = "Success",
+                    Message = "Save Job creation is Success : "
+                });
             }
             else
             {
                 MessageBoxDisplayer.DisplayError("SAVE_JOB_CREATION_FAILED_MESSAGE");
             }
+           
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            Logger.GetInstance().Log(
+               new
+               {
+                   Type = "Create",
+                   Time = DateTime.Now,
+                   Statue = "Error",
+                   Message = "Save Job creation faild",
+                   Error = ex.ToString()
+               });
             MessageBoxDisplayer.DisplayError("SAVE_JOB_CREATION_FAILED_MESSAGE");
+      
         }
     }
 

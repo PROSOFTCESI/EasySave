@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using EasySave.Utils;
+using LoggerLib;
 
 namespace EasySave.Graphic
 {
@@ -20,6 +21,14 @@ namespace EasySave.Graphic
       
         public MainWindow()
         {
+            Logger.GetInstance().Log(
+          new
+          {
+              Type = "Launching",
+              Time = DateTime.Now,
+              Statue = "Start",
+              Message = "Launching Main Window"
+          });
             InitializeComponent();
             MainFrame.Navigate(new MainMenu()); // Charge la page principale
 

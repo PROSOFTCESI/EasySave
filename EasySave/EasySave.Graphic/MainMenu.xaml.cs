@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Navigation;
 using EasySave.Utils;
 using System.IO;
+using LoggerLib;
 
 namespace EasySave.Graphic;
 
@@ -58,13 +59,23 @@ public partial class MainMenu : Page
     }
     private void OpenSettings_Click(object sender, RoutedEventArgs e)
     {
+
+        // Obtient le dossier AppData\Roaming de l'utilisateur courant
+        string appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        string easySavePath = Path.Combine(appDataFolder, "EasySave");
+        string fileName = "settings.json";
+        string filePath = Path.Combine(easySavePath, fileName);
         try
         {
-            // Obtient le dossier AppData\Roaming de l'utilisateur courant
-            string appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            string easySavePath = Path.Combine(appDataFolder, "EasySave");
-            string fileName = "settings.json";
-            string filePath = Path.Combine(easySavePath, fileName);
+            Logger.GetInstance().Log(
+             new
+             {
+                 Type = "Info",
+                 Time = DateTime.Now,
+                 Statue = "Start",
+                 Message = "Start oppening setting in : " + filePath
+             });
+
             ProcessStartInfo psi = new ProcessStartInfo(filePath)
             {
                 UseShellExecute = true
@@ -73,6 +84,14 @@ public partial class MainMenu : Page
         }
         catch (Exception ex)
         {
+            Logger.GetInstance().Log(
+            new
+            {
+                Type = "Setting",
+                Time = DateTime.Now,
+                Statue = "Error",
+                Message = "Can't open Setting file in "+ filePath,
+            });
             MessageBox.Show("Erreur lors de l'ouverture du fichier : " + ex.Message);
         }
     }

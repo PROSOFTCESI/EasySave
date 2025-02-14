@@ -1,4 +1,5 @@
 ﻿using EasySave.Utils;
+using LoggerLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,15 @@ internal static class MessageBoxDisplayer
     }
     public static void DisplayError(string messageId)
     {
+        Logger.GetInstance().Log(
+        new
+        {
+           Type = "Message",
+           Time = DateTime.Now,
+           Statue = "Error",
+           Message = Messages.GetInstance().GetMessage(messageId),
+        });
+
         System.Windows.MessageBox.Show(
             Messages.GetInstance().GetMessage(messageId),
             Messages.GetInstance().GetMessage("ERROR_MESSAGE"),
