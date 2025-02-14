@@ -1,0 +1,37 @@
+@startuml
+title "Création d'une sauvegarde (Interface graphique)"
+
+actor Utilisateur
+
+participant "MainMenu" as MM
+participant "CreateJobMenu" as CJM
+participant "SaveJob" as SJ
+
+' Lancement de l'application et affichage du MainMenu
+Utilisateur -> MM: Launch()
+activate MM
+MM -> MM: Affiche les boutons
+deactivate MM
+
+' L'utilisateur clique sur "Créer une sauvegarde"
+Utilisateur -> MM: Clique sur "Créer une sauvegarde"
+MM -> CJM: Navigation vers CreateJobMenu
+activate CJM
+note right of CJM: Affiche le formulaire (Nom, Source, Destination, Type)
+
+' L'utilisateur saisit les informations dans le formulaire
+Utilisateur -> CJM: Remplit le formulaire (ex: "Job1", "C:\source", "D:\ target", "Diff")
+
+' Création d'une sauvegarde (instance de SaveJob)
+CJM -> SJ: new SaveJob("Job1", "C:\source", "D:\ target")
+activate SJ
+    SJ -> SJ: Exécute création (copie des fichiers, etc.)
+    SJ --> CJM: Retour (bool isCreated)
+deactivate SJ
+
+' Retour au MainMenu avec le résultat
+CJM -> MM: Navigation retour (affiche résultat)
+deactivate CJM
+
+MM -> Utilisateur: Affiche le résultat
+@enduml

@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using EasySave.CustomExceptions;
 using EasySave.Utils;
 using EasySave.Utils.JobStates;
 
@@ -52,27 +53,37 @@ public partial class CreateJobMenu : Page
 
             if (FullSaveRadioButton.IsChecked ?? false)
             {
-                newJob = new FullSave(saveJobName, sourcePathJob, destPathJob);
+                newJob = new FullSave(saveJobName, sourcePathJob, destPathJob, true);
             }
             else
             {
-                newJob = new DifferentialSave(saveJobName, sourcePathJob, destPathJob);
+                newJob = new DifferentialSave(saveJobName, sourcePathJob, destPathJob, true);
             }
 
             bool isCreated = newJob.CreateSave();
 
-            if (isCreated)
-            {
-                MessageBoxDisplayer.DisplayConfirmation("SAVE_JOB_CREATED_SUCCESSFULLY");
-            }
-            else
+            if (!isCreated)
             {
                 MessageBoxDisplayer.DisplayError("SAVE_JOB_CREATION_FAILED_MESSAGE");
+                return;
             }
+
+            MessageBoxDisplayer.DisplayConfirmation("SAVE_JOB_CREATED_SUCCESSFULLY", saveJobName);
+
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            MessageBoxDisplayer.DisplayError("SAVE_JOB_CREATION_FAILED_MESSAGE");
+            if (ex is BusinessSoftwareRunningException)
+            {
+                MessageBoxDisplayer.DisplayError("BUSINESS_SOFTWARE_DETECTED_ERROR");
+                return;
+            }
+
+            if (ex is Exception)
+            {
+                MessageBoxDisplayer.DisplayError("SAVE_JOB_CREATION_FAILED_MESSAGE");
+                return;
+            }
         }
     }
 

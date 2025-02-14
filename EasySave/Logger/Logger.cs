@@ -1,16 +1,16 @@
 ﻿using Newtonsoft.Json;
 using System.Reflection.Metadata;
 using System.Xml.Serialization;
+
+using System.Reflection;
+using System.Xml;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace LoggerLib;
-
-
-
 
 /// <summary>
 /// Class to write dated JSON logs in the Application Data folder or a custom directory.
 /// Depends on Newtonsoft.Json.
 /// </summary>
-/// 
 
 public class Logger
 {
@@ -62,13 +62,45 @@ public class Logger
   
     private string GetLogDirectory(string projectName = "LogLib", string? projectsPath = null)
     {
+
         return Path.Combine(string.IsNullOrWhiteSpace(projectsPath) ? Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) : projectsPath, projectName, "logs");
     }
 
     private string GetLogPath()
     {
-
         return Path.Combine(LogDirectory,DateTime.Now.Date.ToString("yyyy-MM-dd") +"." + ExportType.ToString());
+    }
+
+    public class LogClass{
+        public object Details;
+        public LogClass()
+        {
+            Details = null;
+        }
+
+        public LogClass(object details) 
+        {
+            Details = details; 
+        }
+    };
+
+    public static LogClass ConvertTo<LogClass>(object source) where LogClass : new()
+    {
+        LogClass result = new LogClass();
+        Type sourceType = source.GetType();
+        Type targetType = typeof(LogClass);
+
+        foreach (PropertyInfo sourceProp in sourceType.GetProperties())
+        {
+            PropertyInfo targetProp = targetType.GetProperty(sourceProp.Name);
+            if (targetProp != null && targetProp.CanWrite)
+            {
+                object value = sourceProp.GetValue(source);
+                targetProp.SetValue(result, value);
+            }
+        }
+        return result;
+
     }
 
     private bool WriteFile(string text)
@@ -89,33 +121,22 @@ public class Logger
     /// </summary>
     /// <param name="toWrite">Object to log.</param>
     /// <returns>True if the log was successfully written, otherwise false.</returns>
-    public bool Log(Object toWrite)
+    public bool Log(object toWrite)
     {
-   
-            switch (ExportType) {
-                case LogExportType.json:
-                    string jsonToAdd = JsonConvert.SerializeObject(toWrite, Formatting.Indented) + ",\n";
-              
-                    return WriteFile(jsonToAdd);
-                case LogExportType.xml:
-                    XmlSerializer serializer = new XmlSerializer(toWrite.GetType());
-                    using (StringWriter writer = new StringWriter())
-                    {
-                        serializer.Serialize(writer, toWrite);
-                        string xml = writer.ToString();
-                    
-                        return WriteFile(xml+"\n");
-                    }
-                default:
-                    return false;
-
-
-            };
-              
-        
-        }
-
+        switch (ExportType) {
+            case LogExportType.json:
+                string jsonToAdd = JsonConvert.SerializeObject(toWrite, Newtonsoft.Json.Formatting.Indented) + ",\n";
+                return WriteFile(jsonToAdd);
+            case LogExportType.xml:
+                var xmlToWrite = new
+                {
+                    Log = toWrite
+                };
+                var jsonText = JsonConvert.SerializeObject(xmlToWrite);           // convert to JSON
+                XmlDocument doc = JsonConvert.DeserializeXmlNode(jsonText); // convert JSON to XML Document
+                return WriteFile(doc.OuterXml + "\n");
+            default:
+                return false;
+        };     
     }
-
-
-
+}
