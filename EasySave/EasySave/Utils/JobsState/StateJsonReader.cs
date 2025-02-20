@@ -16,6 +16,10 @@ public class StateJsonReader
 
     public const string SavedState = "SAVED";
     public const string SavingState = "SAVING";
+    public const string EncryptingState = "ENCRYPTING";
+    public const string DecryptingState = "DECRYPTING";
+    public const string EncryptedState = "ENCRYPTED";
+    public const string DecryptedState = "DECRYPTED";
     public const string DeletedState = "DELETED";
 
     private StateJsonReader() { }
