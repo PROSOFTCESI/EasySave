@@ -86,9 +86,9 @@ namespace EasySave
             
             Directory.CreateDirectory(saveTargetPath);
 
-            string jsonPath = FileStructureJson.CreateDiffenretialFileStructure(SourcePath, saveTargetPath, jsonSaved);
+            string jsonPath = FileStructureJson.GetInstance().CreateDiffenretialFileStructure(SourcePath, saveTargetPath, jsonSaved);
 
-            FileStructureJson.GetAdvancement(jsonPath);
+            FileStructureJson.GetInstance().GetAdvancement(jsonPath);
             // Copy Files
             CopyFiles(jsonPath, saveTargetPath);
             //EncryptFiles

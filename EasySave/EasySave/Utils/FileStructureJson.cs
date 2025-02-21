@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using EasySave.Utils.JobStates;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,14 @@ namespace EasySave.Utils
 {
     public class FileStructureJson
     {
-        public static string CreateFileStructure(string sourceDirectory, string jsonPath)
+        private static FileStructureJson? instance;
+        public static FileStructureJson GetInstance()
+        {
+            instance ??= new FileStructureJson();
+            return instance;
+        }
+
+        public string CreateFileStructure(string sourceDirectory, string jsonPath)
         {
             var jsonStructure = new JsonStructure();
 
@@ -36,7 +44,7 @@ namespace EasySave.Utils
             return jsonFile;
         }
 
-        public static string CreateDiffenretialFileStructure(string sourceDirectory, string jsonPath, string jsonSaved)
+        public string CreateDiffenretialFileStructure(string sourceDirectory, string jsonPath, string jsonSaved)
         {
             var jsonStructure = new JsonStructure();
 
@@ -87,7 +95,7 @@ namespace EasySave.Utils
             return jsonFile;
         }
 
-        public static void GetAdvancement(string jsonFilePath)
+        public void GetAdvancement(string jsonFilePath)
         {
             // faire ration SET/SAVED en %                      --> avancement save
             // faire ration tous fichiers / Encrypted en %      --> avancement encrypt

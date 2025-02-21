@@ -90,8 +90,8 @@ public abstract class SaveJob
         // Create the destination directory
         Directory.CreateDirectory(saveTargetPath);
         //Create Json with file structure
-        string jsonPath = FileStructureJson.CreateFileStructure(SourcePath, saveTargetPath);
-        FileStructureJson.GetAdvancement(jsonPath);
+        string jsonPath = FileStructureJson.GetInstance().CreateFileStructure(SourcePath, saveTargetPath);
+        FileStructureJson.GetInstance().GetAdvancement(jsonPath);
         // Copy Files
         CopyFiles(jsonPath, saveTargetPath);
         //EncryptFiles
@@ -196,7 +196,7 @@ public abstract class SaveJob
                 string updatedJson = JsonConvert.SerializeObject(jsonStructure, Formatting.Indented);
                 File.WriteAllText(jsonFilePath, updatedJson);
 
-                FileStructureJson.GetAdvancement(jsonFilePath);
+                FileStructureJson.GetInstance().GetAdvancement(jsonFilePath);
 
                 // Log
                 Logger.GetInstance().Log(new {
@@ -298,7 +298,7 @@ public abstract class SaveJob
                 string updatedJson = JsonConvert.SerializeObject(jsonStructure, Formatting.Indented);
                 File.WriteAllText(jsonFilePath, updatedJson);
 
-                FileStructureJson.GetAdvancement(jsonFilePath);
+                FileStructureJson.GetInstance().GetAdvancement(jsonFilePath);
 
                 Logger.GetInstance().Log(new
                 {
