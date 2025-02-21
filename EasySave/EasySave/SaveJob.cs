@@ -91,6 +91,7 @@ public abstract class SaveJob
         Directory.CreateDirectory(saveTargetPath);
         //Create Json with file structure
         string jsonPath = FileStructureJson.CreateFileStructure(SourcePath, saveTargetPath);
+        FileStructureJson.GetAdvancement(jsonPath);
         // Copy Files
         CopyFiles(jsonPath, saveTargetPath);
         //EncryptFiles
@@ -152,6 +153,20 @@ public abstract class SaveJob
                    Statue = "Error",
                    Message = $"Json file does not exists: {jsonFilePath}"
                });
+
+            StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
+            {
+                State = StateJsonReader.ErrorState,
+                LastUpdate = DateTime.Now,
+                TotalFilesToCopy = null,
+                TotalFilesSize = null,
+                Progression = null,
+                NbFilesLeftToDo = null,
+                TotalSizeLeftToDo = null,
+                SourceFilePath = null,
+                TargetFilePath = null
+            });
+
             throw new Exception("Json file does not exists");
         }
 
@@ -180,6 +195,8 @@ public abstract class SaveJob
                 file.Status = "saved";
                 string updatedJson = JsonConvert.SerializeObject(jsonStructure, Formatting.Indented);
                 File.WriteAllText(jsonFilePath, updatedJson);
+
+                FileStructureJson.GetAdvancement(jsonFilePath);
 
                 // Log
                 Logger.GetInstance().Log(new {
@@ -232,6 +249,19 @@ public abstract class SaveJob
                    Statue = "Error",
                    Message = $"Json file does not exists: {jsonFilePath}"
                });
+
+            StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
+            {
+                State = StateJsonReader.ErrorState,
+                LastUpdate = DateTime.Now,
+                TotalFilesToCopy = null,
+                TotalFilesSize = null,
+                Progression = null,
+                NbFilesLeftToDo = null,
+                TotalSizeLeftToDo = null,
+                SourceFilePath = null,
+                TargetFilePath = null
+            });
             throw new Exception("Json file does not exists");
         }
 
@@ -267,6 +297,8 @@ public abstract class SaveJob
                 // Save Status
                 string updatedJson = JsonConvert.SerializeObject(jsonStructure, Formatting.Indented);
                 File.WriteAllText(jsonFilePath, updatedJson);
+
+                FileStructureJson.GetAdvancement(jsonFilePath);
 
                 Logger.GetInstance().Log(new
                 {
