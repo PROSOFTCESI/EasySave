@@ -95,8 +95,9 @@ namespace EasySave.Utils
             return jsonFile;
         }
 
-        public void GetAdvancement(string jsonFilePath)
+        public int[] GetAdvancement(string jsonFilePath)
         {
+            int[] ret = [];
             // faire ration SET/SAVED en %                      --> avancement save
             // faire ration tous fichiers / Encrypted en %      --> avancement encrypt
             // prendre en compte la taille des fichiers
@@ -118,6 +119,7 @@ namespace EasySave.Utils
                 {
                     case "set":
                         allFiles++;
+                        allBytes += int.Parse(item.Size);
                         break;
                     case "saved":
                         savedBytes += int.Parse(item.Size);
@@ -145,7 +147,7 @@ namespace EasySave.Utils
             jsonStructure.SetFiles = allFiles.ToString();
             jsonStructure.EncryptedFiles = encryptedFiles.ToString();
             jsonStructure.EncryptedBytes = encryptedBytes.ToString();
-
+            jsonStructure.TotalBytes = allBytes.ToString();
 
             if(allFiles > 0 && allBytes > 0)
             {
@@ -155,6 +157,12 @@ namespace EasySave.Utils
 
             string updatedJson = JsonConvert.SerializeObject(jsonStructure, Formatting.Indented);
             File.WriteAllText(jsonFilePath, updatedJson);
+
+            
+
+            ret = [allFiles, allBytes, savedFiles, savedBytes, encryptedFiles, encryptedBytes];
+
+            return ret;
         }
     }
 
@@ -173,6 +181,8 @@ namespace EasySave.Utils
         public string SavedFiles { get; set; } = "0";
         public string EncryptedFiles { get; set; } = "0";
         public string SavedBytes { get; set; } = "0";
+
+        public string TotalBytes { get; set; } = "0";  
         public string EncryptedBytes { get; set; } = "0";
         public string SaveAdvancement { get; set; } = "0";
         public string EncryptAdvancement { get; set; } = "0";

@@ -196,7 +196,6 @@ public abstract class SaveJob
                 string updatedJson = JsonConvert.SerializeObject(jsonStructure, Formatting.Indented);
                 File.WriteAllText(jsonFilePath, updatedJson);
 
-                FileStructureJson.GetInstance().GetAdvancement(jsonFilePath);
 
                 // Log
                 Logger.GetInstance().Log(new {
@@ -210,15 +209,25 @@ public abstract class SaveJob
                     FileTransferTime = stopwatch.ElapsedMilliseconds
                 }) ;
 
-                // Update Statejson
+                int[] advancement = FileStructureJson.GetInstance().GetAdvancement(jsonFilePath);
+                int progress = 0;
+                if (advancement[1] != 0)
+                {
+                    progress = (int)Math.Round(((double)advancement[3] / advancement[1]) * 100);
+                }
+                
                 StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
                 {
                     State = StateJsonReader.SavingState,
                     LastUpdate = DateTime.Now,
-                    //Progression = long.Parse(jsonStructure.EncryptedFiles),
-                    SourceFilePath = source,
-                    TargetFilePath = newFile
-                });
+                    TotalFilesToCopy = advancement[0],
+                    TotalFilesSize = advancement[1],
+                    Progression = progress,
+                    NbFilesLeftToDo = advancement[2] - advancement[0],
+                    TotalSizeLeftToDo = advancement[3] - advancement[1],
+                    SourceFilePath = Path.Combine(SourcePath, file.Name),
+                    TargetFilePath = Path.Combine(TargetPath, file.Name)
+                });                
             }
         }
 
@@ -312,11 +321,22 @@ public abstract class SaveJob
                     FileCryptTime = isEncrypted ? stopwatch.ElapsedMilliseconds : 0
                 });
 
+                int[] advancement = FileStructureJson.GetInstance().GetAdvancement(jsonFilePath);
+                int progress = 0;
+                if (advancement[1] != 0)
+                {
+                    progress = (int)Math.Round(((double)advancement[5] / advancement[1]) * 100);
+                }
+
                 StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
                 {
                     State = isEncrypted ? StateJsonReader.EncryptingState : StateJsonReader.DecryptingState,
                     LastUpdate = DateTime.Now,
-                    //Progression = long.Parse(jsonStructure.SaveAdvancement),
+                    TotalFilesToCopy = advancement[0],
+                    TotalFilesSize = advancement[1],
+                    Progression = progress,
+                    NbFilesLeftToDo = advancement[4] - advancement[0],
+                    TotalSizeLeftToDo = advancement[5] - advancement[1],
                     SourceFilePath = Path.Combine(SourcePath, file.Name),
                     TargetFilePath = Path.Combine(TargetPath, file.Name)
                 });
@@ -324,7 +344,8 @@ public abstract class SaveJob
         }
         StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
         {
-            State = isEncrypted ? StateJsonReader.EncryptedState : StateJsonReader.DecryptedState,
+            //State = isEncrypted ? StateJsonReader.EncryptedState : StateJsonReader.DecryptedState,
+            State = StateJsonReader.SavedState,
             LastUpdate = DateTime.Now,
             TotalFilesToCopy = null,
             TotalFilesSize = null,
