@@ -60,7 +60,7 @@ public abstract class SaveJob : INotifyPropertyChanged, IDisposable
 
         if (checkBusinessSoftwares)
         {
-            _businessSoftwaresObserver = new ProcessObserver(1000);
+            _businessSoftwaresObserver = ProcessObserver.GetInstance();
             _businessSoftwaresObserver.OnProcessStateChanged += isRunning =>
             {
                 CanRun = !isRunning;
