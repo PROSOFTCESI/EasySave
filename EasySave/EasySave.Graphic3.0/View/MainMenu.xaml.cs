@@ -90,10 +90,6 @@ public partial class MainMenu : Page, INotifyPropertyChanged
 
     private void RefreshJobs()
     {
-        foreach (var job in AvailableSaveJobs)
-        {
-            job.Dispose();
-        }
         AvailableSaveJobs.Clear();
         foreach (var job in StateJsonReader.GetInstance().GetJobs(true))
         {
