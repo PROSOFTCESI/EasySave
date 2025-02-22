@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logger", "Logger\Logger.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasySave.Graphic", "EasySave.Graphic\EasySave.Graphic.csproj", "{CABA45A3-E5F3-4240-9B61-EF5E3FC67808}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasySave.Graphic3.0", "EasySave.Graphic3.0\EasySave.Graphic3.0.csproj", "{A73B4F9C-D01D-4156-A03F-408EA2D68CB0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{CABA45A3-E5F3-4240-9B61-EF5E3FC67808}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CABA45A3-E5F3-4240-9B61-EF5E3FC67808}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CABA45A3-E5F3-4240-9B61-EF5E3FC67808}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A73B4F9C-D01D-4156-A03F-408EA2D68CB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A73B4F9C-D01D-4156-A03F-408EA2D68CB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A73B4F9C-D01D-4156-A03F-408EA2D68CB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A73B4F9C-D01D-4156-A03F-408EA2D68CB0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

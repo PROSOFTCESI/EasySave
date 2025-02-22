@@ -9,10 +9,12 @@ using System.Threading.Tasks;
 using CryptoSoftLib;
 using EasySave.Utils;
 using EasySave.CustomExceptions;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace EasySave;
 
-public abstract class SaveJob
+public abstract class SaveJob : INotifyPropertyChanged, IDisposable
 {
     // ATTRIBUTES
     public string Name { get; set; }
@@ -21,6 +23,27 @@ public abstract class SaveJob
     public DateTime CreationDate { get; set; }
     public DateTime LastUpdate { get; set; }
     public string State { get; set; }
+
+    private long? _progression;
+    public long? Progression
+    {
+        get => _progression;
+        set
+        {
+            if (_progression != value)
+            {
+                _progression = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    private bool _disposed = false;
+    public event PropertyChangedEventHandler? PropertyChanged;
+    private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
     private bool CanRun { get; set; } = true;
 
     private readonly ProcessObserver _businessSoftwaresObserver;
@@ -177,6 +200,7 @@ public abstract class SaveJob
             leftFilesToCopy--;
             leftSizeToCopy -= file.Length;
             leftSizeToCopy = leftSizeToCopy <= 1 ? 1 : leftSizeToCopy;
+            Progression = 100 - (leftSizeToCopy * 100) / totalSizeToCopy;
             StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
             {
                 State = StateJsonReader.SavingState,
@@ -197,7 +221,7 @@ public abstract class SaveJob
             CreateFullSave(subDir.FullName, newDestinationDir, leftSizeToCopy, leftFilesToCopy, totalSizeToCopy);
         }
 
-
+        Progression = 100;
         StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
         {
             State = StateJsonReader.SavedState,
@@ -246,6 +270,21 @@ public abstract class SaveJob
         {
             throw new BusinessSoftwareRunningException();
         }
+    }
+
+    public void Dispose()
+    {
+        if (!_disposed)
+        {
+            _businessSoftwaresObserver?.Dispose(); // Dispose correctement l'observateur
+            _disposed = true;
+            GC.SuppressFinalize(this);
+        }
+    }
+
+    ~SaveJob()
+    {
+        Dispose();
     }
 
     public override string ToString()
