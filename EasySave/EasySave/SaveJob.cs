@@ -78,11 +78,11 @@ public abstract class SaveJob : INotifyPropertyChanged
         if (SourcePath == TargetPath)
         {
             Logger.GetInstance().Log(
-                   new
-                   {
-                       Statue = "Error",
-                       Message = "Source path and Target path can't be equal"
-                   });
+                    new
+                    {
+                        Statue = "Error",
+                        Message = "Source path and Target path can't be equal"
+                    });
             throw new ArgumentException("Source path and Target path can't be equal");
         }
 
@@ -100,11 +100,11 @@ public abstract class SaveJob : INotifyPropertyChanged
         if (!dir.Exists)
         {
             Logger.GetInstance().Log(
-                 new
-                 {
-                     Statue = "Error",
-                     Message = $"Source directory not found: {dir.FullName}"
-                 });
+                    new
+                    {
+                        Statue = "Error",
+                        Message = $"Source directory not found: {dir.FullName}"
+                    });
             throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
         }
 
@@ -237,6 +237,8 @@ public abstract class SaveJob : INotifyPropertyChanged
                 {
                     progress = (int)Math.Round(((double)advancement[3] / advancement[1]) * 100);
                 }
+
+                Progression = progress;
 
                 StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
                 {
@@ -381,4 +383,19 @@ public abstract class SaveJob : INotifyPropertyChanged
         return isEncrypted;
     }
 
+    public void ResetState()
+    {
+        StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
+        {
+            State = StateJsonReader.SavedState,
+            LastUpdate = DateTime.Now,
+            TotalFilesToCopy = null,
+            TotalFilesSize = null,
+            Progression = null,
+            NbFilesLeftToDo = null,
+            TotalSizeLeftToDo = null,
+            SourceFilePath = null,
+            TargetFilePath = null
+        });
+    }
 }
