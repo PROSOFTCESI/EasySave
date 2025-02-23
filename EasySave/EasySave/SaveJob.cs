@@ -9,10 +9,15 @@ using System.Threading.Tasks;
 using CryptoSoftLib;
 using EasySave.Utils;
 using EasySave.CustomExceptions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Security.Cryptography.X509Certificates;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace EasySave;
 
-public abstract class SaveJob : INotifyPropertyChanged, IDisposable
+public abstract class SaveJob : INotifyPropertyChanged
 {
     // ATTRIBUTES
     public string Name { get; set; }
@@ -21,7 +26,6 @@ public abstract class SaveJob : INotifyPropertyChanged, IDisposable
     public DateTime CreationDate { get; set; }
     public DateTime LastUpdate { get; set; }
     public string State { get; set; }
-
     private long? _progression;
     public long? Progression
     {
@@ -35,7 +39,6 @@ public abstract class SaveJob : INotifyPropertyChanged, IDisposable
             }
         }
     }
-
     private bool _disposed = false;
     public event PropertyChangedEventHandler? PropertyChanged;
     private void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -58,7 +61,7 @@ public abstract class SaveJob : INotifyPropertyChanged, IDisposable
 
         if (checkBusinessSoftwares)
         {
-            _businessSoftwaresObserver = ProcessObserver.GetInstance();
+            _businessSoftwaresObserver = ProcessObserver.GetInstance(1000);
             _businessSoftwaresObserver.OnProcessStateChanged += isRunning =>
             {
                 CanRun = !isRunning;
@@ -188,7 +191,7 @@ public abstract class SaveJob : INotifyPropertyChanged, IDisposable
             throw new Exception("Json file does not exists");
         }
 
-        string jsonContent = File.ReadAllText(jsonFilePath);            
+        string jsonContent = File.ReadAllText(jsonFilePath);
         var jsonStructure = JsonConvert.DeserializeObject<JsonStructure>(jsonContent);
         foreach (var file in jsonStructure.Files)
         {
@@ -205,7 +208,7 @@ public abstract class SaveJob : INotifyPropertyChanged, IDisposable
 
                 // Copy
                 Stopwatch stopwatch = Stopwatch.StartNew();
-                string source = Path.Combine(SourcePath, file.Name);                 
+                string source = Path.Combine(SourcePath, file.Name);
                 File.Copy(source, newFile, true);
                 stopwatch.Stop();
 
@@ -216,7 +219,8 @@ public abstract class SaveJob : INotifyPropertyChanged, IDisposable
 
 
                 // Log
-                Logger.GetInstance().Log(new {
+                Logger.GetInstance().Log(new
+                {
                     type = "Info",
                     SaveJobName = Name,
                     FileSource = source,
@@ -226,20 +230,27 @@ public abstract class SaveJob : INotifyPropertyChanged, IDisposable
                     action = "save",
                     FileTransferTime = stopwatch.ElapsedMilliseconds
                 });
-            leftFilesToCopy--;
-            leftSizeToCopy -= file.Length;
-            leftSizeToCopy = leftSizeToCopy <= 1 ? 1 : leftSizeToCopy;
-            StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
-            {
-                State = StateJsonReader.SavingState,
-                LastUpdate = DateTime.Now,
-                Progression = 100 - (leftSizeToCopy * 100) / totalSizeToCopy,
-                NbFilesLeftToDo = leftFilesToCopy,
-                TotalSizeLeftToDo = leftSizeToCopy,
-                SourceFilePath = Path.Combine(SourcePath, file.Name),
-                TargetFilePath = targetFilePath
-            });
-           
+
+                int[] advancement = FileStructureJson.GetInstance().GetAdvancement(jsonFilePath);
+                int progress = 0;
+                if (advancement[1] != 0)
+                {
+                    progress = (int)Math.Round(((double)advancement[3] / advancement[1]) * 100);
+                }
+
+                StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
+                {
+                    State = StateJsonReader.SavingState,
+                    LastUpdate = DateTime.Now,
+                    TotalFilesToCopy = advancement[0],
+                    TotalFilesSize = advancement[1],
+                    Progression = progress,
+                    NbFilesLeftToDo = advancement[2] - advancement[0],
+                    TotalSizeLeftToDo = advancement[3] - advancement[1],
+                    SourceFilePath = Path.Combine(SourcePath, file.Name),
+                    TargetFilePath = Path.Combine(TargetPath, file.Name)
+                });
+            }
         }
 
         StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
@@ -257,21 +268,33 @@ public abstract class SaveJob : INotifyPropertyChanged, IDisposable
 
     }
 
-
-        StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
+    public bool EncryptFiles(string jsonFilePath, string saveTargetPath, bool encrypt = true)
+    {
+        CheckIfCanRun();
+        bool isEncrypted = false;
+        if (!File.Exists(jsonFilePath))
         {
-            State = StateJsonReader.SavedState,
-            LastUpdate = DateTime.Now,
-            TotalFilesToCopy = null,
-            TotalFilesSize = null,
-            Progression = null,
-            NbFilesLeftToDo = null,
-            TotalSizeLeftToDo = null,
-            SourceFilePath = null,
-            TargetFilePath = null
-        });
-        return true;
-    }
+            Logger.GetInstance().Log(
+               new
+               {
+                   Statue = "Error",
+                   Message = $"Json file does not exists: {jsonFilePath}"
+               });
+
+            StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
+            {
+                State = StateJsonReader.ErrorState,
+                LastUpdate = DateTime.Now,
+                TotalFilesToCopy = null,
+                TotalFilesSize = null,
+                Progression = null,
+                NbFilesLeftToDo = null,
+                TotalSizeLeftToDo = null,
+                SourceFilePath = null,
+                TargetFilePath = null
+            });
+            throw new Exception("Json file does not exists");
+        }
 
         string jsonContent = File.ReadAllText(jsonFilePath);
         var jsonStructure = JsonConvert.DeserializeObject<JsonStructure>(jsonContent);
@@ -279,14 +302,15 @@ public abstract class SaveJob : INotifyPropertyChanged, IDisposable
         {
             CheckIfCanRun();
             string filePath = Path.Combine(saveTargetPath, file.Name);
-            if (File.Exists(filePath)) {
+            if (File.Exists(filePath))
+            {
 
                 Stopwatch stopwatch = Stopwatch.StartNew();
                 if (file.Status.Equals("saved") && encrypt) // if saved and want to encrypt
                 {
                     CryptoSoft.EncryptDecryptFile(filePath);
                     isEncrypted = true;
-                    file.Status = "encrypted";  
+                    file.Status = "encrypted";
                 }
                 if (file.Status.Equals("encrypted") && !encrypt) // if encrypted and want to decrypt
                 {
@@ -327,17 +351,34 @@ public abstract class SaveJob : INotifyPropertyChanged, IDisposable
                     progress = (int)Math.Round(((double)advancement[5] / advancement[1]) * 100);
                 }
 
-    protected void CheckIfCanRun()
-    {
-        if (!CanRun)
-        {
-            throw new BusinessSoftwareRunningException();
+                StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
+                {
+                    State = isEncrypted ? StateJsonReader.EncryptingState : StateJsonReader.DecryptingState,
+                    LastUpdate = DateTime.Now,
+                    TotalFilesToCopy = advancement[0],
+                    TotalFilesSize = advancement[1],
+                    Progression = progress,
+                    NbFilesLeftToDo = advancement[4] - advancement[0],
+                    TotalSizeLeftToDo = advancement[5] - advancement[1],
+                    SourceFilePath = Path.Combine(SourcePath, file.Name),
+                    TargetFilePath = Path.Combine(TargetPath, file.Name)
+                });
+            }
         }
-    }
-
-    public override string ToString()
-    {
-        return $"'{Name}' | Source : '{SourcePath}', Destination : '{TargetPath}'";
+        StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
+        {
+            //State = isEncrypted ? StateJsonReader.EncryptedState : StateJsonReader.DecryptedState,
+            State = StateJsonReader.SavedState,
+            LastUpdate = DateTime.Now,
+            TotalFilesToCopy = null,
+            TotalFilesSize = null,
+            Progression = null,
+            NbFilesLeftToDo = null,
+            TotalSizeLeftToDo = null,
+            SourceFilePath = null,
+            TargetFilePath = null
+        });
+        return isEncrypted;
     }
 
 }
