@@ -1,0 +1,16 @@
+﻿<Window x:Class="EasySaveClient.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="EasySave Client" Height="350" Width="400">
+    <Grid>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock Text="EasySave Client Remote" FontSize="20" Margin="10" />
+
+            <Button Content="Démarrer Backup" Click="StartBackup_Click" Margin="5"/>
+            <Button Content="Arrêter Backup" Click="StopBackup_Click" Margin="5"/>
+            <Button Content="Vérifier Statut" Click="CheckStatus_Click" Margin="5"/>
+
+            <TextBox Name="ResponseBox" Height="100" Width="300" Margin="10" TextWrapping="Wrap" IsReadOnly="True"/>
+        </StackPanel>
+    </Grid>
+</Window>
