@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using CryptoSoftLib;
 using EasySave.CustomExceptions;
 
-namespace EasySave
+namespace EasySave.Utils
 {
     public class DifferentialSave : SaveJob
     {
@@ -25,7 +25,7 @@ namespace EasySave
         //METHODS
 
         public string GetLastFullSavePath()
-        {           
+        {
 
             Regex regex = new Regex(@"^FullSave_(\d{2}_\d{2}_\d{4}-\d{2}_\d{2}_\d{2})$");
 
@@ -38,18 +38,18 @@ namespace EasySave
 
             return latestSave?.Name;
         }
-        
+
 
         private void CreateDifferentialSave(string source, string fullsave, string diffsave)
         {
-            CheckIfCanRun();            
+            CheckIfCanRun();
 
             DirectoryInfo sourceDir = new DirectoryInfo(source);
 
             FileInfo[] sourceFiles = sourceDir.GetFiles();
 
             //Copy New and modified Files
-            foreach(FileInfo sFile in sourceFiles)
+            foreach (FileInfo sFile in sourceFiles)
             {
                 CheckIfCanRun();
                 if (Directory.Exists(fullsave))
@@ -71,25 +71,25 @@ namespace EasySave
                 {
                     Directory.CreateDirectory(diffsave);
 
-                    Copyfile(diffsave, sFile);                    
+                    Copyfile(diffsave, sFile);
                 }
             }
             // new Dir DDD not in FS. 
 
             // Recursivity
-            foreach(DirectoryInfo dir in sourceDir.GetDirectories())
-            {                
+            foreach (DirectoryInfo dir in sourceDir.GetDirectories())
+            {
 
                 CreateDifferentialSave(Path.Combine(source, dir.Name), Path.Combine(fullsave, dir.Name), Path.Combine(diffsave, dir.Name));
-            }    
+            }
         }
 
-        private void Copyfile(string diffsave,FileInfo sFile)
+        private void Copyfile(string diffsave, FileInfo sFile)
         {
             string newS = Path.Combine(diffsave, sFile.Name);
             Stopwatch stopwatch = Stopwatch.StartNew();
             sFile.CopyTo(newS);
-            stopwatch.Stop(); 
+            stopwatch.Stop();
 
             Stopwatch stopwatchCrypt = Stopwatch.StartNew();
             bool isEncrypted = CryptoSoft.EncryptDecryptFile(newS);

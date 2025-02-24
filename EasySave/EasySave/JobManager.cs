@@ -42,7 +42,7 @@ public class JobManager
     {
         var tcs = new TaskCompletionSource<bool>();
         ProcessQueue.Enqueue((job, action, tcs));
-         return tcs.Task;
+        return tcs.Task;
     }
 
     public void WaitAllTaskFinished()
@@ -61,21 +61,27 @@ public class JobManager
         {
             if (!ProcessQueue.IsEmpty)
             {
-                await semaphore.WaitAsync(); // Wait for a Free Thread
-
-                ProcessQueue.TryDequeue(out (SaveJob, saveAction,TaskCompletionSource<bool>) result);
-                if (!ProcessingJobs.Where(j => j.Name == result.Item1.Name).Any()) {
-                   
+             
+               await semaphore.WaitAsync(); // Wait for a Free Thread
+               
+               bool res= ProcessQueue.TryDequeue(out (SaveJob, saveAction, TaskCompletionSource<bool>) result);
+                
+                if (!ProcessingJobs.Where(j => j.Name == result.Item1.Name).Any())
+                {
+                    
+                    ProcessingJobs.Add(result.Item1);
+                 
                     new Task(() => ProcessNextRequest(result.Item1, result.Item2, result.Item3)).Start();
                 }
                 else
                 {
-                    ProcessQueue.Enqueue(result);
-                }   
-
-            }
              
+                    ProcessQueue.Enqueue(result);
+                }
+            }
+            else
             {
+                Console.WriteLine("loop" + ProcessQueue.Count);
                 Thread.Sleep(100);
             }
         }
@@ -85,9 +91,6 @@ public class JobManager
     {
         try
         {
-            if (ProcessingJobs.Contains(job))
-            {
-                ProcessingJobs.Add(job);
                 bool result = action switch
                 {
                     saveAction.Create => job.CreateSave(),
@@ -97,12 +100,9 @@ public class JobManager
                     saveAction.Decrypte => job.DeleteSave(),
                     _ => false,
                 };
+                Console.WriteLine("CREATE");
                 tcs.SetResult(result);
-            }
-            else
-            {
-                tcs.SetResult(false);
-            }
+                Console.WriteLine("Finished");
         }
         catch (Exception ex)
         {
@@ -112,6 +112,7 @@ public class JobManager
         }
         finally
         {
+            ProcessingJobs.Remove(job);
             semaphore.Release();
         }
     }
