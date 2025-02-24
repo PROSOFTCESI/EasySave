@@ -28,6 +28,7 @@ public partial class MainMenu : Page, INotifyPropertyChanged
 {
     private ObservableCollection<SaveJob> _availableSaveJobs;
     private readonly DispatcherTimer _timer;
+    private readonly MainMenuViewModel mainMenuViewModel = new();
 
     public ObservableCollection<SaveJob> AvailableSaveJobs
     {
@@ -52,6 +53,19 @@ public partial class MainMenu : Page, INotifyPropertyChanged
         AvailableSaveJobs = new();
         RefreshJobs();
         DataContext = this;
+
+        // Initialisation du timer
+        _timer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromMilliseconds(500)
+        };
+        _timer.Tick += Timer_Tick;
+        _timer.Start();
+    }
+
+    private void Timer_Tick(object sender, EventArgs e)
+    {
+        RefreshJobs();
     }
 
     private void CreateButton_Click(object sender, RoutedEventArgs e)
@@ -91,7 +105,7 @@ public partial class MainMenu : Page, INotifyPropertyChanged
     private void RefreshJobs()
     {
         AvailableSaveJobs.Clear();
-        foreach (var job in StateJsonReader.GetInstance().GetJobs(true))
+        foreach (var job in mainMenuViewModel.GetJobs())
         {
             AvailableSaveJobs.Add(job);
         }

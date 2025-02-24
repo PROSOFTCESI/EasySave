@@ -35,8 +35,8 @@
                             <TextBlock Text="{Binding SourcePath}" FontSize="12" FontWeight="Bold"/>
                             <TextBlock Text="{Binding TargetPath}" FontSize="12" FontWeight="Bold"/>
                             <StackPanel Orientation="Horizontal">
-                                <Button Content="⏯" Margin="0,5,5,5" Padding="5" Click="Play_Click"/>
-                                <Button Content="◼" Margin="5" Padding="5" Click="Play_Click"/>
+                                <Button Content="⏯" Margin="0,5,5,5" Padding="5" Click="Play_Click" ClickMode="Press"/>
+                                <Button Content="◼" Margin="5" Padding="5" Click="Play_Click" ClickMode="Press"/>
                                 <Button Content="🗑️" Margin="5" Padding="5" Click="Delete_Click"/>
                             </StackPanel>
                             <ProgressBar Width="200" Margin="0,5,5,5" Height="10" Value="{Binding Progression, TargetNullValue=0}" HorizontalAlignment="Left"/>

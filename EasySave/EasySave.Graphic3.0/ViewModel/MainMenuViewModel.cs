@@ -9,8 +9,10 @@ namespace EasySave.Graphic3._0.ViewModel;
 
 internal class MainMenuViewModel
 {
-    public static List<SaveJob> GetJobs()
+    private static List<SaveJob> saveJobs = null;
+    public List<SaveJob> GetJobs()
     {
-        return StateJsonReader.GetInstance().GetJobs(true);
+        saveJobs = StateJsonReader.GetInstance().GetJobs(true);
+        return saveJobs;
     }
 }

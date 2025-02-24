@@ -16,21 +16,23 @@ internal class UpdateJobViewModel
             }
             else
             {
-                saveJob.ResetState();
                 return new UserResponse(false, "SAVE_JOB_UPDATE_FAILED_MESSAGE");
             }
         }
         catch (Exception ex)
         {
-            saveJob.ResetState();
             if (ex is BusinessSoftwareRunningException)
             {
                 return new UserResponse(false, "BUSINESS_SOFTWARE_DETECTED_ERROR");
             }
             return new UserResponse(false, "SAVE_JOB_UPDATE_FAILED_MESSAGE");
         }
+        finally
+        {
+            saveJob.ResetState();
+        }
     }
-
+    
     public static long? GetSaveJobProgress(string name)
     {
         var progression = StateJsonReader.GetInstance().GetJob(name).Progression;
