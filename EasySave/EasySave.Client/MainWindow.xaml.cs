@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.Net.Sockets;
 using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace EasySaveClient
 {
@@ -15,53 +13,6 @@ namespace EasySaveClient
         public MainWindow()
         {
             InitializeComponent();
-            AvailableSaveJobs = new ObservableCollection<SaveJob>();
-            SaveJobsList.ItemsSource = AvailableSaveJobs;
-        }
-
-        private void ConnectToServer_Click(object sender, RoutedEventArgs e)
-        {
-            ServerIp = ServerIpBox.Text.Trim();
-            
-            string numberString = ServerPortBox.Text.Trim();
-            if (!int.TryParse(numberString, out int ServerPort))
-            {
-                ResponseBox.Text = "Erreur Port";
-                return;
-            }
-         
-            if (CheckServerConnection(ServerIp, ServerPort))
-            {
-                ResponseBox.Text = $"✅ Connecté au serveur {ServerIp} au port {ServerPort}";
-                isConnected = true;
-
-                RefreshButton.IsEnabled = true;
-                CreateButton.IsEnabled = true;
-                RefreshJobs();
-            }
-            else
-            {
-                ResponseBox.Text = $"❌ Impossible de se connecter à {ServerIp} port {ServerPort}";
-            }
-
-        }
-        private void TogglePlayPause_Click(object sender, RoutedEventArgs e)
-        {
-            Button button = sender as Button;
-            if (button == null) return;
-
-            string jobName = button.Tag.ToString();
-
-            if (button.Content.ToString() == "⏸")
-            {
-                SendCommand($"pause_backup {jobName}");
-                button.Content = "▶"; 
-        }
-            else 
-            {
-                SendCommand($"start_backup {jobName}");
-                button.Content = "⏸"; 
-            }
         }
 
         private void StartBackup_Click(object sender, RoutedEventArgs e)
@@ -100,9 +51,6 @@ namespace EasySaveClient
             {
                 ResponseBox.Text = $"Erreur: {ex.Message}";
             }
-            catch (Exception ex) { return $"❌ Erreur: {ex.Message}"; }
         }
     }
-
-    public class SaveJob { public string Name { get; set; } }
 }
