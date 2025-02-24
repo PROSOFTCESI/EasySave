@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-
+﻿
 
 using EasySave.Graphic3._0.ViewModel;
 
@@ -8,42 +6,38 @@ namespace EasySaveRemote
 {
     public class EasySaveController
     {
-        private const string EasySavePath = @"C:\Users\Poirr\source\repos\PROSOFTCESI\EasySave\EasySave\EasySave.Graphic\bin\Release\net8.0-windows\EasySave.Graphic.exe"; // Chemin d'EasySave
-
         public string ExecuteCommand(string command)
         {
-            switch (command.ToLower())
+            string[] parts = command.Split(' ');
+            string action = parts[0];
+            string jobName = parts.Length > 1 ? parts[1] : "";
+
+            switch (action)
             {
                 case "list_jobs":
                     return GetSaveJobs();
                 case "start_backup":
-                    return StartBackup();
-                case "stop_backup":
-                    return StopBackup();
-                case "status":
-                    return "EasySave opérationnel.";
+                    return StartBackup(jobName);
+                case "pause_backup":
+                    return PauseBackup(jobName);
+                case "delete_backup":
+                    return DeleteBackup(jobName);
+                case "create_backup":
+                    return CreateBackup(jobName);
                 default:
                     return "Commande inconnue.";
             }
         }
 
-        private string StartBackup()
+        private string GetSaveJobs()
         {
-            try
+            string str = "";
+            var jobs = new MainMenuViewModel().GetJobs();
+            foreach (var job in jobs)
             {
-                Process.Start(EasySavePath); // Lancer EasySave
-                return "Backup démarré.";
+                str += job.ToString();
             }
-            catch (Exception ex)
-            {
-                return $"Erreur : {ex.Message}";
-            }
-        }
-
-        private string StopBackup()
-        {
-            // Logique pour arrêter un processus spécifique d'EasySave
-            return "Arrêt du backup non implémenté.";
+            return str;
         }
         private string StartBackup(string job) => $"Démarrage de {job}";
         private string PauseBackup(string job) => $"Pause de {job}";
