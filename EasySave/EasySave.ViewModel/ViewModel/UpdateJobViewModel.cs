@@ -3,7 +3,7 @@ using EasySave.Utils.JobStates;
 
 namespace EasySave.Graphic3._0.ViewModel;
 
-internal class UpdateJobViewModel
+public class UpdateJobViewModel
 {
     public static async Task<UserResponse> Update(SaveJob saveJob)
     {

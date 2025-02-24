@@ -1,5 +1,4 @@
 ﻿using EasySave.CustomExceptions;
-using EasySave.Graphic;
 using LoggerLib;
 using System;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace EasySave.Graphic3._0.ViewModel;
 
-internal class CreateJobViewModel
+public class CreateJobViewModel
 {
     public static async Task<UserResponse> Create(string name, string sourcePath, string targetPath, string saveType)
     {
