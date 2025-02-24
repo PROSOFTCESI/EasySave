@@ -10,6 +10,7 @@ public class StateJsonReader
     private static readonly string FilePath = Path.Combine(FolderPath, "state.json");
 
     private static StateJsonReader? instance;
+    private static readonly object _lock = new(); // 🔒 Verrou pour l’accès concurrent
 
     public const string FullSaveType = "FullSave";
     public const string DifferentialSaveType = "DifferentialSave";
@@ -34,19 +35,22 @@ public class StateJsonReader
 
     private List<JobStateJsonDefinition> ReadJson()
     {
-        if (!Directory.Exists(FolderPath))
+        lock (_lock) // 🔒 Verrou
         {
-            Directory.CreateDirectory(FolderPath);
-        }
+            if (!Directory.Exists(FolderPath))
+            {
+                Directory.CreateDirectory(FolderPath);
+            }
 
-        if (!File.Exists(FilePath))
-        {
-            File.WriteAllText(FilePath, "[]");
-        }
+            if (!File.Exists(FilePath))
+            {
+                File.WriteAllText(FilePath, "[]");
+            }
 
-        string jsonContent = File.ReadAllText(FilePath);
-        return JsonSerializer.Deserialize<List<JobStateJsonDefinition>>(jsonContent)
-                       ?? throw new Exception("Le fichier JSON est vide ou invalide.");
+            string jsonContent = File.ReadAllText(FilePath);
+            return JsonSerializer.Deserialize<List<JobStateJsonDefinition>>(jsonContent)
+                           ?? throw new Exception("Le fichier JSON est vide ou invalide.");
+        }
     }
 
     /// <summary>
@@ -68,10 +72,18 @@ public class StateJsonReader
             switch (job.Type)
             {
                 case FullSaveType:
-                    jobsList.Add(new FullSave(job.Name, job.SourcePath, job.TargetPath, checkBusinessSoftwares));
+                    jobsList.Add(new FullSave(job.Name, job.SourcePath, job.TargetPath, checkBusinessSoftwares)
+                    {
+                        State = job.State,
+                        Progression = job.Progression,
+                    });
                     break;
                 case DifferentialSaveType:
-                    jobsList.Add(new DifferentialSave(job.Name, job.SourcePath, job.TargetPath, checkBusinessSoftwares));
+                    jobsList.Add(new DifferentialSave(job.Name, job.SourcePath, job.TargetPath, checkBusinessSoftwares)
+                    {
+                        State = job.State,
+                        Progression = job.Progression,
+                    });
                     break;
             }
         }
@@ -176,8 +188,11 @@ public class StateJsonReader
             jobsJson.Add(job);
             var options = new JsonSerializerOptions { WriteIndented = true };
             string json = JsonSerializer.Serialize(jobsJson, options);
-            File.WriteAllText(FilePath, json);
-            return true;
+            lock (_lock) // 🔒 Verrou
+            {
+                File.WriteAllText(FilePath, json);
+                return true;
+            }
         }
         catch (Exception)
         {
@@ -185,7 +200,7 @@ public class StateJsonReader
         }
     }
 
-    private JobStateJsonDefinition GetJob(string jobName)
+    public JobStateJsonDefinition GetJob(string jobName)
     {
         List<JobStateJsonDefinition> jobsJson = ReadJson();
         JobStateJsonDefinition job = jobsJson.Find(j => j.Name == jobName && j.State != DeletedState) ?? throw new KeyNotFoundException($"Job {jobName} not found");
@@ -200,8 +215,11 @@ public class StateJsonReader
             jobsJson[jobsJson.FindIndex(j => j.Name == job.Name && j.State != DeletedState)] = job;
             var options = new JsonSerializerOptions { WriteIndented = true };
             string json = JsonSerializer.Serialize(jobsJson, options);
-            File.WriteAllText(FilePath, json);
-            return true;
+            lock (_lock) // 🔒 Verrou
+            {
+                File.WriteAllText(FilePath, json);
+                return true;
+            }
         }
         catch (Exception)
         {

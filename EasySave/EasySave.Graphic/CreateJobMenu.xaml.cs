@@ -124,6 +124,5 @@ public partial class CreateJobMenu : Page
     private void GoBack_Click(object sender, RoutedEventArgs e)
     {
         NavigationService.GoBack();
-
     }
 }

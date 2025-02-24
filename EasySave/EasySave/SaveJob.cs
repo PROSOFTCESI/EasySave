@@ -12,10 +12,12 @@ using EasySave.CustomExceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Security.Cryptography.X509Certificates;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace EasySave;
 
-public abstract class SaveJob
+public abstract class SaveJob : INotifyPropertyChanged
 {
     // ATTRIBUTES
     public string Name { get; set; }
@@ -24,6 +26,25 @@ public abstract class SaveJob
     public DateTime CreationDate { get; set; }
     public DateTime LastUpdate { get; set; }
     public string State { get; set; }
+    private long? _progression;
+    public long? Progression
+    {
+        get => _progression;
+        set
+        {
+            if (_progression != value)
+            {
+                _progression = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+    private bool _disposed = false;
+    public event PropertyChangedEventHandler? PropertyChanged;
+    private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
     private bool CanRun { get; set; } = true;
 
     private readonly ProcessObserver _businessSoftwaresObserver;
@@ -40,7 +61,7 @@ public abstract class SaveJob
 
         if (checkBusinessSoftwares)
         {
-            _businessSoftwaresObserver = new ProcessObserver(1000);
+            _businessSoftwaresObserver = ProcessObserver.GetInstance(1000);
             _businessSoftwaresObserver.OnProcessStateChanged += isRunning =>
             {
                 CanRun = !isRunning;
@@ -57,11 +78,11 @@ public abstract class SaveJob
         if (SourcePath == TargetPath)
         {
             Logger.GetInstance().Log(
-                   new
-                   {
-                       Statue = "Error",
-                       Message = "Source path and Target path can't be equal"
-                   });
+                    new
+                    {
+                        Statue = "Error",
+                        Message = "Source path and Target path can't be equal"
+                    });
             throw new ArgumentException("Source path and Target path can't be equal");
         }
 
@@ -79,11 +100,11 @@ public abstract class SaveJob
         if (!dir.Exists)
         {
             Logger.GetInstance().Log(
-                 new
-                 {
-                     Statue = "Error",
-                     Message = $"Source directory not found: {dir.FullName}"
-                 });
+                    new
+                    {
+                        Statue = "Error",
+                        Message = $"Source directory not found: {dir.FullName}"
+                    });
             throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
         }
 
@@ -170,7 +191,7 @@ public abstract class SaveJob
             throw new Exception("Json file does not exists");
         }
 
-        string jsonContent = File.ReadAllText(jsonFilePath);            
+        string jsonContent = File.ReadAllText(jsonFilePath);
         var jsonStructure = JsonConvert.DeserializeObject<JsonStructure>(jsonContent);
         foreach (var file in jsonStructure.Files)
         {
@@ -187,7 +208,7 @@ public abstract class SaveJob
 
                 // Copy
                 Stopwatch stopwatch = Stopwatch.StartNew();
-                string source = Path.Combine(SourcePath, file.Name);                 
+                string source = Path.Combine(SourcePath, file.Name);
                 File.Copy(source, newFile, true);
                 stopwatch.Stop();
 
@@ -198,7 +219,8 @@ public abstract class SaveJob
 
 
                 // Log
-                Logger.GetInstance().Log(new {
+                Logger.GetInstance().Log(new
+                {
                     type = "Info",
                     SaveJobName = Name,
                     FileSource = source,
@@ -207,7 +229,7 @@ public abstract class SaveJob
                     Time = DateTime.Now,
                     action = "save",
                     FileTransferTime = stopwatch.ElapsedMilliseconds
-                }) ;
+                });
 
                 int[] advancement = FileStructureJson.GetInstance().GetAdvancement(jsonFilePath);
                 int progress = 0;
@@ -215,7 +237,9 @@ public abstract class SaveJob
                 {
                     progress = (int)Math.Round(((double)advancement[3] / advancement[1]) * 100);
                 }
-                
+
+                Progression = progress;
+
                 StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
                 {
                     State = StateJsonReader.SavingState,
@@ -227,7 +251,7 @@ public abstract class SaveJob
                     TotalSizeLeftToDo = advancement[3] - advancement[1],
                     SourceFilePath = Path.Combine(SourcePath, file.Name),
                     TargetFilePath = Path.Combine(TargetPath, file.Name)
-                });                
+                });
             }
         }
 
@@ -280,14 +304,15 @@ public abstract class SaveJob
         {
             CheckIfCanRun();
             string filePath = Path.Combine(saveTargetPath, file.Name);
-            if (File.Exists(filePath)) {
+            if (File.Exists(filePath))
+            {
 
                 Stopwatch stopwatch = Stopwatch.StartNew();
                 if (file.Status.Equals("saved") && encrypt) // if saved and want to encrypt
                 {
                     CryptoSoft.EncryptDecryptFile(filePath);
                     isEncrypted = true;
-                    file.Status = "encrypted";  
+                    file.Status = "encrypted";
                 }
                 if (file.Status.Equals("encrypted") && !encrypt) // if encrypted and want to decrypt
                 {
@@ -340,7 +365,7 @@ public abstract class SaveJob
                     SourceFilePath = Path.Combine(SourcePath, file.Name),
                     TargetFilePath = Path.Combine(TargetPath, file.Name)
                 });
-            }            
+            }
         }
         StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
         {
@@ -358,4 +383,19 @@ public abstract class SaveJob
         return isEncrypted;
     }
 
+    public void ResetState()
+    {
+        StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
+        {
+            State = StateJsonReader.SavedState,
+            LastUpdate = DateTime.Now,
+            TotalFilesToCopy = null,
+            TotalFilesSize = null,
+            Progression = null,
+            NbFilesLeftToDo = null,
+            TotalSizeLeftToDo = null,
+            SourceFilePath = null,
+            TargetFilePath = null
+        });
+    }
 }
