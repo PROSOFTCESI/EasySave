@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EasySave.ViewModel\EasySave.ViewModel.csproj" />
     <ProjectReference Include="..\EasySave\EasySave.csproj" />
   </ItemGroup>
 

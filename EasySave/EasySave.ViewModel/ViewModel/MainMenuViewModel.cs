@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EasySave.Graphic3._0.ViewModel;
 
-internal class MainMenuViewModel
+public class MainMenuViewModel
 {
     private static List<SaveJob> saveJobs = null;
     public List<SaveJob> GetJobs()
