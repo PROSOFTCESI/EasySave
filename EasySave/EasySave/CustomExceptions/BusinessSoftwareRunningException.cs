@@ -1,17 +1,17 @@
 ﻿namespace EasySave.CustomExceptions;
 
-public class BusinessSoftwareRunningException : Exception
+public class PausedSaveException : Exception
 {
-    public BusinessSoftwareRunningException()
+    public PausedSaveException()
     {
     }
 
-    public BusinessSoftwareRunningException(string message)
+    public PausedSaveException(string message)
         : base(message)
     {
     }
 
-    public BusinessSoftwareRunningException(string message, Exception inner)
+    public PausedSaveException(string message, Exception inner)
         : base(message, inner)
     {
     }

@@ -22,6 +22,8 @@ public class StateJsonReader
     public const string DecryptedState = "DECRYPTED";
     public const string DeletedState = "DELETED";
 
+    public const string PausedState = "PAUSED";
+
     public const string ErrorState = "ERROR";
 
     private StateJsonReader() { }
