@@ -8,7 +8,7 @@ namespace EasySaveClient
 {
     public partial class MainWindow : Window
     {
-        private string ServerIp = "127.0.0.1";
+        private const string ServerIp = "127.0.0.1"; // Remplace par l'IP du serveur
         private const int Port = 5000;
         private bool isConnected = false;
         public ObservableCollection<SaveJob> AvailableSaveJobs { get; set; }
@@ -20,57 +20,22 @@ namespace EasySaveClient
             SaveJobsList.ItemsSource = AvailableSaveJobs;
         }
 
-        private void ConnectToServer_Click(object sender, RoutedEventArgs e)
+        private void StartBackup_Click(object sender, RoutedEventArgs e)
         {
-            ServerIp = ServerIpBox.Text.Trim();
-
-            if (CheckServerConnection(ServerIp))
-            {
-                ResponseBox.Text = $"✅ Connecté au serveur {ServerIp}";
-                isConnected = true;
-
-                RefreshButton.IsEnabled = true;
-                CreateButton.IsEnabled = true;
-                RefreshJobs();
-            }
-            else
-            {
-                ResponseBox.Text = $"❌ Impossible de se connecter à {ServerIp}";
-            }
-
+            SendCommand("start_backup");
         }
 
-        private void RefreshJobs_Click(object sender, RoutedEventArgs e) => RefreshJobs();
-
-        private void StartBackup_Click(object sender, RoutedEventArgs e) => SendCommand($"start_backup {((FrameworkElement)sender).Tag}");
-
-        private void PauseBackup_Click(object sender, RoutedEventArgs e) => SendCommand($"pause_backup {((FrameworkElement)sender).Tag}");
-
-        private void DeleteBackup_Click(object sender, RoutedEventArgs e) => SendCommand($"delete_backup {((FrameworkElement)sender).Tag}");
-
-        private void CreateJob_Click(object sender, RoutedEventArgs e)
+        private void StopBackup_Click(object sender, RoutedEventArgs e)
         {
-            SendCommand("create_backup");
-            RefreshJobs();
+            SendCommand("stop_backup");
         }
 
-        private void RefreshJobs()
+        private void CheckStatus_Click(object sender, RoutedEventArgs e)
         {
-            AvailableSaveJobs.Clear();
-            string response = SendCommand("list_jobs");
-
-            foreach (string job in response.Split(','))
-                if (!string.IsNullOrWhiteSpace(job))
-                    AvailableSaveJobs.Add(new SaveJob { Name = job.Trim() });
+            SendCommand("status");
         }
 
-        private bool CheckServerConnection(string ip)
-        {
-            try { using (var client = new TcpClient()) { client.Connect(ip, Port); return true; } }
-            catch { return false; }
-        }
-
-        private string SendCommand(string command)
+        private void SendCommand(string command)
         {
             try
             {
@@ -79,9 +44,17 @@ namespace EasySaveClient
                 {
                     byte[] data = Encoding.UTF8.GetBytes(command);
                     stream.Write(data, 0, data.Length);
+
                     byte[] buffer = new byte[1024];
-                    return Encoding.UTF8.GetString(buffer, 0, stream.Read(buffer, 0, buffer.Length));
+                    int bytesRead = stream.Read(buffer, 0, buffer.Length);
+                    string response = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+
+                    ResponseBox.Text = $"Réponse: {response}";
                 }
+            }
+            catch (Exception ex)
+            {
+                ResponseBox.Text = $"Erreur: {ex.Message}";
             }
             catch (Exception ex) { return $"❌ Erreur: {ex.Message}"; }
         }
