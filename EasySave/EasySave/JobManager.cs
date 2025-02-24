@@ -61,27 +61,26 @@ public class JobManager
         {
             if (!ProcessQueue.IsEmpty)
             {
-             
-               await semaphore.WaitAsync(); // Wait for a Free Thread
-               
-               bool res= ProcessQueue.TryDequeue(out (SaveJob, saveAction, TaskCompletionSource<bool>) result);
-                
+
+                await semaphore.WaitAsync(); // Wait for a Free Thread
+
+                bool res = ProcessQueue.TryDequeue(out (SaveJob, saveAction, TaskCompletionSource<bool>) result);
+
                 if (!ProcessingJobs.Where(j => j.Name == result.Item1.Name).Any())
                 {
-                    
+
                     ProcessingJobs.Add(result.Item1);
-                 
+
                     new Task(() => ProcessNextRequest(result.Item1, result.Item2, result.Item3)).Start();
                 }
                 else
                 {
-             
+
                     ProcessQueue.Enqueue(result);
                 }
             }
             else
             {
-                Console.WriteLine("loop" + ProcessQueue.Count);
                 Thread.Sleep(100);
             }
         }
@@ -91,18 +90,16 @@ public class JobManager
     {
         try
         {
-                bool result = action switch
-                {
-                    saveAction.Create => job.CreateSave(),
-                    saveAction.Restore => job.RestoreSave(),
-                    saveAction.Save => job.Save(),
-                    saveAction.Delete => job.DeleteSave(),
-                    saveAction.Decrypte => job.DeleteSave(),
-                    _ => false,
-                };
-                Console.WriteLine("CREATE");
-                tcs.SetResult(result);
-                Console.WriteLine("Finished");
+            bool result = action switch
+            {
+                saveAction.Create => job.CreateSave(),
+                saveAction.Restore => job.RestoreSave(),
+                saveAction.Save => job.Save(),
+                saveAction.Delete => job.DeleteSave(),
+                saveAction.Decrypte => job.DeleteSave(),
+                _ => false,
+            };
+            tcs.SetResult(result);
         }
         catch (Exception ex)
         {
