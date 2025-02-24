@@ -22,7 +22,7 @@ namespace EasySave
         public override bool Save()
         {
             string saveTargetPath = Path.Combine(TargetPath, ("FullSave_" + DateTime.Now.ToString("dd_MM_yyyy-HH_mm_ss")));
-            CreateFullSave(SourcePath, saveTargetPath);
+            this.CreateSave();
             Logger.GetInstance().Log(
                 new
                 {

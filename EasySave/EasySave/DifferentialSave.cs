@@ -9,132 +9,103 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CryptoSoftLib;
 using EasySave.CustomExceptions;
+using EasySave.Utils;
+using Newtonsoft.Json;
+using EasySave.Utils.JobStates;
 
-namespace EasySave;
-
-public class DifferentialSave : SaveJob
+namespace EasySave
 {
-    //ATTRIBUTES
-
-
-    //CONTRUCTOR
-    public DifferentialSave(string name, string sourcePath, string targetPath, bool checkBusinessSoftwares = false) : base(name, sourcePath, targetPath, checkBusinessSoftwares)
+    public class DifferentialSave : SaveJob
     {
-    }
-
-    //METHODS
-
-    public string GetLastFullSavePath()
-    {
-
-        Regex regex = new Regex(@"^FullSave_(\d{2}_\d{2}_\d{4}-\d{2}_\d{2}_\d{2})$");
-
-        var latestSave = Directory.GetDirectories(TargetPath)
-            .Select(Path.GetFileName)
-            .Where(name => regex.IsMatch(name))
-            .Select(name => new { Name = name, Date = DateTime.ParseExact(name.Substring(9), "dd_MM_yyyy-HH_mm_ss", null) })
-            .OrderByDescending(entry => entry.Date)
-            .FirstOrDefault();
-
-        return latestSave?.Name;
-    }
+        //ATTRIBUTES
 
 
-    private void CreateDifferentialSave(string source, string fullsave, string diffsave)
-    {
-        CheckIfCanRun();
+        //CONTRUCTOR
+        public DifferentialSave(string name, string sourcePath, string targetPath, bool checkBusinessSoftwares = false) : base(name, sourcePath, targetPath, checkBusinessSoftwares)
+        {
+        }
 
-        DirectoryInfo sourceDir = new DirectoryInfo(source);
+        //METHODS
 
-        FileInfo[] sourceFiles = sourceDir.GetFiles();
+        public string GetLastFullSavePath()
+        {           
 
-        //Copy New and modified Files
-        foreach (FileInfo sFile in sourceFiles)
+            Regex regex = new Regex(@"^FullSave_(\d{2}_\d{2}_\d{4}-\d{2}_\d{2}_\d{2})$");
+
+            var latestSave = Directory.GetDirectories(TargetPath)
+                .Select(Path.GetFileName)
+                .Where(name => regex.IsMatch(name))
+                .Select(name => new { Name = name, Date = DateTime.ParseExact(name.Substring(9), "dd_MM_yyyy-HH_mm_ss", null) })
+                .OrderByDescending(entry => entry.Date)
+                .FirstOrDefault();
+
+            return latestSave?.Name;
+        }
+       
+
+        public override bool Save()
         {
             CheckIfCanRun();
-            if (Directory.Exists(fullsave))
+
+            if (SourcePath == TargetPath)
             {
-                DirectoryInfo fullsaveDir = new DirectoryInfo(fullsave);
-                FileInfo[] fullsaveFiles = fullsaveDir.GetFiles();
-                string savedFile = Path.Combine(fullsave, sFile.Name);
-
-                if (!File.Exists(savedFile) || File.GetLastWriteTime(sFile.FullName) > File.GetLastWriteTime(savedFile))
-                {
-                    if (!Directory.Exists(diffsave))
-                        Directory.CreateDirectory(diffsave);
-
-                    Copyfile(diffsave, sFile);
-
-                }
+                Logger.GetInstance().Log(
+                       new
+                       {
+                           Statue = "Error",
+                           Message = "Source path and Target path can't be equal"
+                       });
+                throw new ArgumentException("Source path and Target path can't be equal");
             }
-            else //directory is new
+
+            // Create Target Directory
+            Directory.CreateDirectory(TargetPath);
+
+            StateJsonReader.GetInstance().AddJob(this);
+
+            string saveTargetPath = Path.Combine(TargetPath, ("DifferentialSave_" + DateTime.Now.ToString("dd_MM_yyyy-HH_mm_ss")));
+
+            // Get information about the source directory
+            var dir = new DirectoryInfo(SourcePath);
+
+            // Check if the source directory exists
+            if (!dir.Exists)
             {
-                Directory.CreateDirectory(diffsave);
-
-                Copyfile(diffsave, sFile);
+                Logger.GetInstance().Log(
+                     new
+                     {
+                         Statue = "Error",
+                         Message = $"Source directory not found: {dir.FullName}"
+                     });
+                throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
             }
+
+            // Create the destination directory
+            string jsonSaved = Path.Combine(TargetPath, Path.Combine(GetLastFullSavePath(), ".fileStructure.json"));
+
+            
+            Directory.CreateDirectory(saveTargetPath);
+
+            string jsonPath = FileStructureJson.GetInstance().CreateDiffenretialFileStructure(SourcePath, saveTargetPath, jsonSaved);
+
+            FileStructureJson.GetInstance().GetAdvancement(jsonPath);
+            // Copy Files
+            CopyFiles(jsonPath, saveTargetPath);
+            //EncryptFiles
+            EncryptFiles(jsonPath, saveTargetPath, true);
+
+            return true;
         }
-        // new Dir DDD not in FS. 
 
-        // Recursivity
-        foreach (DirectoryInfo dir in sourceDir.GetDirectories())
+
+        public override bool RestoreSave()
         {
-
-            CreateDifferentialSave(Path.Combine(source, dir.Name), Path.Combine(fullsave, dir.Name), Path.Combine(diffsave, dir.Name));
+            return true;
         }
-    }
 
-    private void Copyfile(string diffsave, FileInfo sFile)
-    {
-        string newS = Path.Combine(diffsave, sFile.Name);
-        Stopwatch stopwatch = Stopwatch.StartNew();
-        sFile.CopyTo(newS);
-        stopwatch.Stop();
-
-        Stopwatch stopwatchCrypt = Stopwatch.StartNew();
-        bool isEncrypted = CryptoSoft.EncryptDecryptFile(newS);
-        stopwatchCrypt.Stop();
-
-        var test = Logger.GetInstance();
-        Logger.GetInstance().Log(
-        new
+        public override string ToString()
         {
-            SaveJobName = Name,
-            FileSource = SourcePath + "/" + sFile,
-            FileTarget = TargetPath + "/" + sFile,
-            FileSize = sFile.Length,
-            Time = DateTime.Now,
-            FileCryptTime = isEncrypted ? stopwatchCrypt.ElapsedMilliseconds : 0,
-            FileTransferTime = stopwatch.ElapsedMilliseconds
-        });
-    }
-
-    public override bool Save()
-    {
-        string fullSave = Path.Combine(TargetPath, GetLastFullSavePath());
-        string diffsave = Path.Combine(TargetPath, "DiffenrentialSave_" + DateTime.Now.ToString("dd_MM_yyyy-HH_mm_ss"));
-        Directory.CreateDirectory(diffsave);
-        CreateDifferentialSave(SourcePath, fullSave, diffsave);
-        Logger.GetInstance().Log(
-           new
-           {
-               Type = "Update",
-               Time = DateTime.Now,
-               statut = "Success",
-               Name,
-           }
-       );
-        return true;
-    }
-
-
-    public override bool RestoreSave()
-    {
-        return true;
-    }
-
-    public override string ToString()
-    {
-        return base.ToString() + ", Differential Save";
+            return base.ToString() + ", Differential Save";
+        }
     }
 }

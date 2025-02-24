@@ -9,10 +9,15 @@ using System.Threading.Tasks;
 using CryptoSoftLib;
 using EasySave.Utils;
 using EasySave.CustomExceptions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Security.Cryptography.X509Certificates;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace EasySave;
 
-public abstract class SaveJob
+public abstract class SaveJob : INotifyPropertyChanged
 {
     // ATTRIBUTES
     public string Name { get; set; }
@@ -21,6 +26,25 @@ public abstract class SaveJob
     public DateTime CreationDate { get; set; }
     public DateTime LastUpdate { get; set; }
     public string State { get; set; }
+    private long? _progression;
+    public long? Progression
+    {
+        get => _progression;
+        set
+        {
+            if (_progression != value)
+            {
+                _progression = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+    private bool _disposed = false;
+    public event PropertyChangedEventHandler? PropertyChanged;
+    private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
     private bool CanRun { get; set; } = true;
 
     private readonly ProcessObserver _businessSoftwaresObserver;
@@ -37,7 +61,7 @@ public abstract class SaveJob
 
         if (checkBusinessSoftwares)
         {
-            _businessSoftwaresObserver = new ProcessObserver(1000);
+            _businessSoftwaresObserver = ProcessObserver.GetInstance(1000);
             _businessSoftwaresObserver.OnProcessStateChanged += isRunning =>
             {
                 CanRun = !isRunning;
@@ -54,162 +78,46 @@ public abstract class SaveJob
         if (SourcePath == TargetPath)
         {
             Logger.GetInstance().Log(
-                   new
-                   {
-                       Statue = "Error",
-                       Message = "Source path and Target path can't be equal"
-                   });
+                    new
+                    {
+                        Statue = "Error",
+                        Message = "Source path and Target path can't be equal"
+                    });
             throw new ArgumentException("Source path and Target path can't be equal");
         }
 
         // Create Target Directory
         Directory.CreateDirectory(TargetPath);
 
-        // Create a default FULL SAVE
-        FullSave(SourcePath, TargetPath);
+        StateJsonReader.GetInstance().AddJob(this);
 
-        return StateJsonReader.GetInstance().AddJob(this);
-    }
-
-    protected bool FullSave(string sourcePath, string targetPath)
-    {
-        // Create save path with type and date
-        string saveTargetPath = Path.Combine(targetPath, ("FullSave_" + DateTime.Now.ToString("dd_MM_yyyy-HH_mm_ss")));
+        string saveTargetPath = Path.Combine(TargetPath, ("FullSave_" + DateTime.Now.ToString("dd_MM_yyyy-HH_mm_ss")));
 
         // Get information about the source directory
-        var dir = new DirectoryInfo(sourcePath);
+        var dir = new DirectoryInfo(SourcePath);
 
         // Check if the source directory exists
-        // TODO We need to andle the case of an inexistant directory. Currently, it crashes
         if (!dir.Exists)
         {
             Logger.GetInstance().Log(
-                 new
-                 {
-                     Statue = "Error",
-                     Message = $"Source directory not found: {dir.FullName}"
-                 });
+                    new
+                    {
+                        Statue = "Error",
+                        Message = $"Source directory not found: {dir.FullName}"
+                    });
             throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
-        }
-
-        // Cache directories before we start copying
-        DirectoryInfo[] dirs = dir.GetDirectories();
-
-        // Create the destination directory
-        Directory.CreateDirectory(saveTargetPath);
-
-        CreateFullSave(SourcePath, saveTargetPath);
-
-        return true;
-    }
-
-    protected bool CreateFullSave(string sourcePath, string saveTargetPath, long? leftSizeToCopy = null, long? leftFilesToCopy = null, long? totalSizeToCopy = null)
-    {
-        CheckIfCanRun();
-        // Get information about the source directory
-        var dir = new DirectoryInfo(sourcePath);
-
-        // Check if the source directory exists
-        // TODO We need to andle the case of an inexistant directory. Currently, it crashes
-        if (!dir.Exists)
-        {
-            Logger.GetInstance().Log(
-               new
-               {
-                   Statue = "Error",
-                   Message = $"Source directory not found: {dir.FullName}"
-               });
-            throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
-        }
-          
-
-        // Cache directories before we start copying
-        DirectoryInfo[] dirs = dir.GetDirectories();
-
-        if (leftSizeToCopy == null && leftFilesToCopy == null)
-        {
-            // Compute the total size of the root directory
-            leftSizeToCopy = dir.EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length);
-
-            // Compute the total number of files to copy
-            leftFilesToCopy = dir.EnumerateFiles("*", SearchOption.AllDirectories).Count();
-
-            totalSizeToCopy = leftSizeToCopy;
-
-            StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
-            {
-                State = StateJsonReader.SavingState,
-                LastUpdate = DateTime.Now,
-                TotalFilesToCopy = leftFilesToCopy,
-                TotalFilesSize = totalSizeToCopy
-            });
         }
 
         // Create the destination directory
         Directory.CreateDirectory(saveTargetPath);
+        //Create Json with file structure
+        string jsonPath = FileStructureJson.GetInstance().CreateFileStructure(SourcePath, saveTargetPath);
+        FileStructureJson.GetInstance().GetAdvancement(jsonPath);
+        // Copy Files
+        CopyFiles(jsonPath, saveTargetPath);
+        //EncryptFiles
+        EncryptFiles(jsonPath, saveTargetPath, true);
 
-        // Get the files in the source directory and copy to the destination directory
-        foreach (FileInfo file in dir.GetFiles())
-        {
-            CheckIfCanRun();
-            string targetFilePath = Path.Combine(saveTargetPath, file.Name);
-
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            file.CopyTo(targetFilePath);
-            stopwatch.Stop();
-
-            Stopwatch stopwatchCrypt = Stopwatch.StartNew();            
-            bool isEncrypted = CryptoSoft.EncryptDecryptFile(targetFilePath);
-            stopwatchCrypt.Stop();
-
-            Logger.GetInstance().Log(
-                new
-                {
-                    type = "Info",
-                    SaveJobName = Name,
-                    FileSource = Path.Combine(SourcePath, file.Name),
-                    FileTarget = targetFilePath,
-                    FileSize = file.Length,
-                    Time = DateTime.Now,
-                    FileCryptTime = isEncrypted ? stopwatchCrypt.ElapsedMilliseconds : 0,
-                    FileTransferTime = stopwatch.ElapsedMilliseconds
-                });
-            leftFilesToCopy--;
-            leftSizeToCopy -= file.Length;
-            leftSizeToCopy = leftSizeToCopy <= 1 ? 1 : leftSizeToCopy;
-            StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
-            {
-                State = StateJsonReader.SavingState,
-                LastUpdate = DateTime.Now,
-                Progression = 100 - (leftSizeToCopy * 100) / totalSizeToCopy,
-                NbFilesLeftToDo = leftFilesToCopy,
-                TotalSizeLeftToDo = leftSizeToCopy,
-                SourceFilePath = Path.Combine(SourcePath, file.Name),
-                TargetFilePath = targetFilePath
-            });
-           
-        }
-
-        // RECURSIVITY : Copy the files from the sub directories
-        foreach (DirectoryInfo subDir in dirs)
-        {
-            string newDestinationDir = Path.Combine(saveTargetPath, subDir.Name);
-            CreateFullSave(subDir.FullName, newDestinationDir, leftSizeToCopy, leftFilesToCopy, totalSizeToCopy);
-        }
-
-
-        StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
-        {
-            State = StateJsonReader.SavedState,
-            LastUpdate = DateTime.Now,
-            TotalFilesToCopy = null,
-            TotalFilesSize = null,
-            Progression = null,
-            NbFilesLeftToDo = null,
-            TotalSizeLeftToDo = null,
-            SourceFilePath = null,
-            TargetFilePath = null
-        });
         return true;
     }
 
@@ -251,5 +159,243 @@ public abstract class SaveJob
     public override string ToString()
     {
         return $"'{Name}' | Source : '{SourcePath}', Destination : '{TargetPath}'";
+    }
+
+    //Copy files 
+    //TODO ADD logger and size files
+    public void CopyFiles(string jsonFilePath, string saveTargetPath)
+    {
+        CheckIfCanRun();
+        if (!File.Exists(jsonFilePath))
+        {
+            Logger.GetInstance().Log(
+               new
+               {
+                   Statue = "Error",
+                   Message = $"Json file does not exists: {jsonFilePath}"
+               });
+
+            StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
+            {
+                State = StateJsonReader.ErrorState,
+                LastUpdate = DateTime.Now,
+                TotalFilesToCopy = null,
+                TotalFilesSize = null,
+                Progression = null,
+                NbFilesLeftToDo = null,
+                TotalSizeLeftToDo = null,
+                SourceFilePath = null,
+                TargetFilePath = null
+            });
+
+            throw new Exception("Json file does not exists");
+        }
+
+        string jsonContent = File.ReadAllText(jsonFilePath);
+        var jsonStructure = JsonConvert.DeserializeObject<JsonStructure>(jsonContent);
+        foreach (var file in jsonStructure.Files)
+        {
+            CheckIfCanRun();
+            if (file.Status.Equals("set"))
+            {
+                string newFile = Path.Combine(saveTargetPath, file.Name);
+                string dir = Path.GetDirectoryName(newFile);
+
+                if (!Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
+
+                // Copy
+                Stopwatch stopwatch = Stopwatch.StartNew();
+                string source = Path.Combine(SourcePath, file.Name);
+                File.Copy(source, newFile, true);
+                stopwatch.Stop();
+
+                // Save Status
+                file.Status = "saved";
+                string updatedJson = JsonConvert.SerializeObject(jsonStructure, Formatting.Indented);
+                File.WriteAllText(jsonFilePath, updatedJson);
+
+
+                // Log
+                Logger.GetInstance().Log(new
+                {
+                    type = "Info",
+                    SaveJobName = Name,
+                    FileSource = source,
+                    FileTarget = newFile,
+                    FileSize = file.Size,
+                    Time = DateTime.Now,
+                    action = "save",
+                    FileTransferTime = stopwatch.ElapsedMilliseconds
+                });
+
+                int[] advancement = FileStructureJson.GetInstance().GetAdvancement(jsonFilePath);
+                int progress = 0;
+                if (advancement[1] != 0)
+                {
+                    progress = (int)Math.Round(((double)advancement[3] / advancement[1]) * 100);
+                }
+
+                Progression = progress;
+
+                StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
+                {
+                    State = StateJsonReader.SavingState,
+                    LastUpdate = DateTime.Now,
+                    TotalFilesToCopy = advancement[0],
+                    TotalFilesSize = advancement[1],
+                    Progression = progress,
+                    NbFilesLeftToDo = advancement[2] - advancement[0],
+                    TotalSizeLeftToDo = advancement[3] - advancement[1],
+                    SourceFilePath = Path.Combine(SourcePath, file.Name),
+                    TargetFilePath = Path.Combine(TargetPath, file.Name)
+                });
+            }
+        }
+
+        StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
+        {
+            State = StateJsonReader.SavedState,
+            LastUpdate = DateTime.Now,
+            TotalFilesToCopy = null,
+            TotalFilesSize = null,
+            Progression = null,
+            NbFilesLeftToDo = null,
+            TotalSizeLeftToDo = null,
+            SourceFilePath = null,
+            TargetFilePath = null
+        });
+
+    }
+
+    public bool EncryptFiles(string jsonFilePath, string saveTargetPath, bool encrypt = true)
+    {
+        CheckIfCanRun();
+        bool isEncrypted = false;
+        if (!File.Exists(jsonFilePath))
+        {
+            Logger.GetInstance().Log(
+               new
+               {
+                   Statue = "Error",
+                   Message = $"Json file does not exists: {jsonFilePath}"
+               });
+
+            StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
+            {
+                State = StateJsonReader.ErrorState,
+                LastUpdate = DateTime.Now,
+                TotalFilesToCopy = null,
+                TotalFilesSize = null,
+                Progression = null,
+                NbFilesLeftToDo = null,
+                TotalSizeLeftToDo = null,
+                SourceFilePath = null,
+                TargetFilePath = null
+            });
+            throw new Exception("Json file does not exists");
+        }
+
+        string jsonContent = File.ReadAllText(jsonFilePath);
+        var jsonStructure = JsonConvert.DeserializeObject<JsonStructure>(jsonContent);
+        foreach (var file in jsonStructure.Files)
+        {
+            CheckIfCanRun();
+            string filePath = Path.Combine(saveTargetPath, file.Name);
+            if (File.Exists(filePath))
+            {
+
+                Stopwatch stopwatch = Stopwatch.StartNew();
+                if (file.Status.Equals("saved") && encrypt) // if saved and want to encrypt
+                {
+                    CryptoSoft.EncryptDecryptFile(filePath);
+                    isEncrypted = true;
+                    file.Status = "encrypted";
+                }
+                if (file.Status.Equals("encrypted") && !encrypt) // if encrypted and want to decrypt
+                {
+                    CryptoSoft.EncryptDecryptFile(filePath);
+                    isEncrypted = false;
+                    file.Status = "decrypted";
+                }
+                if (file.Status.Equals("decrypted") && encrypt) // if decrypted and want to encrypt
+                {
+                    CryptoSoft.EncryptDecryptFile(filePath);
+                    isEncrypted = true;
+                    file.Status = "encrypted";
+                }
+                stopwatch.Stop();
+
+                // Save Status
+                string updatedJson = JsonConvert.SerializeObject(jsonStructure, Formatting.Indented);
+                File.WriteAllText(jsonFilePath, updatedJson);
+
+                FileStructureJson.GetInstance().GetAdvancement(jsonFilePath);
+
+                Logger.GetInstance().Log(new
+                {
+                    type = "Info",
+                    SaveJobName = Name,
+                    FileSource = Path.Combine(SourcePath, file.Name),
+                    FileTarget = Path.Combine(TargetPath, file.Name),
+                    FileSize = file.Size,
+                    Time = DateTime.Now,
+                    action = isEncrypted ? "encrypt" : "decrypt",
+                    FileCryptTime = isEncrypted ? stopwatch.ElapsedMilliseconds : 0
+                });
+
+                int[] advancement = FileStructureJson.GetInstance().GetAdvancement(jsonFilePath);
+                int progress = 0;
+                if (advancement[1] != 0)
+                {
+                    progress = (int)Math.Round(((double)advancement[5] / advancement[1]) * 100);
+                }
+
+                StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
+                {
+                    State = isEncrypted ? StateJsonReader.EncryptingState : StateJsonReader.DecryptingState,
+                    LastUpdate = DateTime.Now,
+                    TotalFilesToCopy = advancement[0],
+                    TotalFilesSize = advancement[1],
+                    Progression = progress,
+                    NbFilesLeftToDo = advancement[4] - advancement[0],
+                    TotalSizeLeftToDo = advancement[5] - advancement[1],
+                    SourceFilePath = Path.Combine(SourcePath, file.Name),
+                    TargetFilePath = Path.Combine(TargetPath, file.Name)
+                });
+            }
+        }
+        StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
+        {
+            //State = isEncrypted ? StateJsonReader.EncryptedState : StateJsonReader.DecryptedState,
+            State = StateJsonReader.SavedState,
+            LastUpdate = DateTime.Now,
+            TotalFilesToCopy = null,
+            TotalFilesSize = null,
+            Progression = null,
+            NbFilesLeftToDo = null,
+            TotalSizeLeftToDo = null,
+            SourceFilePath = null,
+            TargetFilePath = null
+        });
+        return isEncrypted;
+    }
+
+    public void ResetState()
+    {
+        StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
+        {
+            State = StateJsonReader.SavedState,
+            LastUpdate = DateTime.Now,
+            TotalFilesToCopy = null,
+            TotalFilesSize = null,
+            Progression = null,
+            NbFilesLeftToDo = null,
+            TotalSizeLeftToDo = null,
+            SourceFilePath = null,
+            TargetFilePath = null
+        });
     }
 }
