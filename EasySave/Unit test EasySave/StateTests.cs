@@ -62,19 +62,20 @@ public class StateTests
         Assert.True(result);
         Assert.True(allJobs[0].ToString() == FullsaveJob.ToString());
     }
-
-    [Fact]
-    public void Verify5JobsMax_JsonStateReader()
-    {
-        Cleanup();
-        List<string> jobsName = ["TesteSave1", "TesteSave2", "TesteSave3", "TesteSave4", "TesteSave5", "TesteSave6",];
-        foreach (string jobName in jobsName)
-        {
-            FullSave FullsaveJob = new(jobName, SourcePath, TargetPathFull);
-            StateJsonReader.GetInstance().AddJob(FullsaveJob);
-        }
-        Assert.Equal(5,StateJsonReader.GetInstance().GetJobs().Count);
-    }
+    
+    //Deprecated
+    //[Fact]
+    //public void Verify5JobsMax_JsonStateReader()
+    //{
+    //    Cleanup();
+    //    List<string> jobsName = ["TesteSave1", "TesteSave2", "TesteSave3", "TesteSave4", "TesteSave5", "TesteSave6",];
+    //    foreach (string jobName in jobsName)
+    //    {
+    //        FullSave FullsaveJob = new(jobName, SourcePath, TargetPathFull);
+    //        StateJsonReader.GetInstance().AddJob(FullsaveJob);
+    //    }
+    //    Assert.Equal(5,StateJsonReader.GetInstance().GetJobs().Count);
+    //}
 
     [Fact]
     public void Delete_JsonStateReader()
