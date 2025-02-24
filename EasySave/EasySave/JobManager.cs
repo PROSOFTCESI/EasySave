@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Collections.Specialized.BitVector32;
 
 namespace EasySave;
 
@@ -19,37 +20,41 @@ public enum saveAction
 
 public class JobManager
 {
-
+    //A verifier
     public static readonly Lazy<JobManager> instance = new(() => new JobManager());
     public static JobManager Instance => instance.Value;
 
     //Avoid 2 process at the same job at the same time
     private static readonly List<SaveJob> ProcessingJobs = [];
-    private static readonly ConcurrentQueue<(SaveJob, saveAction)> ProcessQueue = [];
+    private static readonly ConcurrentQueue<(SaveJob, saveAction, TaskCompletionSource<bool>)> ProcessQueue = [];
+
     //Allow 3 task Max
     private static readonly int MAXWORKER = 3;
     static SemaphoreSlim semaphore = new SemaphoreSlim(MAXWORKER); // Allow 3 task at the same time
 
     private JobManager()
     {
-        
         Thread loopThread = new(LaunchMainloop);
         loopThread.Start();
     }
 
-    public void NewProcess(SaveJob job, saveAction action)
+    public Task<bool> NewProcess(SaveJob job, saveAction action)
     {
-        ProcessQueue.Enqueue((job, action));
+        var tcs = new TaskCompletionSource<bool>();
+        ProcessQueue.Enqueue((job, action, tcs));
+         return tcs.Task;
     }
 
     public void WaitAllTaskFinished()
     {
-        
-        while (ProcessingJobs.Count > 0 && ProcessQueue.Count > 0) {
+
+        while (ProcessingJobs.Count > 0 && !ProcessQueue.IsEmpty)
+        {
             Thread.Sleep(100);
         }
 
     }
+
     async private void LaunchMainloop()
     {
         while (true)
@@ -57,60 +62,53 @@ public class JobManager
             if (!ProcessQueue.IsEmpty)
             {
                 await semaphore.WaitAsync(); // Wait for a Free Thread
-                new Task(() => ProcessNextRequest()).Start();
+
+                ProcessQueue.TryDequeue(out (SaveJob, saveAction,TaskCompletionSource<bool>) result);
+                if (!ProcessingJobs.Where(j => j.Name == result.Item1.Name).Any()) {
+                   
+                    new Task(() => ProcessNextRequest(result.Item1, result.Item2, result.Item3)).Start();
+                }
+                else
+                {
+                    ProcessQueue.Enqueue(result);
+                }   
+
             }
-            else
+             
             {
                 Thread.Sleep(100);
             }
-
         }
     }
-    
 
-    static async private void ProcessNextRequest()
+    static private void ProcessNextRequest(SaveJob job, saveAction action, TaskCompletionSource<bool> tcs)
     {
-        if (ProcessQueue.Count == 0)
-        {
-            semaphore.Release();
-            return;
-        }
         try
         {
-            ProcessQueue.TryDequeue(out (SaveJob, saveAction) result);
-            SaveJob job = result.Item1;
-            saveAction action = result.Item2;
-
             if (ProcessingJobs.Contains(job))
             {
                 ProcessingJobs.Add(job);
-                switch (action)
+                bool result = action switch
                 {
-                    case saveAction.Create:
-                        job.CreateSave();
-                        break;
-                    case saveAction.Restore:
-                        job.RestoreSave();
-                        break;
-                    case saveAction.Save:
-                        job.Save();
-                        break;
-                    case saveAction.Delete:
-                        job.DeleteSave();
-                        break;
-                    case saveAction.Decrypte:
-                        job.DeleteSave();
-                        break;
-                    default:
-                        return;
-                        break;
-                }
+                    saveAction.Create => job.CreateSave(),
+                    saveAction.Restore => job.RestoreSave(),
+                    saveAction.Save => job.Save(),
+                    saveAction.Delete => job.DeleteSave(),
+                    saveAction.Decrypte => job.DeleteSave(),
+                    _ => false,
+                };
+                tcs.SetResult(result);
             }
-            return;
+            else
+            {
+                tcs.SetResult(false);
+            }
         }
         catch (Exception ex)
         {
+            tcs.SetResult(false);
             LoggerLib.Logger.GetInstance().Log(ex);
+            throw;
         }
         finally
         {

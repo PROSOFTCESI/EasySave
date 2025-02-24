@@ -182,18 +182,19 @@ public class SaveTests
     }
 
     [Fact]
-    public void MultriprocessingDifferentialSave_Save()
+    public void MultriprocessingFullSave()
     {
         Cleanup();
         string SourcePath = CreateFakeInformationFolder();
         string TargetPath = Path.Combine(Path.GetTempPath(), "EasySaveDiffTestTemp");
         
 
-        var DifferentialSave = new DifferentialSave("TestSave", SourcePath, TargetPath);
-        JobManager.Instance.NewProcess(DifferentialSave,saveAction.Create);
+        var DifferentialSave = new FullSave("TestSave", SourcePath, TargetPath);
+      
+        CreateFakeFile(Path.Combine(SourcePath, "NewFileToSee.data"));
+        JobManager.Instance.NewProcess(DifferentialSave, saveAction.Create);
         JobManager.Instance.NewProcess(DifferentialSave, saveAction.Save);
         JobManager.Instance.NewProcess(DifferentialSave, saveAction.Delete);
-        CreateFakeFile(Path.Combine(SourcePath, "NewFileToSee.data"));
         JobManager.Instance.WaitAllTaskFinished();
         Cleanup();
     }
