@@ -30,7 +30,7 @@ namespace EasySaveRemote
         static void HandleClient(TcpClient client, EasySaveController controller)
         {
             NetworkStream stream = client.GetStream();
-            byte[] buffer = new byte[9999];
+            byte[] buffer = new byte[1024];
             int bytesRead;
 
             while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)

@@ -9,10 +9,8 @@ namespace EasySaveClient
 {
     public partial class MainWindow : Window
     {
-        private string ServerIp = "127.0.0.1";
-        private int  ServerPort = 5000;
-        private bool isConnected = false;
-        public ObservableCollection<SaveJob> AvailableSaveJobs { get; set; }
+        private const string ServerIp = "127.0.0.1"; // Remplace par l'IP du serveur
+        private const int Port = 5000;
 
         public MainWindow()
         {
@@ -58,7 +56,7 @@ namespace EasySaveClient
             {
                 SendCommand($"pause_backup {jobName}");
                 button.Content = "▶"; 
-            }
+        }
             else 
             {
                 SendCommand($"start_backup {jobName}");
@@ -66,47 +64,41 @@ namespace EasySaveClient
             }
         }
 
-        private void RefreshJobs_Click(object sender, RoutedEventArgs e) => RefreshJobs();
-
-        private void StartBackup_Click(object sender, RoutedEventArgs e) => SendCommand($"start_backup {((FrameworkElement)sender).Tag}");
-
-
-        private void DeleteBackup_Click(object sender, RoutedEventArgs e) => SendCommand($"delete_backup {((FrameworkElement)sender).Tag}");
-
-        private void CreateJob_Click(object sender, RoutedEventArgs e)
+        private void StartBackup_Click(object sender, RoutedEventArgs e)
         {
-            SendCommand("create_backup");
-            RefreshJobs();
+            SendCommand("start_backup");
         }
 
-        private void RefreshJobs()
+        private void StopBackup_Click(object sender, RoutedEventArgs e)
         {
-            AvailableSaveJobs.Clear();
-            string response = SendCommand("list_jobs");
-
-            foreach (string job in response.Split(','))
-                if (!string.IsNullOrWhiteSpace(job))
-                    AvailableSaveJobs.Add(new SaveJob { Name = job.Trim() });
+            SendCommand("stop_backup");
         }
 
-        private bool CheckServerConnection(string ip, int port)
+        private void CheckStatus_Click(object sender, RoutedEventArgs e)
         {
-            try { using (var client = new TcpClient()) { client.Connect(ip, port); return true; } }
-            catch { return false; }
+            SendCommand("status");
         }
 
-        private string SendCommand(string command)
+        private void SendCommand(string command)
         {
             try
             {
-                using (TcpClient client = new TcpClient(ServerIp, ServerPort))
+                using (TcpClient client = new TcpClient(ServerIp, Port))
                 using (NetworkStream stream = client.GetStream())
                 {
                     byte[] data = Encoding.UTF8.GetBytes(command);
                     stream.Write(data, 0, data.Length);
+
                     byte[] buffer = new byte[1024];
-                    return Encoding.UTF8.GetString(buffer, 0, stream.Read(buffer, 0, buffer.Length));
+                    int bytesRead = stream.Read(buffer, 0, buffer.Length);
+                    string response = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+
+                    ResponseBox.Text = $"Réponse: {response}";
                 }
+            }
+            catch (Exception ex)
+            {
+                ResponseBox.Text = $"Erreur: {ex.Message}";
             }
             catch (Exception ex) { return $"❌ Erreur: {ex.Message}"; }
         }

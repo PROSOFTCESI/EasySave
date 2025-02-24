@@ -1,40 +1,16 @@
 ﻿<Window x:Class="EasySaveClient.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="EasySave Client" Height="500" Width="500">
+        Title="EasySave Client" Height="350" Width="400">
     <Grid>
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
             <TextBlock Text="EasySave Client Remote" FontSize="20" Margin="10" />
 
-            <TextBlock Text="Adresse IP du serveur :" Margin="5"/>
-            <TextBox x:Name="ServerIpBox" Width="200" Text="127.0.0.1" Margin="5"/>
-            <TextBlock Text="Port du serveur :" Margin="5"/>
-            <TextBox x:Name="ServerPortBox" Width="200" Text="5000" Margin="5"/>
+            <Button Content="Démarrer Backup" Click="StartBackup_Click" Margin="5"/>
+            <Button Content="Arrêter Backup" Click="StopBackup_Click" Margin="5"/>
+            <Button Content="Vérifier Statut" Click="CheckStatus_Click" Margin="5"/>
 
-            <Button x:Name="ConnectButton" Content="Connexion au serveur de sauvegarde" Click="ConnectToServer_Click" Margin="5"/>
-            <Button x:Name="RefreshButton" Content="Actualiser la liste" Click="RefreshJobs_Click" Margin="5" IsEnabled="False"/>
-            <Button x:Name="CreateButton" Content="Créer une sauvegarde" Click="CreateJob_Click" Margin="5" IsEnabled="False"/>
-
-            <ListView x:Name="SaveJobsList" Width="400" Height="200">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding Name}" Width="200"/>
-                        <GridViewColumn Header="Actions">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Button x:Name="TogglePlayPauseButton" Content="⏸" Click="TogglePlayPause_Click" Tag="{Binding Name}" Margin="2"/>
-
-                                        <Button Content="❌" Click="DeleteBackup_Click" Tag="{Binding Name}" Margin="2"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                    </GridView>
-                </ListView.View>
-            </ListView>
-
-            <TextBox Name="ResponseBox" Height="100" Width="400" Margin="10" TextWrapping="Wrap" IsReadOnly="True"/>
+            <TextBox Name="ResponseBox" Height="100" Width="300" Margin="10" TextWrapping="Wrap" IsReadOnly="True"/>
         </StackPanel>
     </Grid>
 </Window>
