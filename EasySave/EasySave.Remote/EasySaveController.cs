@@ -1,6 +1,12 @@
 ﻿
 
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Text.Json;
+using EasySave;
 using EasySave.Graphic3._0.ViewModel;
+using EasySave.Utils.JobStates;
+
 
 namespace EasySaveRemote
 {
@@ -17,6 +23,8 @@ namespace EasySaveRemote
                 case "list_jobs":
                     return GetSaveJobs();
                 case "start_backup":
+                    SaveJob job = null;
+
                     return StartBackup(jobName);
                 case "pause_backup":
                     return PauseBackup(jobName);
@@ -31,17 +39,24 @@ namespace EasySaveRemote
 
         private string GetSaveJobs()
         {
-            string str = "";
             var jobs = new MainMenuViewModel().GetJobs();
-            foreach (var job in jobs)
+
+            if (jobs == null || jobs.Count == 0)
             {
-                str += job.ToString();
+                return "Aucun job disponible.";
             }
-            return str;
+
+            return JsonSerializer.Serialize(jobs);
         }
-        private string StartBackup(string job) => $"Démarrage de {job}";
+        private async void StartBackup(SaveJob saveJob)
+        {
+
+            UserResponse response = await UpdateJobViewModel.Update(saveJob);
+        }
+   
         private string PauseBackup(string job) => $"Pause de {job}";
         private string DeleteBackup(string job) => $"Suppression de {job}";
         private string CreateBackup(string job) => $"Création de {job}";
+       
     }
 }
