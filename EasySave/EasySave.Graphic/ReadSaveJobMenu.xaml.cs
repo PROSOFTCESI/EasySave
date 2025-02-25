@@ -25,7 +25,6 @@ namespace EasySave.Graphic
 
 
         private readonly Messages messages = Messages.GetInstance();
-        private readonly List<string> saveJobs;
 
         public ReadSaveJobMenu()
         {

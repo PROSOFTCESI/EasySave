@@ -1,24 +1,42 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace EasySaveClient
 {
     public partial class MainWindow : Window
     {
+        public ObservableCollection<SaveJob> AvailableSaveJobs { get; set; } = new ObservableCollection<SaveJob>();
+
         private string ServerIp = "127.0.0.1";
         private int  ServerPort = 5000;
         private bool isConnected = false;
-        public ObservableCollection<SaveJob> AvailableSaveJobs { get; set; }
+        private readonly DispatcherTimer _timer;
 
         public MainWindow()
         {
             InitializeComponent();
             AvailableSaveJobs = new ObservableCollection<SaveJob>();
             SaveJobsList.ItemsSource = AvailableSaveJobs;
+            // Initialisation du timer
+            _timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(500)
+            };
+            _timer.Tick += Timer_Tick;
+            _timer.Start();
+        }
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            if (isConnected)
+            {
+                RefreshJobs();
+            }
         }
 
         private void ConnectToServer_Click(object sender, RoutedEventArgs e)
@@ -44,6 +62,7 @@ namespace EasySaveClient
             else
             {
                 ResponseBox.Text = $"❌ Impossible de se connecter à {ServerIp} port {ServerPort}";
+                isConnected = false;
             }
 
         }
@@ -54,15 +73,17 @@ namespace EasySaveClient
 
             string jobName = button.Tag.ToString();
 
-            if (button.Content.ToString() == "⏸")
+            if (button.Content.ToString() == "▶")
             {
-                SendCommand($"pause_backup {jobName}");
-                button.Content = "▶"; 
+                SendCommand($"start_backup {jobName}");
+                button.Content = "⏸";
+                
             }
             else 
             {
-                SendCommand($"start_backup {jobName}");
-                button.Content = "⏸"; 
+                SendCommand($"pause_backup {jobName}");
+                button.Content = "▶";
+
             }
         }
 
@@ -84,10 +105,18 @@ namespace EasySaveClient
             AvailableSaveJobs.Clear();
             string response = SendCommand("list_jobs");
 
-            foreach (string job in response.Split(','))
-                if (!string.IsNullOrWhiteSpace(job))
-                    AvailableSaveJobs.Add(new SaveJob { Name = job.Trim() });
+          
+            List<SaveJob>? jobsList = JsonSerializer.Deserialize<List<SaveJob>>(response);
+
+            if (jobsList != null)
+            {
+                foreach (var job in jobsList)
+                {
+                    AvailableSaveJobs.Add(job);
+                }
+            }
         }
+
 
         private bool CheckServerConnection(string ip, int port)
         {
@@ -111,6 +140,15 @@ namespace EasySaveClient
             catch (Exception ex) { return $"❌ Erreur: {ex.Message}"; }
         }
     }
+    public class SaveJob
+    {
+        public string Name { get; set; }
+        public string SourcePath { get; set; }
+        public string TargetPath { get; set; }
+        public DateTime CreationDate { get; set; }
+        public DateTime LastUpdate { get; set; }
+        public string State { get; set; }
+        public long? Progression { get; set; }
+    }
 
-    public class SaveJob { public string Name { get; set; } }
 }
