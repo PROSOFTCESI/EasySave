@@ -8,6 +8,8 @@
 
             <TextBlock Text="Adresse IP du serveur :" Margin="5"/>
             <TextBox x:Name="ServerIpBox" Width="200" Text="127.0.0.1" Margin="5"/>
+            <TextBlock Text="Port du serveur :" Margin="5"/>
+            <TextBox x:Name="ServerPortBox" Width="200" Text="5000" Margin="5"/>
 
             <Button x:Name="ConnectButton" Content="Connexion au serveur de sauvegarde" Click="ConnectToServer_Click" Margin="5"/>
             <Button x:Name="RefreshButton" Content="Actualiser la liste" Click="RefreshJobs_Click" Margin="5" IsEnabled="False"/>
@@ -21,8 +23,8 @@
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
-                                        <Button Content="▶" Click="StartBackup_Click" Tag="{Binding Name}" Margin="2"/>
-                                        <Button Content="⏸" Click="PauseBackup_Click" Tag="{Binding Name}" Margin="2"/>
+                                        <Button x:Name="TogglePlayPauseButton" Content="⏸" Click="TogglePlayPause_Click" Tag="{Binding Name}" Margin="2"/>
+
                                         <Button Content="❌" Click="DeleteBackup_Click" Tag="{Binding Name}" Margin="2"/>
                                     </StackPanel>
                                 </DataTemplate>
