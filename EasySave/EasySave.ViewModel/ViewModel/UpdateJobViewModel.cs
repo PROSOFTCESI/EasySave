@@ -5,10 +5,13 @@ namespace EasySave.Graphic3._0.ViewModel;
 
 public class UpdateJobViewModel
 {
-    public static async Task<UserResponse> Update(SaveJob saveJob)
+    public static async Task<UserResponse> Update(string saveJobName)
     {
+        SaveJob? saveJob = null;
         try
         {
+            saveJob = StateJsonReader.GetInstance().GetJobs().Where(s => s.Name.Equals(saveJobName) && s.State != StateJsonReader.DeletedState).FirstOrDefault() ?? throw new KeyNotFoundException("Job name key not found");
+
             bool success = await Task.Run(() => saveJob.Save()); // Exécute Save() dans un nouveau thread
             if (success)
             {
@@ -29,7 +32,7 @@ public class UpdateJobViewModel
         }
         finally
         {
-            saveJob.ResetState();
+            saveJob?.ResetState();
         }
     }
     
