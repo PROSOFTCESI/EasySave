@@ -95,21 +95,21 @@ namespace EasySave.Utils
             return jsonFile;
         }
 
-        public int[] GetAdvancement(string jsonFilePath)
+        public long[] GetAdvancement(string jsonFilePath)
         {
-            int[] ret = [];
+            long[] ret = [];
             // faire ration SET/SAVED en %                      --> avancement save
             // faire ration tous fichiers / Encrypted en %      --> avancement encrypt
             // prendre en compte la taille des fichiers
             //          faire ration poids Set / poids SAVED
 
-            int allFiles = 0;
-            int savedFiles = 0;
-            int encryptedFiles = 0;
+            long allFiles = 0;
+            long savedFiles = 0;
+            long encryptedFiles = 0;
 
-            int allBytes = 0;
-            int savedBytes = 0;
-            int encryptedBytes = 0;
+            long allBytes = 0;
+            long savedBytes = 0;
+            long encryptedBytes = 0;
 
             string jsonContent = File.ReadAllText(jsonFilePath);
             var jsonStructure = JsonConvert.DeserializeObject<JsonStructure>(jsonContent);
@@ -119,28 +119,36 @@ namespace EasySave.Utils
                 {
                     case "set":
                         allFiles++;
-                        allBytes += int.Parse(item.Size);
+                        allBytes += long.Parse(item.Size) >= 0 ? long.Parse(item.Size) : 0;
                         break;
                     case "saved":
-                        savedBytes += int.Parse(item.Size);
-                        allBytes += int.Parse(item.Size);
+                        savedBytes += long.Parse(item.Size) >= 0 ? long.Parse(item.Size) : 0;
+                        allBytes += long.Parse(item.Size) >= 0 ? long.Parse(item.Size) : 0;
                         savedFiles++;
                         allFiles++;
                         break;
                     case "encrypted":
-                        encryptedBytes += int.Parse(item.Size);
-                        allBytes += int.Parse(item.Size);
+                        encryptedBytes += long.Parse(item.Size) >= 0 ? long.Parse(item.Size) : 0;
+                        allBytes += long.Parse(item.Size) >= 0 ? long.Parse(item.Size) : 0;
                         encryptedFiles++;
                         allFiles++;
                         break;
                     case "decrypted":
-                        savedBytes += int.Parse(item.Size);
-                        allBytes += int.Parse(item.Size);
+                        savedBytes += long.Parse(item.Size) >= 0 ? long.Parse(item.Size) : 0;
+                        allBytes += long.Parse(item.Size) >= 0 ? long.Parse(item.Size) : 0;
                         savedFiles++;
                         allFiles++;
                         break;
                 }
             }
+
+            allFiles = Math.Abs(allFiles);
+            allBytes = Math.Abs(allBytes);
+            savedBytes = Math.Abs(savedBytes);
+            savedFiles = Math.Abs(savedFiles);
+            encryptedBytes = Math.Abs(encryptedBytes);
+            encryptedFiles = Math.Abs(encryptedFiles);
+
 
             jsonStructure.SavedBytes = (savedBytes + encryptedBytes).ToString();
             jsonStructure.SavedFiles = (savedFiles + encryptedFiles).ToString();
