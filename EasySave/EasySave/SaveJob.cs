@@ -15,6 +15,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using System.Resources;
 
 namespace EasySave;
 
@@ -182,16 +183,13 @@ public abstract class SaveJob : INotifyPropertyChanged
         }
         if (Paused)
         {
+            State = StateJsonReader.PausedState;
             StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
             {
                 State = StateJsonReader.PausedState,
                 LastUpdate = DateTime.Now,
             });
             throw new PlayPauseStopException("PAUSED");
-        }
-        if(StateJsonReader.GetInstance().GetJob(Name).State.Equals(StateJsonReader.PausedState))
-        {
-            Pause();
         }
     }
 
@@ -296,7 +294,7 @@ public abstract class SaveJob : INotifyPropertyChanged
                    Statue = "Error",
                    Message = $"Json file does not exists: {jsonFilePath}"
                });
-
+            State = StateJsonReader.ErrorState;
             StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
             {
                 State = StateJsonReader.ErrorState,
@@ -365,7 +363,7 @@ public abstract class SaveJob : INotifyPropertyChanged
                 SetAvancement("saving", jsonFilePath, file.Name);
             }
         }
-
+        State = StateJsonReader.SavedState;
         StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
         {
             State = StateJsonReader.SavedState,
@@ -393,7 +391,7 @@ public abstract class SaveJob : INotifyPropertyChanged
                    Statue = "Error",
                    Message = $"Json file does not exists: {jsonFilePath}"
                });
-
+            State = StateJsonReader.ErrorState;
             StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
             {
                 State = StateJsonReader.ErrorState,
@@ -467,6 +465,7 @@ public abstract class SaveJob : INotifyPropertyChanged
                 SetAvancement("encrypt", jsonFilePath, file.Name);
             }
         }
+        State = StateJsonReader.SavedState;
         StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
         {
             //State = isEncrypted ? StateJsonReader.EncryptedState : StateJsonReader.DecryptedState,
@@ -485,6 +484,7 @@ public abstract class SaveJob : INotifyPropertyChanged
 
     public void ResetState()
     {
+        State = StateJsonReader.SavedState;
         StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
         {
             State = StateJsonReader.SavedState,
@@ -526,6 +526,8 @@ public abstract class SaveJob : INotifyPropertyChanged
         {
             progress = (int)Math.Round(((double)advanceBytes / advancement[1]) * 100);
         }
+
+        State = state;
 
         StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
         {

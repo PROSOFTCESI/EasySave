@@ -10,7 +10,7 @@ public class UpdateJobViewModel
         SaveJob? saveJob = null;
         try
         {
-            saveJob = SaveJob.Instances.Where(s => s.Name.Equals(saveJobName) && s.State != StateJsonReader.DeletedState).FirstOrDefault() ?? throw new KeyNotFoundException("Job name key not found");
+            saveJob = SaveJob.GetJob(saveJobName) ?? throw new KeyNotFoundException("Job name key not found");
             if (saveJob.State.Equals(StateJsonReader.SavedState))
             {
                 try
@@ -34,7 +34,7 @@ public class UpdateJobViewModel
                     throw;
                 }
             }
-            else if (saveJob.State.Equals(StateJsonReader.SavingState) || saveJob.State.Equals(StateJsonReader.EncryptedState))
+            else if (saveJob.State.Equals(StateJsonReader.SavingState) || saveJob.State.Equals(StateJsonReader.EncryptingState))
             {
                 saveJob.Pause();
                 return UserResponse.GetEmptyUserResponse();
