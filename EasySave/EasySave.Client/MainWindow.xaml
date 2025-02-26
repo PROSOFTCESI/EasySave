@@ -24,7 +24,7 @@
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
-                                        <Button Content="▶" Click="TogglePlayPause_Click" Tag="{Binding Name}" Margin="2"/>
+                                        <Button Content="⏯" Click="PlayPause_Click" Tag="{Binding Name}" Margin="2"/>
                                         <Button Content="❌" Click="DeleteBackup_Click" Tag="{Binding Name}" Margin="2"/>
                                     </StackPanel>
                                 </DataTemplate>
