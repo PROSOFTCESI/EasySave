@@ -52,6 +52,9 @@ public class ProcessObserver : IDisposable
             OnProcessStateChanged?.Invoke(isRunning);
             _lastState = isRunning;
         }
+        /*
+         * faire en sorte que si ya plus de process, on relance les jobs en pause
+         * */
     }
 
     private bool CheckIfProcessRunning()

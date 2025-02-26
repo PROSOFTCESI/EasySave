@@ -45,6 +45,8 @@ namespace EasySave
 
         public override bool Save()
         {
+            NameLastSave = "DifferentialSave_" + DateTime.Now.ToString("dd_MM_yyyy-HH_mm_ss");
+
             CheckIfCanRun();
 
             if (SourcePath == TargetPath)
@@ -63,7 +65,10 @@ namespace EasySave
 
             StateJsonReader.GetInstance().AddJob(this);
 
-            string saveTargetPath = Path.Combine(TargetPath, ("DifferentialSave_" + DateTime.Now.ToString("dd_MM_yyyy-HH_mm_ss")));
+            var state = StateJsonReader.GetInstance().GetJob(Name);
+            state.NameLastSave = NameLastSave;
+            StateJsonReader.GetInstance().UpdateJob(Name, state);
+            string saveTargetPath = Path.Combine(TargetPath, NameLastSave);
 
             // Get information about the source directory
             var dir = new DirectoryInfo(SourcePath);
