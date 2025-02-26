@@ -3,6 +3,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using EasySave;
 using EasySave.Graphic3._0.ViewModel;
 using EasySave.Utils.JobStates;
@@ -31,7 +32,7 @@ namespace EasySaveRemote
                 case "delete_backup":
                     return DeleteBackup(jobName);
                 case "create_backup":
-                    return CreateBackup(jobName);
+                    return await CreateBackup(command);
                 default:
                     return "Commande inconnue.";
             }
@@ -49,14 +50,33 @@ namespace EasySaveRemote
             return JsonSerializer.Serialize(jobs);
         }
         private async Task<string> UpdateBackup(string saveJobName)
-        { SaveJob saveJob = StateJsonReader.GetInstance().GetJobs().Where(job => job.Name == saveJobName).First();
-            bool response = await JobManager.instance.Value.NewProcess(saveJob, saveAction.Save);
-            return response ? "OK" : "NOK";
+        {
+            UserResponse response = await UpdateJobViewModel.Update(saveJobName);
+            return response.Success ? "OK" : "NOK";
         }
+
         private string StartBackup(string job) => $"Pause de {job}";
         private string PauseBackup(string job) => $"Pause de {job}";
         private string DeleteBackup(string job) => $"Suppression de {job}";
-        private string CreateBackup(string job) => $"Création de {job}";
-       
+        private async Task<string> CreateBackup(string command)
+        {
+            // Exemple attendu : create_backup "NomJob" "CheminSource" "CheminCible" "SaveType"
+            Regex regex = new Regex("\"([^\"]+)\"");
+            MatchCollection matches = regex.Matches(command);
+
+            if (matches.Count < 4)
+            {
+                return "Paramètres insuffisants pour créer un job.";
+            }
+
+            string jobName = matches[0].Groups[1].Value;
+            string sourcePath = matches[1].Groups[1].Value;
+            string targetPath = matches[2].Groups[1].Value;
+            string saveType = matches[3].Groups[1].Value; // Pour normaliser la casse
+
+            UserResponse response = await CreateJobViewModel.Create(jobName, sourcePath, targetPath, saveType);
+            return response.Success ? "Job créé avec succès." : "Échec de la création du job.";
+        }
+
     }
 }
