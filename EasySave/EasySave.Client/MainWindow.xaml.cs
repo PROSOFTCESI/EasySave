@@ -26,7 +26,7 @@ namespace EasySaveClient
             // Initialisation du timer
             _timer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromMilliseconds(1000)
+                Interval = TimeSpan.FromMilliseconds(500)
             };
             _timer.Tick += Timer_Tick;
             _timer.Start();
@@ -106,7 +106,23 @@ namespace EasySaveClient
 
         private async void CreateJob_Click(object sender, RoutedEventArgs e)
         {
-            SendCommand("create_backup");
+            string jobName = JobNameBox.Text.Trim();
+            string sourcePath = SourcePathBox.Text.Trim();
+            string targetPath = TargetPathBox.Text.Trim();
+            string saveType = (SaveTypeBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+
+            if (string.IsNullOrEmpty(jobName) || string.IsNullOrEmpty(sourcePath) ||
+                string.IsNullOrEmpty(targetPath) || string.IsNullOrEmpty(saveType))
+            {
+                ResponseBox.Text = "Tous les champs doivent être remplis.";
+                return;
+            }
+
+            // Construire la commande en enveloppant chaque paramètre dans des guillemets
+            string command = $"create_backup \"{jobName}\" \"{sourcePath}\" \"{targetPath}\" \"{saveType}\"";
+            Console.WriteLine($"Command: {command}"); // Pour vérification
+            string response = await SendCommand(command);
+            ResponseBox.Text = response;
             RefreshJobs();
         }
 
@@ -157,6 +173,7 @@ namespace EasySaveClient
                 return $"❌ Erreur: {ex.Message}";
             }
         }
+
 
     }
     public class SaveJob

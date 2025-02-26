@@ -13,6 +13,19 @@
 
             <Button x:Name="ConnectButton" Content="Connexion au serveur de sauvegarde" Click="ConnectToServer_Click" Margin="5"/>
             <Button x:Name="RefreshButton" Content="Actualiser la liste" Click="RefreshJobs_Click" Margin="5" IsEnabled="False"/>
+
+            <TextBlock Text="Nom du job :" Margin="5"/>
+            <TextBox x:Name="JobNameBox" Width="200" Margin="5"/>
+            <TextBlock Text="Chemin source :" Margin="5"/>
+            <TextBox x:Name="SourcePathBox" Width="200" Margin="5"/>
+            <TextBlock Text="Chemin cible :" Margin="5"/>
+            <TextBox x:Name="TargetPathBox" Width="200" Margin="5"/>
+            <TextBlock Text="Type de sauvegarde :" Margin="5"/>
+            <ComboBox x:Name="SaveTypeBox" Width="200" Margin="5">
+                <ComboBoxItem Content="Total" />
+                <ComboBoxItem Content="Diffential" />
+            </ComboBox>
+
             <Button x:Name="CreateButton" Content="Créer une sauvegarde" Click="CreateJob_Click" Margin="5" IsEnabled="False"/>
 
             <ListView x:Name="SaveJobsList" Width="400" Height="250" ItemsSource="{Binding AvailableSaveJobs}">
@@ -24,8 +37,8 @@
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
-                                        <Button Content="⏯" Click="PlayPause_Click" Tag="{Binding Name}" Margin="2"/>
-                                        <Button Content="❌" Click="DeleteBackup_Click" Tag="{Binding Name}" Margin="2"/>
+                                        <Button Content="⏯" Click="PlayPause_Click" Tag="{Binding Name}" Margin="2" ClickMode="Press"/>
+                                        <Button Content="❌" Click="DeleteBackup_Click" Tag="{Binding Name}" Margin="2" ClickMode="Press"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
