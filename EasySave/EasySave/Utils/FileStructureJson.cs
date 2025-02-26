@@ -33,7 +33,7 @@ namespace EasySave.Utils
                     Size = new FileInfo(file).Length.ToString(),
                 });
             }
-
+            jsonStructure.Status = "set";
             // Create JSON
             string jsonOutput = JsonConvert.SerializeObject(jsonStructure, Formatting.Indented);
 
@@ -84,7 +84,7 @@ namespace EasySave.Utils
                 }
 
             }
-
+            jsonStructure.Status = "set";
             // Create JSON
             string jsonOutput = JsonConvert.SerializeObject(jsonStructure, Formatting.Indented);
 
@@ -176,7 +176,7 @@ namespace EasySave.Utils
 
     public class JsonStructure
     {
-        public string Status { get; set; } = "set";
+        public string Status { get; set; } = "";
         public string SetFiles { get; set; } = "0";
         public string SavedFiles { get; set; } = "0";
         public string EncryptedFiles { get; set; } = "0";

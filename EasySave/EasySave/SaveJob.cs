@@ -159,6 +159,73 @@ public abstract class SaveJob : INotifyPropertyChanged
         {
             throw new BusinessSoftwareRunningException();
         }
+        if (Paused)
+        {
+            StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
+            {
+                State = StateJsonReader.PausedState,
+                LastUpdate = DateTime.Now,
+            });
+            throw new PlayPauseStopException("PAUSED");
+        }
+    }
+
+    public void Pause()
+    {
+        Paused = true;
+        Logger.GetInstance().Log(new
+        {
+            type = "Info",
+            SaveJobName = Name,
+            Time = DateTime.Now,
+            action = "Pause"
+        });
+        CheckIfCanRun();
+    }
+
+    public void Play()
+    {
+        if (!StateJsonReader.GetInstance().GetJob(Name).State.Equals(StateJsonReader.PausedState))
+        {
+            return;
+        }
+        Paused = false;
+        Logger.GetInstance().Log(new
+        {
+            type = "Info",
+            SaveJobName = Name,
+            Time = DateTime.Now,
+            action = "Play"
+        });
+        NameLastSave = StateJsonReader.GetInstance().GetJob(Name).NameLastSave;
+        string saveTargetPath = Path.Combine(TargetPath, NameLastSave);
+        string jsonFilePath = Path.Combine(TargetPath, Path.Combine(NameLastSave, ".fileStructure.json"));
+        if (!File.Exists(jsonFilePath))
+        {
+            ResetState();
+            string jsonPath = FileStructureJson.GetInstance().CreateFileStructure(SourcePath, saveTargetPath);
+            FileStructureJson.GetInstance().GetAdvancement(jsonPath);
+            CopyFiles(jsonPath, saveTargetPath);
+            EncryptFiles(jsonPath, saveTargetPath, true);
+        }
+        else
+        {
+            string jsonContent = File.ReadAllText(jsonFilePath);
+            var jsonStructure = JsonConvert.DeserializeObject<JsonStructure>(jsonContent);
+            if (jsonStructure.Status.Equals("set"))
+            {
+                ResetState();
+                int[] advancement = FileStructureJson.GetInstance().GetAdvancement(jsonFilePath);
+                if (advancement[0] != advancement[2]  && advancement[0] != 0) // If saving not completed
+                {
+                    CopyFiles(jsonFilePath, saveTargetPath);
+                    EncryptFiles(jsonFilePath, saveTargetPath, true);
+                }else if(advancement[0] != advancement[4]) // If encrypting not completed
+                {
+                    EncryptFiles(jsonFilePath, saveTargetPath, true);
+                }
+            }
+        }
     }
 
     public override string ToString()
@@ -245,18 +312,7 @@ public abstract class SaveJob : INotifyPropertyChanged
 
                 Progression = progress;
 
-                StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
-                {
-                    State = StateJsonReader.SavingState,
-                    LastUpdate = DateTime.Now,
-                    TotalFilesToCopy = advancement[0],
-                    TotalFilesSize = advancement[1],
-                    Progression = progress,
-                    NbFilesLeftToDo = advancement[2] - advancement[0],
-                    TotalSizeLeftToDo = advancement[3] - advancement[1],
-                    SourceFilePath = Path.Combine(SourcePath, file.Name),
-                    TargetFilePath = Path.Combine(TargetPath, file.Name)
-                });
+                SetAvancement("saving", jsonFilePath, file.Name);
             }
         }
 
@@ -358,18 +414,7 @@ public abstract class SaveJob : INotifyPropertyChanged
                     progress = (int)Math.Round(((double)advancement[5] / advancement[1]) * 100);
                 }
 
-                StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
-                {
-                    State = isEncrypted ? StateJsonReader.EncryptingState : StateJsonReader.DecryptingState,
-                    LastUpdate = DateTime.Now,
-                    TotalFilesToCopy = advancement[0],
-                    TotalFilesSize = advancement[1],
-                    Progression = progress,
-                    NbFilesLeftToDo = advancement[4] - advancement[0],
-                    TotalSizeLeftToDo = advancement[5] - advancement[1],
-                    SourceFilePath = Path.Combine(SourcePath, file.Name),
-                    TargetFilePath = Path.Combine(TargetPath, file.Name)
-                });
+                SetAvancement("encrypt", jsonFilePath, file.Name);
             }
         }
         StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
@@ -401,6 +446,46 @@ public abstract class SaveJob : INotifyPropertyChanged
             TotalSizeLeftToDo = null,
             SourceFilePath = null,
             TargetFilePath = null
+        });
+    }
+
+    private void SetAvancement(string origin, string jsonFilePath, string fileName = "")
+    {
+        int[] advancement = FileStructureJson.GetInstance().GetAdvancement(jsonFilePath);
+
+        string state = "";
+        int progress = 0;
+        int advanceFiles = 0;
+        int advanceBytes = 0;
+
+        if (origin == "saving")
+        {
+            state = StateJsonReader.SavingState;
+            advanceFiles = advancement[2];
+            advanceBytes = advancement[3];
+        }
+        if (origin == "encrypt")
+        {
+            state = StateJsonReader.EncryptingState;
+            advanceFiles = advancement[4];
+            advanceBytes = advancement[5];
+        }
+
+        if (advancement[1] != 0)
+        {
+            progress = (int)Math.Round(((double)advanceBytes / advancement[1]) * 100);
+        }
+        StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
+        {
+            State = Paused ? StateJsonReader.PausedState : state,
+            LastUpdate = DateTime.Now,
+            TotalFilesToCopy = advancement[0],
+            TotalFilesSize = advancement[1],
+            Progression = progress,
+            NbFilesLeftToDo = advancement[0] - advanceFiles,
+            TotalSizeLeftToDo = advancement[1] - advanceBytes,
+            SourceFilePath = Path.Combine(SourcePath, fileName),
+            TargetFilePath = Path.Combine(TargetPath, fileName)
         });
     }
 }
