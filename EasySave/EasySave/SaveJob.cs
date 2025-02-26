@@ -229,16 +229,17 @@ public abstract class SaveJob : INotifyPropertyChanged
             {
                 ResetState();
                 long[] advancement = FileStructureJson.GetInstance().GetAdvancement(jsonFilePath);
-                if (advancement[0] != advancement[2]  && advancement[0] != 0) // If saving not completed
+                if (advancement[0] != advancement[2] && advancement[0] != 0) // If saving not completed
                 {
                     CopyFiles(jsonFilePath, saveTargetPath);
                     EncryptFiles(jsonFilePath, saveTargetPath, true);
-                }else if(advancement[0] != advancement[4]) // If encrypting not completed
+                } else if (advancement[0] != advancement[4]) // If encrypting not completed
                 {
                     EncryptFiles(jsonFilePath, saveTargetPath, true);
                 }
             }
         }
+    }
 
     public void Stop()
     {
@@ -521,6 +522,7 @@ public abstract class SaveJob : INotifyPropertyChanged
             SourceFilePath = Path.Combine(SourcePath, fileName),
             TargetFilePath = Path.Combine(TargetPath, fileName)
         });
+    }
 
     public string GetLastSavePath(string type = "full")
     {
