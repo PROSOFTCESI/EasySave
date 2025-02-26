@@ -26,7 +26,7 @@ namespace EasySaveClient
             // Initialisation du timer
             _timer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromMilliseconds(500)
+                Interval = TimeSpan.FromMilliseconds(1000)
             };
             _timer.Tick += Timer_Tick;
             _timer.Start();
@@ -66,33 +66,43 @@ namespace EasySaveClient
             }
 
         }
-        private async void TogglePlayPause_Click(object sender, RoutedEventArgs e)
-        {
-            Button button = sender as Button;
-            if (button == null) return;
+        //private async void TogglePlayPause_Click(object sender, RoutedEventArgs e)
+        //{
+        //    Button button = sender as Button;
+        //    if (button == null) return;
 
-            string jobName = button.Tag.ToString();
+        //    string jobName = button.Tag.ToString();
 
-            if (button.Content.ToString() == "▶")
-            {
-                button.Content = "⏸";
-                button.IsEnabled = false; 
-                await SendCommand($"start_backup {jobName}");
-                button.IsEnabled = true;
-            }
-            else
-            {
-                button.Content = "▶";
-            }
-        }
+        //    if (button.Content.ToString() == "▶")
+        //    {
+        //        button.Content = "⏸";
+        //        button.IsEnabled = false; 
+        //        await SendCommand($"update_backup {jobName}");
+        //        button.IsEnabled = true;
+        //    }
+        //    else
+        //    {
+        //        button.Content = "▶";
+        //    }
+        //}
 
 
         private async void RefreshJobs_Click(object sender, RoutedEventArgs e) => RefreshJobs();
 
-        private async void StartBackup_Click(object sender, RoutedEventArgs e) => SendCommand($"start_backup {((FrameworkElement)sender).Tag}");
+        private async void PlayPause_Click(object sender, RoutedEventArgs e) => SendCommand($"update_backup {((FrameworkElement)sender).Tag}");
 
 
-        private async void DeleteBackup_Click(object sender, RoutedEventArgs e) => SendCommand($"delete_backup {((FrameworkElement)sender).Tag}");
+        private async void DeleteBackup_Click(object sender, RoutedEventArgs e)
+        {
+            string jobName = ((FrameworkElement)sender).Tag.ToString();
+            MessageBoxResult result = MessageBox.Show($"Êtes-vous sûr de vouloir supprimer le job {jobName} ?", "Confirmation de suppression", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                await SendCommand($"delete_backup {jobName}");
+                RefreshJobs();
+            }
+        }
 
         private async void CreateJob_Click(object sender, RoutedEventArgs e)
         {
@@ -100,12 +110,15 @@ namespace EasySaveClient
             RefreshJobs();
         }
 
+
+
+        // Ajouter le nouveau travail à la collection
         private async void RefreshJobs()
         {
             AvailableSaveJobs.Clear();
             string response = await SendCommand("list_jobs");
 
-          
+
             List<SaveJob>? jobsList = JsonSerializer.Deserialize<List<SaveJob>>(response);
 
             if (jobsList != null)
