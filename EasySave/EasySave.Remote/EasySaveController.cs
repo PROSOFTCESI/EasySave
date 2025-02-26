@@ -47,8 +47,9 @@ namespace EasySaveRemote
             return JsonSerializer.Serialize(jobs);
         }
         private async Task<string> StartBackup(string saveJobName)
-        { SaveJob saveJob = StateJsonReader.GetInstance().GetJobs().Where(job => job.Name == saveJobName).First();
-            bool response = await JobManager.instance.Value.NewProcess(saveJob, saveAction.Save);
+        { 
+          
+            bool response = await JobManager.instance.Value.NewProcess(SaveJob.GetJob(saveJobName), saveAction.Save);
             return response ? "OK" : "NOK";
         }
 

@@ -167,8 +167,8 @@ internal class ConsoleManager
     private void ReadSaveJobsMenu()
     {
         WriteCyan(messages.GetMessage("READ_SAVE_JOBS_MENU_LABEL"));
-        List<SaveJob> availableJobs = StateJsonReader.GetInstance().GetJobs();
-        ShowAvailableSaveJobs(availableJobs);
+       
+        ShowAvailableSaveJobs(SaveJob.Instances);
     }
 
     /// <summary>
@@ -177,7 +177,7 @@ internal class ConsoleManager
     private void DeleteSaveJobMenu()
     {
         WriteCyan(messages.GetMessage("DELETE_SAVE_JOB_MENU_LABEL"));
-        List<SaveJob> availableJobs = StateJsonReader.GetInstance().GetJobs();
+        List<SaveJob> availableJobs = SaveJob.Instances;
         if (!ShowAvailableSaveJobs(availableJobs))
         {
             return;

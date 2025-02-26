@@ -57,7 +57,7 @@ public class StateTests
         Cleanup();
         FullSave FullsaveJob = new FullSave("testeSave",SourcePath,TargetPathFull);
         bool result = StateJsonReader.GetInstance().AddJob(FullsaveJob);
-        var allJobs = StateJsonReader.GetInstance().GetJobs();
+        var allJobs = SaveJob.Instances;
 
         Assert.True(result);
         Assert.True(allJobs[0].ToString() == FullsaveJob.ToString());
