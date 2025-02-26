@@ -23,6 +23,7 @@ public class StateJsonReader
     public const string DecryptedState = "DECRYPTED";
     public const string DeletedState = "DELETED";
 
+    public const string PausedState = "PAUSED";
     public const string ErrorState = "ERROR";
 
     private StateJsonReader() { }
@@ -111,6 +112,7 @@ public class StateJsonReader
 
         jobToUpdate.LastUpdate = DateTime.Now;
         jobToUpdate.State = infos.State ?? jobToUpdate.State;
+        jobToUpdate.NameLastSave = infos.NameLastSave ?? jobToUpdate.NameLastSave;
         jobToUpdate.TotalFilesToCopy = infos.TotalFilesToCopy == null && jobToUpdate.State.Equals(SavingState) ? jobToUpdate.TotalFilesToCopy : infos.TotalFilesToCopy;
         jobToUpdate.TotalFilesSize = infos.TotalFilesSize == null && jobToUpdate.State.Equals(SavingState) ? jobToUpdate.TotalFilesSize : infos.TotalFilesSize;
         jobToUpdate.Progression = infos.Progression == null && jobToUpdate.State.Equals(SavingState) ? jobToUpdate.Progression : infos.Progression;
@@ -147,6 +149,7 @@ public class StateJsonReader
             jobJson.SourcePath = job.SourcePath;
             jobJson.TargetPath = job.TargetPath;
             jobJson.State = job.State;
+            jobJson.NameLastSave = job.NameLastSave;
 
             return SaveJob(jobJson);
         }
@@ -240,6 +243,7 @@ public class JobStateJsonDefinition
     public string SourcePath { get; set; }
     public string TargetPath { get; set; }
     public string State { get; set; }
+    public string NameLastSave { get; set; }
     public long? TotalFilesToCopy { get; set; } = null;
     public long? TotalFilesSize { get; set; } = null;
     public long? Progression { get; set; } = null;

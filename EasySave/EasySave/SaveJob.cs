@@ -26,6 +26,8 @@ public abstract class SaveJob : INotifyPropertyChanged
     public DateTime CreationDate { get; set; }
     public DateTime LastUpdate { get; set; }
     public string State { get; set; }
+    public string NameLastSave { get; set; }
+
     private long? _progression;
     public long? Progression
     {
@@ -46,6 +48,7 @@ public abstract class SaveJob : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
     private bool CanRun { get; set; } = true;
+    private bool Paused { get; set; } = false;
 
     private readonly ProcessObserver _businessSoftwaresObserver;
 
@@ -73,6 +76,8 @@ public abstract class SaveJob : INotifyPropertyChanged
 
     public bool CreateSave()
     {
+        NameLastSave = "FullSave_" + DateTime.Now.ToString("dd_MM_yyyy-HH_mm_ss");
+
         CheckIfCanRun();
 
         if (SourcePath == TargetPath)
@@ -91,7 +96,7 @@ public abstract class SaveJob : INotifyPropertyChanged
 
         StateJsonReader.GetInstance().AddJob(this);
 
-        string saveTargetPath = Path.Combine(TargetPath, ("FullSave_" + DateTime.Now.ToString("dd_MM_yyyy-HH_mm_ss")));
+        string saveTargetPath = Path.Combine(TargetPath, NameLastSave);
 
         // Get information about the source directory
         var dir = new DirectoryInfo(SourcePath);
