@@ -163,7 +163,7 @@ namespace EasySaveClient
                     byte[] data = Encoding.UTF8.GetBytes(command);
                     await stream.WriteAsync(data, 0, data.Length);
 
-                    byte[] buffer = new byte[1024];
+                    byte[] buffer = new byte[4096]; // Augmentez la taille du tampon
                     int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
                     return Encoding.UTF8.GetString(buffer, 0, bytesRead);
                 }
