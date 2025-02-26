@@ -176,6 +176,10 @@ public abstract class SaveJob : INotifyPropertyChanged
             });
             throw new PlayPauseStopException("PAUSED");
         }
+        if(StateJsonReader.GetInstance().GetJob(Name).State.Equals(StateJsonReader.PausedState))
+        {
+            Pause();
+        }
     }
 
     public void Pause()

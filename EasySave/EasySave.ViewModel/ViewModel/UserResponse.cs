@@ -11,7 +11,7 @@ public class UserResponse(bool success, string messageId, params string[] args)
     {
         return new UserResponse(true, "", "")
         {
-            Success = false,
+            Display = false,
         };
     }
 }
