@@ -1,5 +1,6 @@
 ﻿using EasySave.Graphic3._0.ViewModel;
 using EasySave.Utils;
+using EasySave.ViewModel.ViewModel;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
@@ -17,6 +18,7 @@ public partial class MainMenu : Page, INotifyPropertyChanged
 {
     private ObservableCollection<SaveJob> _availableSaveJobs;
     private readonly MainMenuViewModel mainMenuViewModel = new();
+    private readonly DeleteJobViewModel deleteJobViewModel = new();
 
     public ObservableCollection<SaveJob> AvailableSaveJobs
     {
@@ -76,11 +78,15 @@ public partial class MainMenu : Page, INotifyPropertyChanged
         RefreshJobs();
     }
 
-    private void Delete_Click(object sender, RoutedEventArgs e)
+    private async void Delete_Click(object sender, RoutedEventArgs e)
     {
         if ((sender as FrameworkElement)?.DataContext is SaveJob item)
         {
-            //StateJsonReader.GetInstance().GetJobs().Remove(item);
+            var response = await DeleteJobViewModel.Delete(item.Name);
+            if (response.Display)
+            {
+                MessageBoxDisplayer.Display(response);
+            }
         }
         RefreshJobs();
     }
