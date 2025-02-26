@@ -203,7 +203,6 @@ public abstract class SaveJob : INotifyPropertyChanged
             Time = DateTime.Now,
             action = "Pause"
         });
-        CheckIfCanRun();
     }
 
     public void Play()

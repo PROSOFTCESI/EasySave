@@ -1,4 +1,5 @@
 ﻿using EasySave.Graphic3._0.ViewModel;
+using EasySave.Utils;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
@@ -76,6 +77,11 @@ public partial class MainMenu : Page, INotifyPropertyChanged
                 MessageBoxDisplayer.Display(response);
             }
         }
+        RefreshJobs();
+    }
+
+    private void Stop_Click(object sender, RoutedEventArgs e)
+    {
         RefreshJobs();
     }
 

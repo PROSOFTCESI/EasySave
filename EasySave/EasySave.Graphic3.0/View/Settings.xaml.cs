@@ -64,6 +64,7 @@ public partial class Settings : Page
             Logger.GetInstance().Initialize("EasySave", (Logger.LogExportType.xml));
 
         SettingsJson.GetInstance().Update(settings);
+        GoBack_Click(sender, e);
     }
 
     private void RefreshLabels()
