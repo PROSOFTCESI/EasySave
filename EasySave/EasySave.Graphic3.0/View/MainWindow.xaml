@@ -6,5 +6,7 @@
         xmlns:local="clr-namespace:EasySave.Graphic3._0"
         mc:Ignorable="d"
         Title="EasySave 3.0" Height="450" Width="800">
-    <Frame Name="MainFrame" NavigationUIVisibility="Hidden" />
+    <Grid>
+        <Frame Name="MainFrame" NavigationUIVisibility="Hidden" />
+    </Grid>
 </Window>

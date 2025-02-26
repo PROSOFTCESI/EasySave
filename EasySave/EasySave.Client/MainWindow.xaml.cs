@@ -76,22 +76,25 @@ namespace EasySaveClient
             if (button.Content.ToString() == "▶")
             {
                 button.Content = "⏸";
+                button.IsEnabled = false; 
                 await SendCommand($"start_backup {jobName}");
+                button.IsEnabled = true;
             }
-            else 
+            else
             {
                 button.Content = "▶";
             }
         }
 
-        private void RefreshJobs_Click(object sender, RoutedEventArgs e) => RefreshJobs();
 
-        private void StartBackup_Click(object sender, RoutedEventArgs e) => SendCommand($"start_backup {((FrameworkElement)sender).Tag}");
+        private async void RefreshJobs_Click(object sender, RoutedEventArgs e) => RefreshJobs();
+
+        private async void StartBackup_Click(object sender, RoutedEventArgs e) => SendCommand($"start_backup {((FrameworkElement)sender).Tag}");
 
 
-        private void DeleteBackup_Click(object sender, RoutedEventArgs e) => SendCommand($"delete_backup {((FrameworkElement)sender).Tag}");
+        private async void DeleteBackup_Click(object sender, RoutedEventArgs e) => SendCommand($"delete_backup {((FrameworkElement)sender).Tag}");
 
-        private void CreateJob_Click(object sender, RoutedEventArgs e)
+        private async void CreateJob_Click(object sender, RoutedEventArgs e)
         {
             SendCommand("create_backup");
             RefreshJobs();
@@ -129,13 +132,19 @@ namespace EasySaveClient
                 using (NetworkStream stream = client.GetStream())
                 {
                     byte[] data = Encoding.UTF8.GetBytes(command);
-                    stream.Write(data, 0, data.Length);
+                    await stream.WriteAsync(data, 0, data.Length);
+
                     byte[] buffer = new byte[1024];
-                    return Encoding.UTF8.GetString(buffer, 0, stream.Read(buffer, 0, buffer.Length));
+                    int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
+                    return Encoding.UTF8.GetString(buffer, 0, bytesRead);
                 }
             }
-            catch (Exception ex) { return $"❌ Erreur: {ex.Message}"; }
+            catch (Exception ex)
+            {
+                return $"❌ Erreur: {ex.Message}";
+            }
         }
+
     }
     public class SaveJob
     {

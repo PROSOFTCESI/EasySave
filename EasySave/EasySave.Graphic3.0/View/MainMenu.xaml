@@ -25,8 +25,6 @@
             <Button Content="⟳" HorizontalAlignment="Left" FontWeight="Bold" FontSize="16" Margin="10" Padding="10,5" Click="RefreshButton_Click"/>
         </StackPanel>
 
-
-        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Visible" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
             <ListBox x:Name="ItemList" ItemsSource="{Binding AvailableSaveJobs}" Height="400">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
@@ -44,7 +42,7 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-        </ScrollViewer>
+     
 
         <Button Grid.Row="3" Content="Paramètres" HorizontalAlignment="Center" Margin="10" Padding="10,5" Click="SettingsButton_Click"/>
     </Grid>
