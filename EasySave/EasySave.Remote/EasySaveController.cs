@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using EasySave;
 using EasySave.Graphic3._0.ViewModel;
 using EasySave.Utils.JobStates;
+using EasySave.ViewModel.ViewModel;
 
 
 namespace EasySaveRemote
@@ -30,7 +31,7 @@ namespace EasySaveRemote
                 case "update_backup":
                     return await UpdateBackup(jobName);
                 case "delete_backup":
-                    return DeleteBackup(jobName);
+                    return await DeleteBackup(jobName);
                 case "create_backup":
                     return await CreateBackup(command);
                 default:
@@ -57,10 +58,13 @@ namespace EasySaveRemote
 
         private string StartBackup(string job) => $"Pause de {job}";
         private string PauseBackup(string job) => $"Pause de {job}";
-        private string DeleteBackup(string job) => $"Suppression de {job}";
+        private async Task<string> DeleteBackup(string saveJobName)
+        {
+            UserResponse response = await DeleteJobViewModel.Delete(saveJobName);
+            return response.Success ? "OK" : "NOK";
+        }
         private async Task<string> CreateBackup(string command)
         {
-            // Exemple attendu : create_backup "NomJob" "CheminSource" "CheminCible" "SaveType"
             Regex regex = new Regex("\"([^\"]+)\"");
             MatchCollection matches = regex.Matches(command);
 
@@ -72,7 +76,7 @@ namespace EasySaveRemote
             string jobName = matches[0].Groups[1].Value;
             string sourcePath = matches[1].Groups[1].Value;
             string targetPath = matches[2].Groups[1].Value;
-            string saveType = matches[3].Groups[1].Value.ToUpper(); // Pour normaliser la casse
+            string saveType = matches[3].Groups[1].Value.ToUpper();
 
             UserResponse response = await CreateJobViewModel.Create(jobName, sourcePath, targetPath, saveType);
             return response.Success ? "Job créé avec succès." : "Échec de la création du job.";
