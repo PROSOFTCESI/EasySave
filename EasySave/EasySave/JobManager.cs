@@ -38,20 +38,6 @@ public class JobManager
         loopThread.Start();
     }
 
-    public SaveJob GetJobFromName(string Name)
-    {
-        var selectedJob = saveJobs.Where(saveJobs => saveJobs.Name == Name);
-        if (selectedJob.Any()) { 
-            return selectedJob.First();
-        }
-        else
-        {
-            SaveJob newjob =  StateJsonReader.GetInstance().GetJobs().Where(saveJobs => saveJobs.Name == Name).First();
-            saveJobs.Add(newjob);
-            return newjob;
-        }
-    }
-
 
     public Task<bool> NewProcess(SaveJob job, saveAction action)
     {

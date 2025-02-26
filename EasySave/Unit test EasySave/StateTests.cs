@@ -86,7 +86,7 @@ public class StateTests
         bool result = StateJsonReader.GetInstance().DeleteJob(FullsaveJob);
 
         Assert.True(result);
-        Assert.Empty(StateJsonReader.GetInstance().GetJobs());
+        Assert.Empty(SaveJob.Instances);
     }
 
     [Fact]

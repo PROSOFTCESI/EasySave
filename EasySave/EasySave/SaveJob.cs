@@ -60,7 +60,7 @@ public abstract class SaveJob : INotifyPropertyChanged
         Instances = StateJsonReader.GetInstance().GetJobs();
     }
 
-    public SaveJob? GetJob(string Name)
+    public static SaveJob? GetJob(string Name)
     {
         return Instances.Where(j => j.Name == Name).FirstOrDefault();
     }

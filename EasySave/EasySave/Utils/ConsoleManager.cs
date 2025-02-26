@@ -120,7 +120,7 @@ internal class ConsoleManager
     private void UpdateSaveJobMenu()
     {
         WriteCyan(messages.GetMessage("UPDATE_SAVE_JOB_MENU_LABEL"));
-        List<SaveJob> availableJobs = StateJsonReader.GetInstance().GetJobs();
+        List<SaveJob> availableJobs = SaveJob.Instances;
         if (!ShowAvailableSaveJobs(availableJobs))
         {
             return;
