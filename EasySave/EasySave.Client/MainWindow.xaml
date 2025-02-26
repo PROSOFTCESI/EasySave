@@ -19,6 +19,7 @@
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding Name}" Width="150"/>
+
                         <GridViewColumn Header="Actions">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
@@ -29,12 +30,20 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
+
                         <GridViewColumn Header="Progression" Width="100">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel>
-                                        <ProgressBar Value="{Binding Progression, TargetNullValue=0%}" Minimum="0" Maximum="100" Height="15" Width="100"/>
-                                        <TextBlock Text="{Binding Progression,TargetNullValue=0%, StringFormat={}{0}%}" HorizontalAlignment="Center"/>
+                                        <ProgressBar Value="{Binding Progression, TargetNullValue=0%}" 
+                                                     Minimum="0" 
+                                                     Maximum="100" 
+                                                     Height="15" 
+                                                     Width="100"/>
+                                        <TextBlock Text="{Binding Progression, 
+                                                                 TargetNullValue=0%, 
+                                                                 StringFormat={}{0}%}" 
+                                                   HorizontalAlignment="Center"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
@@ -43,7 +52,8 @@
                 </ListView.View>
             </ListView>
 
-            <TextBox Name="ResponseBox" Height="100" Width="400" Margin="10" TextWrapping="Wrap" IsReadOnly="True"/>
+            <TextBox Name="ResponseBox" Height="100" Width="400" Margin="10" 
+                     TextWrapping="Wrap" IsReadOnly="True"/>
         </StackPanel>
     </Grid>
 </Window>
