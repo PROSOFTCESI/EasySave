@@ -42,7 +42,7 @@ public class CreateJobViewModel
                 throw new Exception("Unsupported type of save");
             }
 
-            bool isCreated = await Task.Run(() => newJob.CreateSave()); // Exécute CreateSave() dans un nouveau thread
+            bool isCreated = await Task.Run(() => JobManager.Instance.NewProcess(newJob,saveAction.Create)); // Exécute CreateSave() dans un nouveau thread
             if (!isCreated)
             {
                 Logger.GetInstance().Log(
@@ -66,6 +66,7 @@ public class CreateJobViewModel
                     Message = "Save Job creation is Success : " + newJob.Name
                 }
             );
+            SaveJob.Instances.Add(newJob);
             return new UserResponse(true, "SAVE_JOB_CREATED_SUCCESSFULLY", name);
         }
         catch (Exception ex)
