@@ -27,20 +27,7 @@ namespace EasySave
 
         //METHODS
 
-        public string GetLastFullSavePath()
-        {           
-
-            Regex regex = new Regex(@"^FullSave_(\d{2}_\d{2}_\d{4}-\d{2}_\d{2}_\d{2})$");
-
-            var latestSave = Directory.GetDirectories(TargetPath)
-                .Select(Path.GetFileName)
-                .Where(name => regex.IsMatch(name))
-                .Select(name => new { Name = name, Date = DateTime.ParseExact(name.Substring(9), "dd_MM_yyyy-HH_mm_ss", null) })
-                .OrderByDescending(entry => entry.Date)
-                .FirstOrDefault();
-
-            return latestSave?.Name;
-        }
+        
        
 
         public override bool Save()
@@ -86,7 +73,7 @@ namespace EasySave
             }
 
             // Create the destination directory
-            string jsonSaved = Path.Combine(TargetPath, Path.Combine(GetLastFullSavePath(), ".fileStructure.json"));
+            string jsonSaved = Path.Combine(TargetPath, Path.Combine(GetLastSavePath(), ".fileStructure.json"));
 
             
             Directory.CreateDirectory(saveTargetPath);

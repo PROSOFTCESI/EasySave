@@ -14,6 +14,7 @@ using Newtonsoft.Json.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 
 namespace EasySave;
 
@@ -26,7 +27,7 @@ public abstract class SaveJob : INotifyPropertyChanged
     public DateTime CreationDate { get; set; }
     public DateTime LastUpdate { get; set; }
     public string State { get; set; }
-    public string NameLastSave { get; set; }
+    public string NameLastSave { get; set; } = "";
 
     private long? _progression;
     public long? Progression
@@ -116,6 +117,12 @@ public abstract class SaveJob : INotifyPropertyChanged
         // Create the destination directory
         Directory.CreateDirectory(saveTargetPath);
         //Create Json with file structure
+        StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
+        {
+            State = StateJsonReader.SavingState,
+            LastUpdate = DateTime.Now,
+        });
+        
         string jsonPath = FileStructureJson.GetInstance().CreateFileStructure(SourcePath, saveTargetPath);
         FileStructureJson.GetInstance().GetAdvancement(jsonPath);
         // Copy Files
@@ -203,6 +210,11 @@ public abstract class SaveJob : INotifyPropertyChanged
         if (!File.Exists(jsonFilePath))
         {
             ResetState();
+            StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
+            {
+                State = StateJsonReader.SavingState,
+                LastUpdate = DateTime.Now,
+            });
             string jsonPath = FileStructureJson.GetInstance().CreateFileStructure(SourcePath, saveTargetPath);
             FileStructureJson.GetInstance().GetAdvancement(jsonPath);
             CopyFiles(jsonPath, saveTargetPath);
@@ -215,7 +227,7 @@ public abstract class SaveJob : INotifyPropertyChanged
             if (jsonStructure.Status.Equals("set"))
             {
                 ResetState();
-                int[] advancement = FileStructureJson.GetInstance().GetAdvancement(jsonFilePath);
+                long[] advancement = FileStructureJson.GetInstance().GetAdvancement(jsonFilePath);
                 if (advancement[0] != advancement[2]  && advancement[0] != 0) // If saving not completed
                 {
                     CopyFiles(jsonFilePath, saveTargetPath);
@@ -226,6 +238,26 @@ public abstract class SaveJob : INotifyPropertyChanged
                 }
             }
         }
+    }
+
+    public void Stop()
+    {
+        string dir = Path.Combine(TargetPath, NameLastSave);
+        if (Directory.Exists(dir))
+        {
+            Directory.Delete(dir, true);
+        }
+        ResetState();
+
+        NameLastSave = GetLastSavePath((this is FullSave) ? "full" : "Diffenretial");
+        if(NameLastSave is null && this is DifferentialSave)
+        {
+            NameLastSave = GetLastSavePath();
+        }
+
+        var state = StateJsonReader.GetInstance().GetJob(Name);
+        state.NameLastSave = NameLastSave;
+        StateJsonReader.GetInstance().UpdateJob(Name, state);
     }
 
     public override string ToString()
@@ -303,7 +335,7 @@ public abstract class SaveJob : INotifyPropertyChanged
                     FileTransferTime = stopwatch.ElapsedMilliseconds
                 });
 
-                int[] advancement = FileStructureJson.GetInstance().GetAdvancement(jsonFilePath);
+                long[] advancement = FileStructureJson.GetInstance().GetAdvancement(jsonFilePath);
                 int progress = 0;
                 if (advancement[1] != 0)
                 {
@@ -407,7 +439,7 @@ public abstract class SaveJob : INotifyPropertyChanged
                     FileCryptTime = isEncrypted ? stopwatch.ElapsedMilliseconds : 0
                 });
 
-                int[] advancement = FileStructureJson.GetInstance().GetAdvancement(jsonFilePath);
+                long[] advancement = FileStructureJson.GetInstance().GetAdvancement(jsonFilePath);
                 int progress = 0;
                 if (advancement[1] != 0)
                 {
@@ -451,12 +483,12 @@ public abstract class SaveJob : INotifyPropertyChanged
 
     private void SetAvancement(string origin, string jsonFilePath, string fileName = "")
     {
-        int[] advancement = FileStructureJson.GetInstance().GetAdvancement(jsonFilePath);
+        long[] advancement = FileStructureJson.GetInstance().GetAdvancement(jsonFilePath);
 
         string state = "";
-        int progress = 0;
-        int advanceFiles = 0;
-        int advanceBytes = 0;
+        long progress = 0;
+        long advanceFiles = 0;
+        long advanceBytes = 0;
 
         if (origin == "saving")
         {
@@ -475,6 +507,7 @@ public abstract class SaveJob : INotifyPropertyChanged
         {
             progress = (int)Math.Round(((double)advanceBytes / advancement[1]) * 100);
         }
+
         StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
         {
             State = Paused ? StateJsonReader.PausedState : state,
@@ -487,5 +520,23 @@ public abstract class SaveJob : INotifyPropertyChanged
             SourceFilePath = Path.Combine(SourcePath, fileName),
             TargetFilePath = Path.Combine(TargetPath, fileName)
         });
+    }
+
+    public string GetLastSavePath(string type = "full")
+    {
+
+        Regex regex = new Regex(@"^FullSave_(\d{2}_\d{2}_\d{4}-\d{2}_\d{2}_\d{2})$");
+        if (type == "Diffenretial")
+        {
+            regex = new Regex(@"^DifferentialSave_(\d{2}_\d{2}_\d{4}-\d{2}_\d{2}_\d{2})$");
+        }
+        var latestSave = Directory.GetDirectories(TargetPath)
+            .Select(Path.GetFileName)
+            .Where(name => regex.IsMatch(name))
+            .Select(name => new { Name = name, Date = DateTime.ParseExact(name.Substring(9), "dd_MM_yyyy-HH_mm_ss", null) })
+            .OrderByDescending(entry => entry.Date)
+            .FirstOrDefault();
+
+        return latestSave?.Name;
     }
 }
