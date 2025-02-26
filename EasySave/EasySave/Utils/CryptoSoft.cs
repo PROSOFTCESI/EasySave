@@ -12,7 +12,10 @@ namespace CryptoSoftLib
     {
         private static string currentDir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
 
-        private static string exePath = Path.Combine(currentDir, "CryptoSoft/CryptoSoft.exe");   
+        private static string exePath = Path.Combine(currentDir, "CryptoSoft/CryptoSoft.exe");
+
+        private static Mutex mutex = new Mutex();
+
         
         private static string Key()
         {
@@ -25,35 +28,50 @@ namespace CryptoSoftLib
         }
         public static bool EncryptDecryptFile(string filePath, string key = null)
         {
-            if(key is null){
-                key = Key();
-            }
-
-            if (ExtentionToEncrypt()[0] != "*")
+            if (mutex.WaitOne(1000))
             {
-                if (!ExtentionToEncrypt().Contains(new FileInfo(filePath).Extension))
+                try
                 {
-                    return false;
+                    if (key is null)
+                    {
+                        key = Key();
+                    }
+
+                    if (ExtentionToEncrypt()[0] != "*")
+                    {
+                        if (!ExtentionToEncrypt().Contains(new FileInfo(filePath).Extension))
+                        {
+                            return false;
+                        }
+                    }
+
+                    ProcessStartInfo psi = new ProcessStartInfo
+                    {
+                        FileName = exePath,
+                        Arguments = $"\"{filePath}\" \"{key}\"", // Passer les arguments en les entourant de guillemets
+                        RedirectStandardOutput = true, // Pour récupérer la sortie si nécessaire
+                        RedirectStandardError = true,
+                        CreateNoWindow = true
+                    };
+
+                    try
+                    {
+                        Process.Start(psi);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Erreur lors de l'exécution : " + ex.Message);
+                    }
+                }finally
+                {
+                    mutex.ReleaseMutex();
                 }
             }
-
-            ProcessStartInfo psi = new ProcessStartInfo
+            else
             {
-                FileName = exePath,
-                Arguments = $"\"{filePath}\" \"{key}\"", // Passer les arguments en les entourant de guillemets
-                RedirectStandardOutput = true, // Pour récupérer la sortie si nécessaire
-                RedirectStandardError = true,
-                CreateNoWindow = true
-            };
-
-            try
-            {
-                Process.Start(psi);
+                Console.WriteLine("NOT CRYPTING CAUSE MUTEX");
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Erreur lors de l'exécution : " + ex.Message);
-            }
+            
             return true;
         }
 

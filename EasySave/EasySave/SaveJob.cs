@@ -272,6 +272,10 @@ public abstract class SaveJob : INotifyPropertyChanged
 
     public void Stop()
     {
+        if (State.Equals(StateJsonReader.SavedState))
+        {
+            return;
+        }
         string dir = Path.Combine(TargetPath, NameLastSave);
         if (Directory.Exists(dir))
         {
@@ -380,7 +384,7 @@ public abstract class SaveJob : INotifyPropertyChanged
         State = StateJsonReader.SavedState;
         StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
         {
-            State = StateJsonReader.SavedState,
+            State = StateJsonReader.Saved2State,
             LastUpdate = DateTime.Now,
             TotalFilesToCopy = null,
             TotalFilesSize = null,
@@ -390,7 +394,6 @@ public abstract class SaveJob : INotifyPropertyChanged
             SourceFilePath = null,
             TargetFilePath = null
         });
-
     }
 
     public bool EncryptFiles(string jsonFilePath, string saveTargetPath, bool encrypt = true)
