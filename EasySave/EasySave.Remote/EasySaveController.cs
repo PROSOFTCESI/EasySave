@@ -1,12 +1,18 @@
 ﻿
 
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Text.Json;
+using EasySave;
 using EasySave.Graphic3._0.ViewModel;
+using EasySave.Utils.JobStates;
+
 
 namespace EasySaveRemote
 {
     public class EasySaveController
     {
-        public string ExecuteCommand(string command)
+        public async Task<string> ExecuteCommand(string command)
         {
             string[] parts = command.Split(' ');
             string action = parts[0];
@@ -17,7 +23,7 @@ namespace EasySaveRemote
                 case "list_jobs":
                     return GetSaveJobs();
                 case "start_backup":
-                    return StartBackup(jobName);
+                    return await StartBackup(jobName);
                 case "pause_backup":
                     return PauseBackup(jobName);
                 case "delete_backup":
@@ -31,17 +37,24 @@ namespace EasySaveRemote
 
         private string GetSaveJobs()
         {
-            string str = "";
             var jobs = new MainMenuViewModel().GetJobs();
-            foreach (var job in jobs)
+
+            if (jobs == null || jobs.Count == 0)
             {
-                str += job.ToString();
+                return "Aucun job disponible.";
             }
-            return str;
+
+            return JsonSerializer.Serialize(jobs);
         }
-        private string StartBackup(string job) => $"Démarrage de {job}";
+        private async Task<string> StartBackup(string saveJobName)
+        { SaveJob saveJob = StateJsonReader.GetInstance().GetJobs().Where(job => job.Name == saveJobName).First();
+            bool response = await JobManager.instance.Value.NewProcess(saveJob, saveAction.Save);
+            return response ? "OK" : "NOK";
+        }
+
         private string PauseBackup(string job) => $"Pause de {job}";
         private string DeleteBackup(string job) => $"Suppression de {job}";
         private string CreateBackup(string job) => $"Création de {job}";
+       
     }
 }
