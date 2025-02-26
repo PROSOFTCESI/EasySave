@@ -33,18 +33,27 @@ namespace EasySaveRemote
             byte[] buffer = new byte[1024];
             int bytesRead;
 
-            while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
+            try
             {
-                string command = Encoding.UTF8.GetString(buffer, 0, bytesRead).Trim();
-                Console.WriteLine($"Commande reçue : {command}");
+                while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    string command = Encoding.UTF8.GetString(buffer, 0, bytesRead).Trim();
+                    Console.WriteLine($"Commande reçue : {command}");
 
-                string response = await controller.ExecuteCommand(command);
+                    string response = await controller.ExecuteCommand(command);
 
-                byte[] responseBytes = Encoding.UTF8.GetBytes(response);
-                stream.Write(responseBytes, 0, responseBytes.Length);
+                    byte[] responseBytes = Encoding.UTF8.GetBytes(response);
+                    stream.Write(responseBytes, 0, responseBytes.Length);
+                }
             }
-
-            client.Close();
+            catch (IOException ex)
+            {
+                Console.WriteLine($"Erreur de lecture du flux réseau : {ex.Message}");
+            }
+            finally
+            {
+                client.Close();
+            }
         }
     }
 }
