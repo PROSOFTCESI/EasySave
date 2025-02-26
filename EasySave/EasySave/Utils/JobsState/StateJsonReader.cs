@@ -152,7 +152,14 @@ public class StateJsonReader
             jobJson.State = job.State;
             jobJson.NameLastSave = job.NameLastSave;
 
-            return SaveJob(jobJson);
+            bool saved = SaveJob(jobJson);
+
+            if (saved)
+            {
+                EasySave.SaveJob.Instances.Add(job);
+            }
+
+            return saved;
         }
         catch (Exception)
         {
@@ -171,6 +178,7 @@ public class StateJsonReader
         {
             JobStateJsonDefinition jobToDelete = GetJob(job.Name);
             jobToDelete.State = DeletedState;
+            EasySave.SaveJob.Instances.Remove(job);
             return UpdateJob(jobToDelete);
         }
         catch (Exception)
@@ -217,6 +225,9 @@ public class StateJsonReader
         {
             List<JobStateJsonDefinition> jobsJson = ReadJson();
             jobsJson[jobsJson.FindIndex(j => j.Name == job.Name && j.State != DeletedState)] = job;
+            var jobToUpdate = EasySave.SaveJob.Instances.Where(j => j.Name.Equals(job.Name)).FirstOrDefault();
+            jobToUpdate.State = job.State;
+            jobToUpdate.Progression = job.Progression;
             var options = new JsonSerializerOptions { WriteIndented = true };
             string json = JsonSerializer.Serialize(jobsJson, options);
             lock (_lock) // 🔒 Verrou
