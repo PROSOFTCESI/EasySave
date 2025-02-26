@@ -209,7 +209,7 @@ public abstract class SaveJob : INotifyPropertyChanged
                 // Copy
                 Stopwatch stopwatch = Stopwatch.StartNew();
                 string source = Path.Combine(SourcePath, file.Name);
-                File.Copy(source, newFile, true);
+                new SmartFileCopier().CopyFile(source, newFile);
                 stopwatch.Stop();
 
                 // Save Status

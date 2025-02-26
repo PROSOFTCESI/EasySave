@@ -27,7 +27,7 @@
 
 
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Visible" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
-            <ListBox x:Name="ItemList" ItemsSource="{Binding AvailableSaveJobs}">
+            <ListBox x:Name="ItemList" ItemsSource="{Binding AvailableSaveJobs}" Height="400">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Vertical">
