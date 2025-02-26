@@ -16,6 +16,7 @@ public class StateJsonReader
     public const string DifferentialSaveType = "DifferentialSave";
 
     public const string SavedState = "SAVED";
+    public const string Saved2State = "Saved";
     public const string SavingState = "SAVING";
     public const string EncryptingState = "ENCRYPTING";
     public const string DecryptingState = "DECRYPTING";
