@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EasySave.Graphic3._0"
         mc:Ignorable="d"
-        Title="EasySave 3.0" Height="450" Width="800">
+        Title="EasySave 3.0" Height="650" Width="1000">
     <Grid>
         <Frame Name="MainFrame" NavigationUIVisibility="Hidden" />
     </Grid>

@@ -62,7 +62,30 @@ public class UpdateJobViewModel
             return new UserResponse(false, "SAVE_JOB_UPDATE_FAILED_MESSAGE");
         }
     }
-    
+
+    public static async Task<UserResponse> Stop(string saveJobName)
+    {
+        SaveJob? saveJob = null;
+        try
+        {
+            saveJob = SaveJob.GetJob(saveJobName) ?? throw new KeyNotFoundException("Job name key not found");
+            await Task.Run(() => saveJob.Stop());
+            return UserResponse.GetEmptyUserResponse();
+        }
+        catch (Exception ex)
+        {
+            if (ex is BusinessSoftwareRunningException)
+            {
+                return new UserResponse(false, "BUSINESS_SOFTWARE_DETECTED_ERROR");
+            }
+            if (ex is PlayPauseStopException)
+            {
+                return UserResponse.GetEmptyUserResponse();
+            }
+            return new UserResponse(false, "SAVE_JOB_UPDATE_FAILED_MESSAGE");
+        }
+    }
+
     public static long? GetSaveJobProgress(string name)
     {
         var progression = StateJsonReader.GetInstance().GetJob(name).Progression;
