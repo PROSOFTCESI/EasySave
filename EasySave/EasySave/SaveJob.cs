@@ -53,10 +53,23 @@ public abstract class SaveJob : INotifyPropertyChanged
     private bool Paused { get; set; } = false;
 
     private readonly ProcessObserver _businessSoftwaresObserver;
+    public static List<SaveJob> Instances;
+
+    static SaveJob()
+    {
+        Instances = StateJsonReader.GetInstance().GetJobs();
+    }
+
+    public static SaveJob? GetJob(string Name)
+    {
+        return Instances.Where(j => j.Name == Name).FirstOrDefault();
+    }
+
 
     //CONSTRUCTOR
     protected SaveJob(string name, string sourcePath, string targetPath, bool checkBusinessSoftwares = false)
     {
+
         Name = name;
         SourcePath = sourcePath;
         TargetPath = targetPath;

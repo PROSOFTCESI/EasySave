@@ -1,11 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using EasySave.Utils.JobStates;
+using Newtonsoft.Json;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Collections.Specialized.BitVector32;
 
 namespace EasySave;
 
@@ -15,7 +10,10 @@ public enum saveAction
     Restore,
     Delete,
     Save,
-    Decrypte
+    Decrypte,
+    Play,
+    Pause,
+    Stop
 }
 
 public class JobManager
@@ -27,16 +25,19 @@ public class JobManager
     //Avoid 2 process at the same job at the same time
     private static readonly List<SaveJob> ProcessingJobs = [];
     private static readonly ConcurrentQueue<(SaveJob, saveAction, TaskCompletionSource<bool>)> ProcessQueue = [];
+    private static List<SaveJob> saveJobs = [];
+
 
     //Allow 3 task Max
     private static readonly int MAXWORKER = 3;
-    static SemaphoreSlim semaphore = new SemaphoreSlim(MAXWORKER); // Allow 3 task at the same time
+    static SemaphoreSlim semaphore = new(MAXWORKER); //  Allow max. 3 task at the same time
 
     private JobManager()
     {
         Thread loopThread = new(LaunchMainloop);
         loopThread.Start();
     }
+
 
     public Task<bool> NewProcess(SaveJob job, saveAction action)
     {
@@ -97,6 +98,9 @@ public class JobManager
                 saveAction.Save => job.Save(),
                 saveAction.Delete => job.DeleteSave(),
                 saveAction.Decrypte => job.DeleteSave(),
+                saveAction.Stop => job.DeleteSave(),
+                saveAction.Play => job.DeleteSave(),
+                saveAction.Pause => job.DeleteSave(),
                 _ => false,
             };
             tcs.SetResult(result);

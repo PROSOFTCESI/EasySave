@@ -63,7 +63,7 @@ public partial class UpdateSaveJobMenu : Page
 
         StateJsonReader stateJsonReader = StateJsonReader.GetInstance();
 
-        List<SaveJob> jobs = stateJsonReader.GetJobs(true);
+        List<SaveJob> jobs = SaveJob.Instances;
 
         // Remplir la ListBox avec les travaux disponibles
         foreach (SaveJob job in jobs)
