@@ -12,7 +12,7 @@ public class MainMenuViewModel
     private static List<SaveJob> saveJobs = null;
     public List<SaveJob> GetJobs()
     {
-        saveJobs = StateJsonReader.GetInstance().GetJobs(true);
+        saveJobs = SaveJob.Instances;
         return saveJobs;
     }
 }
