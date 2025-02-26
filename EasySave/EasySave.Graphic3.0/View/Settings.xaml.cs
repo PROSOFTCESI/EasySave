@@ -19,37 +19,7 @@ public partial class Settings : Page
     public Settings()
     {
         InitializeComponent();
-        settings = SettingsJson.GetInstance().GetContent();
-
-        //display info from settings.json
-        NameTextBox.Text = settings.Name;
-        KeyTextBox.Text = settings.EncryptionKey;
-        ExtentionsTextBox.Text = settings.extensionsToEncrypt;
-        if (settings.logFormat == "json")
-        {
-            JsonButton.IsChecked = true;
-            XmlButton.IsChecked = false;
-        }
-        if (settings.logFormat == "xml")
-        {
-            JsonButton.IsChecked = false;
-            XmlButton.IsChecked = true;
-        }
-        BusinessSoftwareTextBox.Text = settings.businessSoftwares;
-
-        //Labels
-        NameLabel.Text = messages.GetMessage("NAME");
-        KeyLabel.Text = messages.GetMessage("ENCRYPTION_KEY");
-        KeyIntLabel.Text = messages.GetMessage("ENCRYPTION_KEY_INT");
-        ExtentionsLabel.Text = messages.GetMessage("EXTENTION_FILES");
-        ExtentionsIntLabel.Text = messages.GetMessage("EXTENTION_FILES_INT");
-        LogFormatLabel.Text = messages.GetMessage("LOG_FORMAT");
-        LangageButton.Content = messages.GetMessage("CHANGE_LANGUAGE_MENU_LABEL");
-        SettingsButton.Content = messages.GetMessage("SETTINGS_BUTTON_OPEN");
-        BusinessSoftwareLabel.Text = messages.GetMessage("BUSINESS_SOFTWARE");
-        BusinessSoftwareIntLabel.Text = messages.GetMessage("BUSINESS_SOFTWARE_INT");
-        SaveButton.Content = messages.GetMessage("SAVE");
-        BackButton.Content = messages.GetMessage("BACK");
+        RefreshLabels();
     }
 
     private void OpenSettings(object sender, RoutedEventArgs e)
@@ -75,7 +45,7 @@ public partial class Settings : Page
 
     private void GoBack_Click(object sender, RoutedEventArgs e)
     {
-        NavigationService.GoBack();
+        NavigationService.Navigate(new MainMenu());
     }
 
     private void Save_Click(object sender, RoutedEventArgs e)
@@ -85,6 +55,8 @@ public partial class Settings : Page
         settings.logFormat = (bool)JsonButton.IsChecked ? "json" : "xml";
         settings.extensionsToEncrypt = ExtentionsTextBox.Text;
         settings.businessSoftwares = BusinessSoftwareTextBox.Text;
+        settings.maxSizeTransferMB = MaxSizeTextBox.Text;
+        settings.priorityFilesToTransfer = PriorityFilesTextBox.Text;
 
         if ((bool)JsonButton.IsChecked)
             Logger.GetInstance().Initialize("EasySave", (Logger.LogExportType.json));
@@ -94,8 +66,49 @@ public partial class Settings : Page
         SettingsJson.GetInstance().Update(settings);
     }
 
+    private void RefreshLabels()
+    {
+        settings = SettingsJson.GetInstance().GetContent();
+
+        //display info from settings.json
+        NameTextBox.Text = settings.Name;
+        KeyTextBox.Text = settings.EncryptionKey;
+        ExtentionsTextBox.Text = settings.extensionsToEncrypt;
+        if (settings.logFormat == "json")
+        {
+            JsonButton.IsChecked = true;
+            XmlButton.IsChecked = false;
+        }
+        if (settings.logFormat == "xml")
+        {
+            JsonButton.IsChecked = false;
+            XmlButton.IsChecked = true;
+        }
+        BusinessSoftwareTextBox.Text = settings.businessSoftwares;
+        MaxSizeTextBox.Text = settings.maxSizeTransferMB;
+        PriorityFilesTextBox.Text = settings.priorityFilesToTransfer;
+
+        //Labels
+        NameLabel.Text = messages.GetMessage("NAME");
+        KeyLabel.Text = messages.GetMessage("ENCRYPTION_KEY");
+        KeyIntLabel.Text = messages.GetMessage("ENCRYPTION_KEY_INT");
+        ExtentionsLabel.Text = messages.GetMessage("EXTENTION_FILES");
+        ExtentionsIntLabel.Text = messages.GetMessage("EXTENTION_FILES_INT");
+        LogFormatLabel.Text = messages.GetMessage("LOG_FORMAT");
+        LangageButton.Content = messages.GetMessage("CHANGE_LANGUAGE_MENU_LABEL");
+        SettingsButton.Content = messages.GetMessage("SETTINGS_BUTTON_OPEN");
+        BusinessSoftwareLabel.Text = messages.GetMessage("BUSINESS_SOFTWARE");
+        BusinessSoftwareIntLabel.Text = messages.GetMessage("BUSINESS_SOFTWARE_INT");
+        MaxSizeLabel.Text = messages.GetMessage("MAX_SIZE_MB");
+        MaxSizeIntLabel.Text = messages.GetMessage("MAX_SIZE_MB_INT");
+        PriorityFilesLabel.Text = messages.GetMessage("PRIORITY_FILES");
+        PriorityFilesIntLabel.Text = messages.GetMessage("PRIORITY_FILES_INT");
+        SaveButton.Content = messages.GetMessage("SAVE");
+        BackButton.Content = messages.GetMessage("BACK");
+    }
+
     private void Langage_Click(object sender, RoutedEventArgs e)
     {
-        //NavigationService.Navigate(new ChangeLanguageMenu("Settings"));
+        NavigationService.Navigate(new ChangeLanguageMenu("Settings"));
     }
 }

@@ -27,10 +27,10 @@ namespace EasySaveRemote
             }
         }
 
-        static void HandleClient(TcpClient client, EasySaveController controller)
+        static async void HandleClient(TcpClient client, EasySaveController controller)
         {
             NetworkStream stream = client.GetStream();
-            byte[] buffer = new byte[9999];
+            byte[] buffer = new byte[1024];
             int bytesRead;
 
             while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
@@ -38,7 +38,7 @@ namespace EasySaveRemote
                 string command = Encoding.UTF8.GetString(buffer, 0, bytesRead).Trim();
                 Console.WriteLine($"Commande reçue : {command}");
 
-                string response = controller.ExecuteCommand(command);
+                string response = await controller.ExecuteCommand(command);
 
                 byte[] responseBytes = Encoding.UTF8.GetBytes(response);
                 stream.Write(responseBytes, 0, responseBytes.Length);

@@ -29,6 +29,7 @@ public abstract class SaveJob : INotifyPropertyChanged
     public string State { get; set; }
     public string NameLastSave { get; set; } = "";
 
+
     private long? _progression;
     public long? Progression
     {
@@ -238,7 +239,6 @@ public abstract class SaveJob : INotifyPropertyChanged
                 }
             }
         }
-    }
 
     public void Stop()
     {
@@ -313,7 +313,7 @@ public abstract class SaveJob : INotifyPropertyChanged
                 // Copy
                 Stopwatch stopwatch = Stopwatch.StartNew();
                 string source = Path.Combine(SourcePath, file.Name);
-                File.Copy(source, newFile, true);
+                new SmartFileCopier().CopyFile(source, newFile);
                 stopwatch.Stop();
 
                 // Save Status
@@ -483,6 +483,7 @@ public abstract class SaveJob : INotifyPropertyChanged
 
     private void SetAvancement(string origin, string jsonFilePath, string fileName = "")
     {
+
         long[] advancement = FileStructureJson.GetInstance().GetAdvancement(jsonFilePath);
 
         string state = "";
@@ -520,7 +521,6 @@ public abstract class SaveJob : INotifyPropertyChanged
             SourceFilePath = Path.Combine(SourcePath, fileName),
             TargetFilePath = Path.Combine(TargetPath, fileName)
         });
-    }
 
     public string GetLastSavePath(string type = "full")
     {

@@ -8,22 +8,33 @@
 
             <TextBlock Text="Adresse IP du serveur :" Margin="5"/>
             <TextBox x:Name="ServerIpBox" Width="200" Text="127.0.0.1" Margin="5"/>
+            <TextBlock Text="Port du serveur :" Margin="5"/>
+            <TextBox x:Name="ServerPortBox" Width="200" Text="5000" Margin="5"/>
 
             <Button x:Name="ConnectButton" Content="Connexion au serveur de sauvegarde" Click="ConnectToServer_Click" Margin="5"/>
             <Button x:Name="RefreshButton" Content="Actualiser la liste" Click="RefreshJobs_Click" Margin="5" IsEnabled="False"/>
             <Button x:Name="CreateButton" Content="Créer une sauvegarde" Click="CreateJob_Click" Margin="5" IsEnabled="False"/>
 
-            <ListView x:Name="SaveJobsList" Width="400" Height="200">
+            <ListView x:Name="SaveJobsList" Width="400" Height="250" ItemsSource="{Binding AvailableSaveJobs}">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding Name}" Width="200"/>
+                        <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding Name}" Width="150"/>
                         <GridViewColumn Header="Actions">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
-                                        <Button Content="▶" Click="StartBackup_Click" Tag="{Binding Name}" Margin="2"/>
-                                        <Button Content="⏸" Click="PauseBackup_Click" Tag="{Binding Name}" Margin="2"/>
+                                        <Button Content="▶" Click="TogglePlayPause_Click" Tag="{Binding Name}" Margin="2"/>
                                         <Button Content="❌" Click="DeleteBackup_Click" Tag="{Binding Name}" Margin="2"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Progression" Width="100">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <ProgressBar Value="{Binding Progression, TargetNullValue=0%}" Minimum="0" Maximum="100" Height="15" Width="100"/>
+                                        <TextBlock Text="{Binding Progression,TargetNullValue=0%, StringFormat={}{0}%}" HorizontalAlignment="Center"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>

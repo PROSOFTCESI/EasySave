@@ -1,4 +1,4 @@
-﻿<Page x:Class="EasySave.Graphic3._0.View.MainMenu"
+<Page x:Class="EasySave.Graphic3._0.View.MainMenu"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -27,7 +27,7 @@
 
 
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Visible" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
-            <ListBox x:Name="ItemList" ItemsSource="{Binding AvailableSaveJobs}">
+            <ListBox x:Name="ItemList" ItemsSource="{Binding AvailableSaveJobs}" Height="400">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Vertical">

@@ -48,5 +48,9 @@
   "ENCRYPTION": "Chiffrer / Déchiffrer",
   "BUSINESS_SOFTWARE_INT": "Renseigner le nom des applications séparés par des espaces",
   "BUSINESS_SOFTWARE": "Applications Métier",
-  "BUSINESS_SOFTWARE_DETECTED_ERROR": "Un logiciel métier a été détecté pendant la mise à jour/création de votre save job. La sauvegarde n'a pas pu aboutir"
+  "BUSINESS_SOFTWARE_DETECTED_ERROR": "Un logiciel métier a été détecté pendant la mise à jour/création de votre save job. La sauvegarde n'a pas pu aboutir",
+  "MAX_SIZE_MB": "Taille maximale des fichiers à sauvegarder en parallèle (MB) :",
+  "MAX_SIZE_MB_INT": "Renseignez la taille maximale des fichiers à sauvegarder en parallèles en MB",
+  "PRIORITY_FILES": "Liste des extensions des fichiers à sauvegarder en priorité :",
+  "PRIORITY_FILES_INT": "Saisir les extentions en les séparant par des espaces ex : .txt .pdf"
 }
