@@ -12,7 +12,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -25,23 +25,24 @@
             <Button Content="⟳" HorizontalAlignment="Left" FontWeight="Bold" FontSize="16" Margin="10" Padding="10,5" Click="RefreshButton_Click"/>
         </StackPanel>
 
-            <ListBox x:Name="ItemList" ItemsSource="{Binding AvailableSaveJobs}" Height="400">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Vertical">
-                            <TextBlock Text="{Binding Name}" FontSize="18" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding SourcePath}" FontSize="12" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding TargetPath}" FontSize="12" FontWeight="Bold"/>
-                            <StackPanel Orientation="Horizontal">
-                                <Button Content="⏯" Margin="0,5,5,5" Padding="5" Click="Play_Click" ClickMode="Press"/>
-                                <Button Content="◼" Margin="5" Padding="5" Click="Play_Click" ClickMode="Press"/>
-                                <Button Content="🗑️" Margin="5" Padding="5" Click="Delete_Click"/>
-                            </StackPanel>
-                            <ProgressBar Width="200" Margin="0,5,5,5" Height="10" Value="{Binding Progression, TargetNullValue=0}" HorizontalAlignment="Left"/>
+        <ListBox x:Name="ItemList" ItemsSource="{Binding AvailableSaveJobs}" Height="400">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="{Binding Name}" FontSize="18" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding SourcePath}" FontSize="12" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding TargetPath}" FontSize="12" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding State}" FontSize="12" FontWeight="Bold"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="⏯" Margin="0,5,5,5" Padding="5" Click="Play_Click" ClickMode="Press"/>
+                            <Button Content="◼" Margin="5" Padding="5" Click="Play_Click" ClickMode="Press"/>
+                            <Button Content="🗑️" Margin="5" Padding="5" Click="Delete_Click"/>
                         </StackPanel>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+                        <ProgressBar Width="200" Margin="0,5,5,5" Height="10" Value="{Binding Progression, TargetNullValue=0}" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
      
 
         <Button Grid.Row="3" Content="Paramètres" HorizontalAlignment="Center" Margin="10" Padding="10,5" Click="SettingsButton_Click"/>

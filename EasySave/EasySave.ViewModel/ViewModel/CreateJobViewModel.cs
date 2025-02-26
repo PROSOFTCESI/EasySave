@@ -1,4 +1,5 @@
 ﻿using EasySave.CustomExceptions;
+using EasySave.Utils.JobStates;
 using LoggerLib;
 using System;
 using System.Collections.Generic;
@@ -66,7 +67,7 @@ public class CreateJobViewModel
                     Message = "Save Job creation is Success : " + newJob.Name
                 }
             );
-            SaveJob.Instances.Add(newJob);
+            StateJsonReader.GetInstance().AddJob(newJob);
             return new UserResponse(true, "SAVE_JOB_CREATED_SUCCESSFULLY", name);
         }
         catch (Exception ex)
@@ -74,6 +75,10 @@ public class CreateJobViewModel
             if (ex is BusinessSoftwareRunningException)
             {
                 return new UserResponse(false, "BUSINESS_SOFTWARE_DETECTED_ERROR");
+            }
+            if (ex is PlayPauseStopException)
+            {
+                return UserResponse.GetEmptyUserResponse();
             }
             return new UserResponse(false, "SAVE_JOB_CREATION_FAILED_MESSAGE");
         }

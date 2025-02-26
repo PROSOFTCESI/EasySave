@@ -27,7 +27,20 @@ public abstract class SaveJob : INotifyPropertyChanged
     public string TargetPath { get; set; }
     public DateTime CreationDate { get; set; }
     public DateTime LastUpdate { get; set; }
-    public string State { get; set; }
+
+    private string? _state { get; set; }
+    public string State
+    {
+        get => _state;
+        set
+        {
+            if (_state != value)
+            {
+                _state = value;
+                OnPropertyChanged();
+            }
+        }
+    }
     public string NameLastSave { get; set; } = "";
 
 
@@ -187,6 +200,7 @@ public abstract class SaveJob : INotifyPropertyChanged
             StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
             {
                 State = StateJsonReader.PausedState,
+                Progression = Progression,
                 LastUpdate = DateTime.Now,
             });
             throw new PlayPauseStopException("PAUSED");

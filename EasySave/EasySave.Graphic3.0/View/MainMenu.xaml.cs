@@ -15,7 +15,6 @@ namespace EasySave.Graphic3._0.View;
 public partial class MainMenu : Page, INotifyPropertyChanged
 {
     private ObservableCollection<SaveJob> _availableSaveJobs;
-    private readonly DispatcherTimer _timer;
     private readonly MainMenuViewModel mainMenuViewModel = new();
 
     public ObservableCollection<SaveJob> AvailableSaveJobs
@@ -41,14 +40,6 @@ public partial class MainMenu : Page, INotifyPropertyChanged
         AvailableSaveJobs = new();
         RefreshJobs();
         DataContext = this;
-
-        // Initialisation du timer
-        _timer = new DispatcherTimer
-        {
-            Interval = TimeSpan.FromMilliseconds(500)
-        };
-        _timer.Tick += Timer_Tick;
-        _timer.Start();
     }
 
     private void Timer_Tick(object sender, EventArgs e)

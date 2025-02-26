@@ -36,12 +36,12 @@ public class UpdateJobViewModel
             }
             else if (saveJob.State.Equals(StateJsonReader.SavingState) || saveJob.State.Equals(StateJsonReader.EncryptingState))
             {
-                saveJob.Pause();
+                await Task.Run(() => saveJob.Pause());
                 return UserResponse.GetEmptyUserResponse();
             }
             else if (saveJob.State.Equals(StateJsonReader.PausedState)) 
             {
-                saveJob.Play();
+                await Task.Run(() => saveJob.Play());
                 return UserResponse.GetEmptyUserResponse();
             }
             else
