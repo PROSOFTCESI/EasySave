@@ -1,4 +1,5 @@
 ﻿using EasySave.CustomExceptions;
+using EasySave.Utils.JobStates;
 using LoggerLib;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,11 @@ namespace EasySave
 
         public override bool Save()
         {
-            string saveTargetPath = Path.Combine(TargetPath, ("FullSave_" + DateTime.Now.ToString("dd_MM_yyyy-HH_mm_ss")));
+            NameLastSave = "FullSave_" + DateTime.Now.ToString("dd_MM_yyyy-HH_mm_ss");
+            var state = StateJsonReader.GetInstance().GetJob(Name);
+            state.NameLastSave = NameLastSave;
+            StateJsonReader.GetInstance().UpdateJob(Name, state);
+            string saveTargetPath = Path.Combine(TargetPath, NameLastSave);
             this.CreateSave();
             Logger.GetInstance().Log(
                 new

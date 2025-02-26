@@ -40,6 +40,14 @@
                     <Button x:Name="SettingsButton" Width="200" Margin="5" Content="Ouvrir le fichier de paramètres" Click="OpenSettings"/>
                 </StackPanel>
 
+                <TextBlock x:Name="MaxSizeLabel" FontWeight="Bold" Text="Taille maximale des fichiers à sauvegarder en parallèle (MB) :"/>
+                <TextBlock x:Name="MaxSizeIntLabel" FontWeight="Bold" FontSize="10" Text="Renseignez la taille maximale des fichiers à sauvegarder en parallèles en MB"/>
+                <TextBox x:Name="MaxSizeTextBox" Margin="0,5,0,15" MinWidth="300"/>
+
+                <TextBlock x:Name="PriorityFilesLabel" FontWeight="Bold" Text="Liste des extensions des fichiers à sauvegarder en priorité :"/>
+                <TextBlock x:Name="PriorityFilesIntLabel" FontWeight="Bold" FontSize="10" Text="Saisir les extentions en les séparant par des espaces ex : .txt .pdf"/>
+                <TextBox x:Name="PriorityFilesTextBox" Margin="0,5,0,15" MinWidth="300"/>
+
                 <TextBlock x:Name="LogFormatLabel" FontWeight="Bold" Text="Format de Logs :"/>
                 <StackPanel Orientation="Vertical" Margin="0,5,0,15">
                     <RadioButton x:Name="JsonButton" IsChecked="True" Content="Json"/>
