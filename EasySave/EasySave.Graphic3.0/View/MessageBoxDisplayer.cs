@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EasySave.Graphic;
+namespace EasySave.Graphic3._0.View;
 
 internal static class MessageBoxDisplayer
 {
