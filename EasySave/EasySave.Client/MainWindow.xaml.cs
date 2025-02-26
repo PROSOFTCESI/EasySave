@@ -66,7 +66,7 @@ namespace EasySaveClient
             }
 
         }
-        private void TogglePlayPause_Click(object sender, RoutedEventArgs e)
+        private async void TogglePlayPause_Click(object sender, RoutedEventArgs e)
         {
             Button button = sender as Button;
             if (button == null) return;
@@ -75,15 +75,12 @@ namespace EasySaveClient
 
             if (button.Content.ToString() == "▶")
             {
-                SendCommand($"start_backup {jobName}");
                 button.Content = "⏸";
-                
+                await SendCommand($"start_backup {jobName}");
             }
             else 
             {
-                SendCommand($"pause_backup {jobName}");
                 button.Content = "▶";
-
             }
         }
 
@@ -100,10 +97,10 @@ namespace EasySaveClient
             RefreshJobs();
         }
 
-        private void RefreshJobs()
+        private async void RefreshJobs()
         {
             AvailableSaveJobs.Clear();
-            string response = SendCommand("list_jobs");
+            string response = await SendCommand("list_jobs");
 
           
             List<SaveJob>? jobsList = JsonSerializer.Deserialize<List<SaveJob>>(response);
@@ -124,7 +121,7 @@ namespace EasySaveClient
             catch { return false; }
         }
 
-        private string SendCommand(string command)
+        private async Task<string> SendCommand(string command)
         {
             try
             {

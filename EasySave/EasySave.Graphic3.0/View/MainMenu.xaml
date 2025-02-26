@@ -17,7 +17,6 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Titre -->
         <Label Grid.Row="0" Content="EasySave 3.0" FontSize="24" HorizontalAlignment="Center" Margin="10"/>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal">
@@ -25,22 +24,28 @@
             <Button Content="⟳" HorizontalAlignment="Left" FontWeight="Bold" FontSize="16" Margin="10" Padding="10,5" Click="RefreshButton_Click"/>
         </StackPanel>
 
-
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Visible" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
-            <ListBox x:Name="ItemList" ItemsSource="{Binding AvailableSaveJobs}">
+            <ListBox x:Name="ItemList" ItemsSource="{Binding AvailableSaveJobs}" HorizontalContentAlignment="Stretch">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Vertical">
-                            <TextBlock Text="{Binding Name}" FontSize="18" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding SourcePath}" FontSize="12" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding TargetPath}" FontSize="12" FontWeight="Bold"/>
-                            <StackPanel Orientation="Horizontal">
-                                <Button Content="⏯" Margin="0,5,5,5" Padding="5" Click="Play_Click" ClickMode="Press"/>
-                                <Button Content="◼" Margin="5" Padding="5" Click="Play_Click" ClickMode="Press"/>
-                                <Button Content="🗑️" Margin="5" Padding="5" Click="Delete_Click"/>
+                        <Border Margin="5" Padding="10" BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="8">
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+                                <TextBlock Text="{Binding Name}" FontSize="18" FontWeight="Bold" TextWrapping="Wrap" HorizontalAlignment="Left"/>
+                                <TextBlock Text="{Binding SourcePath}" FontSize="12" FontWeight="Bold" TextWrapping="Wrap" HorizontalAlignment="Left"/>
+                                <TextBlock Text="{Binding TargetPath}" FontSize="12" FontWeight="Bold" TextWrapping="Wrap" HorizontalAlignment="Left"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button Content="⏯" Margin="0,5,5,5" Padding="5" Click="Play_Click" ClickMode="Press"/>
+                                    <Button Content="◼" Margin="5" Padding="5" Click="Play_Click" ClickMode="Press"/>
+                                    <Button Content="🗑️" Margin="5" Padding="5" Click="Delete_Click"/>
+                                </StackPanel>
+                                <ProgressBar Width="200" Margin="0,5,5,5" Height="10" Value="{Binding Progression, TargetNullValue=0}" HorizontalAlignment="Left"/>
                             </StackPanel>
-                            <ProgressBar Width="200" Margin="0,5,5,5" Height="10" Value="{Binding Progression, TargetNullValue=0}" HorizontalAlignment="Left"/>
-                        </StackPanel>
+                        </Border>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>

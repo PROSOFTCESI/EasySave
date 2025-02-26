@@ -12,7 +12,7 @@ namespace EasySaveRemote
 {
     public class EasySaveController
     {
-        public string ExecuteCommand(string command)
+        public async Task<string> ExecuteCommand(string command)
         {
             string[] parts = command.Split(' ');
             string action = parts[0];
@@ -23,9 +23,7 @@ namespace EasySaveRemote
                 case "list_jobs":
                     return GetSaveJobs();
                 case "start_backup":
-                    SaveJob job = null;
-
-                    return StartBackup(jobName);
+                    return await StartBackup(jobName);
                 case "pause_backup":
                     return PauseBackup(jobName);
                 case "delete_backup":
@@ -48,12 +46,12 @@ namespace EasySaveRemote
 
             return JsonSerializer.Serialize(jobs);
         }
-        private async void StartBackup(SaveJob saveJob)
-        {
-
-            UserResponse response = await UpdateJobViewModel.Update(saveJob);
+        private async Task<string> StartBackup(string saveJobName)
+        { SaveJob saveJob = StateJsonReader.GetInstance().GetJobs().Where(job => job.Name == saveJobName).First();
+            bool response = await JobManager.instance.Value.NewProcess(saveJob, saveAction.Save);
+            return response ? "OK" : "NOK";
         }
-   
+
         private string PauseBackup(string job) => $"Pause de {job}";
         private string DeleteBackup(string job) => $"Suppression de {job}";
         private string CreateBackup(string job) => $"Création de {job}";
