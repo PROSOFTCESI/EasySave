@@ -10,7 +10,7 @@ public class UpdateJobViewModel
         SaveJob? saveJob = null;
         try
         {
-            saveJob = StateJsonReader.GetInstance().GetJobs().Where(s => s.Name.Equals(saveJobName) && s.State != StateJsonReader.DeletedState).FirstOrDefault() ?? throw new KeyNotFoundException("Job name key not found");
+            saveJob = SaveJob.Instances.Where(s => s.Name.Equals(saveJobName) && s.State != StateJsonReader.DeletedState).FirstOrDefault() ?? throw new KeyNotFoundException("Job name key not found");
 
             bool success = await Task.Run(() => JobManager.Instance.NewProcess(saveJob, saveAction.Save)); // Exécute Save() dans un nouveau thread
             if (success)
