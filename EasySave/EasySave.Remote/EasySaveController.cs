@@ -72,7 +72,7 @@ namespace EasySaveRemote
             string jobName = matches[0].Groups[1].Value;
             string sourcePath = matches[1].Groups[1].Value;
             string targetPath = matches[2].Groups[1].Value;
-            string saveType = matches[3].Groups[1].Value; // Pour normaliser la casse
+            string saveType = matches[3].Groups[1].Value.ToUpper(); // Pour normaliser la casse
 
             UserResponse response = await CreateJobViewModel.Create(jobName, sourcePath, targetPath, saveType);
             return response.Success ? "Job créé avec succès." : "Échec de la création du job.";
