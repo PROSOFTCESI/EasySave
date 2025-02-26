@@ -11,15 +11,42 @@ public class UpdateJobViewModel
         try
         {
             saveJob = SaveJob.Instances.Where(s => s.Name.Equals(saveJobName) && s.State != StateJsonReader.DeletedState).FirstOrDefault() ?? throw new KeyNotFoundException("Job name key not found");
-
-            bool success = await Task.Run(() => JobManager.Instance.NewProcess(saveJob, saveAction.Save)); // Exécute Save() dans un nouveau thread
-            if (success)
+            if (saveJob.State.Equals(StateJsonReader.SavedState))
             {
-                return new UserResponse(true, "SAVE_JOB_UPDATED_SUCCESSFULLY", saveJob.Name);
+                try
+                {
+                    bool success = await Task.Run(() => saveJob.Save()); // Exécute Save() dans un nouveau thread
+                    if (success)
+                    {
+                        return new UserResponse(true, "SAVE_JOB_UPDATED_SUCCESSFULLY", saveJob.Name);
+                    }
+                    else
+                    {
+                        return new UserResponse(false, "SAVE_JOB_UPDATE_FAILED_MESSAGE");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (ex is not BusinessSoftwareRunningException && ex is not PlayPauseStopException)
+                    {
+                        saveJob?.ResetState();
+                    }
+                    throw;
+                }
+            }
+            else if (saveJob.State.Equals(StateJsonReader.SavingState))
+            {
+                await Task.Run(() => saveJob.Pause());
+                return UserResponse.GetEmptyUserResponse();
+            }
+            else if (saveJob.State.Equals(StateJsonReader.PausedState)) 
+            {
+                await Task.Run(() => saveJob.Play());
+                return UserResponse.GetEmptyUserResponse();
             }
             else
             {
-                return new UserResponse(false, "SAVE_JOB_UPDATE_FAILED_MESSAGE");
+                throw new Exception("Unknown state");
             }
         }
         catch (Exception ex)
@@ -28,11 +55,11 @@ public class UpdateJobViewModel
             {
                 return new UserResponse(false, "BUSINESS_SOFTWARE_DETECTED_ERROR");
             }
+            if (ex is PlayPauseStopException)
+            {
+                return UserResponse.GetEmptyUserResponse();
+            }
             return new UserResponse(false, "SAVE_JOB_UPDATE_FAILED_MESSAGE");
-        }
-        finally
-        {
-            saveJob?.ResetState();
         }
     }
     

@@ -71,7 +71,10 @@ public partial class MainMenu : Page, INotifyPropertyChanged
         if ((sender as FrameworkElement)?.DataContext is SaveJob item)
         {
             var response = await UpdateJobViewModel.Update(item.Name);
-            MessageBoxDisplayer.Display(response);
+            if (response.Display)
+            {
+                MessageBoxDisplayer.Display(response);
+            }
         }
         RefreshJobs();
     }
