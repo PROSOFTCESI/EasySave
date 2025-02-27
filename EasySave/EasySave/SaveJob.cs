@@ -188,7 +188,7 @@ public abstract class SaveJob : INotifyPropertyChanged
         }
     }
 
-    protected void CheckIfCanRun()
+    protected void CheckIfCanRun(bool stopped = false)
     {
         if (!CanRun)
         {
@@ -211,6 +211,10 @@ public abstract class SaveJob : INotifyPropertyChanged
                 LastUpdate = DateTime.Now,
             });
             throw new PlayPauseStopException("PAUSED");
+        }
+        if (stopped)
+        {
+            throw new PlayPauseStopException("STOPPED");
         }
     }
 
@@ -245,7 +249,6 @@ public abstract class SaveJob : INotifyPropertyChanged
         string jsonFilePath = Path.Combine(TargetPath, Path.Combine(NameLastSave, ".fileStructure.json"));
         if (!File.Exists(jsonFilePath))
         {
-            ResetState();
             StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
             {
                 State = StateJsonReader.SavingState,
@@ -262,7 +265,11 @@ public abstract class SaveJob : INotifyPropertyChanged
             var jsonStructure = JsonConvert.DeserializeObject<JsonStructure>(jsonContent);
             if (jsonStructure.Status.Equals("set"))
             {
-                ResetState();
+                StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
+                {
+                    State = StateJsonReader.SavingState,
+                    LastUpdate = DateTime.Now,
+                });
                 long[] advancement = FileStructureJson.GetInstance().GetAdvancement(jsonFilePath);
                 if (advancement[0] != advancement[2] && advancement[0] != 0) // If saving not completed
                 {
@@ -298,6 +305,8 @@ public abstract class SaveJob : INotifyPropertyChanged
         var state = StateJsonReader.GetInstance().GetJob(Name);
         state.NameLastSave = NameLastSave;
         StateJsonReader.GetInstance().UpdateJob(Name, state);
+        Paused = false;
+        CheckIfCanRun(true);
     }
 
     public override string ToString()

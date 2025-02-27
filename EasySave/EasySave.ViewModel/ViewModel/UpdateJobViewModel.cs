@@ -64,12 +64,14 @@ public class UpdateJobViewModel
     }
 
     public static async Task<UserResponse> Stop(string saveJobName)
-    {
+    { 
         SaveJob? saveJob = null;
         try
         {
             saveJob = SaveJob.GetJob(saveJobName) ?? throw new KeyNotFoundException("Job name key not found");
+            await Task.Run(() => saveJob.Pause());
             await Task.Run(() => saveJob.Stop());
+            saveJob.ResetState();
             return UserResponse.GetEmptyUserResponse();
         }
         catch (Exception ex)
@@ -80,6 +82,11 @@ public class UpdateJobViewModel
             }
             if (ex is PlayPauseStopException)
             {
+                if(ex.Message == "STOPPED") 
+                {
+                    return new UserResponse(true, "SAVE_JOB_STOPPED");
+                }
+
                 return UserResponse.GetEmptyUserResponse();
             }
             return new UserResponse(false, "SAVE_JOB_UPDATE_FAILED_MESSAGE");
