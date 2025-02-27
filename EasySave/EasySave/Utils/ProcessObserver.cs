@@ -1,4 +1,6 @@
-﻿using System;
+﻿using EasySave.CustomExceptions;
+using EasySave.Utils.JobStates;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Timers;
@@ -51,10 +53,30 @@ public class ProcessObserver : IDisposable
         {
             OnProcessStateChanged?.Invoke(isRunning);
             _lastState = isRunning;
+            PlayPauseJobs(isRunning);
         }
         /*
          * faire en sorte que si ya plus de process, on relance les jobs en pause
          * */
+    }
+
+    private void PlayPauseJobs(bool isRunning)
+    {
+        var saveJobs = SaveJob.Instances;
+        if (isRunning)
+        {
+            foreach (SaveJob job in saveJobs)
+            {
+                Pause(job);
+            }
+        }
+        else
+        {
+            foreach (SaveJob job in saveJobs)
+            {
+                Play(job);
+            }
+        }
     }
 
     private bool CheckIfProcessRunning()
@@ -65,6 +87,44 @@ public class ProcessObserver : IDisposable
                 return true;
         }
         return false;
+    }
+
+    public static async void Pause(SaveJob saveJob)
+    {
+        try
+        {
+            if (saveJob.State.Equals(StateJsonReader.SavingState) || saveJob.State.Equals(StateJsonReader.EncryptingState))
+            {
+                await Task.Run(() => saveJob.Pause());
+            }
+        }
+        catch (Exception ex)
+        {
+            if (ex is BusinessSoftwareRunningException || ex is PlayPauseStopException)
+            {
+                return;
+            }
+            throw;
+        }
+    }
+
+    public static async void Play(SaveJob saveJob)
+    {
+        try
+        {
+            if (saveJob.State.Equals(StateJsonReader.PausedState))
+            {
+                await Task.Run(() => saveJob.Play());
+            }
+        }
+        catch (Exception ex)
+        {
+            if (ex is BusinessSoftwareRunningException || ex is PlayPauseStopException)
+            {
+                return;
+            }
+            throw;
+        }
     }
 
     public void Dispose()
