@@ -179,7 +179,11 @@ public class StateJsonReader
             JobStateJsonDefinition jobToDelete = GetJob(job.Name);
             jobToDelete.State = DeletedState;
             UpdateJob(jobToDelete);
-            EasySave.SaveJob.Instances.Remove(job);
+            var instanceToDelete = EasySave.SaveJob.Instances.FirstOrDefault(j => j.Name.Equals(job.Name));
+            if (instanceToDelete != null)
+            {
+                EasySave.SaveJob.Instances.Remove(instanceToDelete);
+            }
             return true;
         }
         catch (Exception)
