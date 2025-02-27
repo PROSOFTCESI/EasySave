@@ -20,4 +20,8 @@
     <ProjectReference Include="..\EasySave\EasySave.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Resources\" />
+  </ItemGroup>
+
 </Project>
