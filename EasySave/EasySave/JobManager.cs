@@ -99,8 +99,6 @@ public class JobManager
                 saveAction.Delete => job.DeleteSave(),
                 saveAction.Decrypte => job.DeleteSave(),
                 saveAction.Stop => job.DeleteSave(),
-                saveAction.Play => job.DeleteSave(),
-                saveAction.Pause => job.DeleteSave(),
                 _ => false,
             };
             tcs.SetResult(result);

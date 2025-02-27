@@ -28,6 +28,7 @@
   "ASK_SAVE_JOB_TO_DELETE_MESSAGE": "Entrez le numéro du travail de sauvegarde à supprimer.\nNb : Seul le répertoire cible sera supprimé, le répertoire source restera inchangé",
   "SAVE_JOB_DELETED_SUCCESSFULLY": "Le travail de sauvegarde '{0}' a été supprimé avec succès !",
   "SAVE_JOB_DELETION_FAILED_MESSAGE": "Une erreur s'est produite lors de la suppression du travail de sauvegarde...'",
+  "SAVE_JOB_STOPPED" :  "La sauvegarde en cours a bien été stoppée",
   "UNKNOWN_ERROR_MESSAGE": "Une erreur innatendue est survenue...",
   "NO_SAVE_JOB_MESSAGE": "Aucun travail de sauvegarde n'a été trouvé",
   "FULL_SAVE_JOB_TITLE": "Sauvegarde complète",

@@ -73,8 +73,16 @@ public partial class MainMenu : Page, INotifyPropertyChanged
         RefreshJobs();
     }
 
-    private void Stop_Click(object sender, RoutedEventArgs e)
+    private async void Stop_Click(object sender, RoutedEventArgs e)
     {
+        if ((sender as FrameworkElement)?.DataContext is SaveJob item)
+        {
+            var response = await UpdateJobViewModel.Stop(item.Name);
+            if (response.Display)
+            {
+                MessageBoxDisplayer.Display(response);
+            }
+        }
         RefreshJobs();
     }
 
