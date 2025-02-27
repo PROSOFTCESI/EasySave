@@ -53,5 +53,6 @@
     "MAX_SIZE_MB_INT": "Enter the maximum file size to be backed up in parallel in MB.",
     "PRIORITY_FILES": "List of file extensions to be prioritized for backup:",
     "PRIORITY_FILES_INT": "Enter the extensions separated by spaces, e.g., .txt .pdf.",
-    "EXIT": "EXIT"
+    "EXIT": "EXIT",
+    "SAVE_JOB_STOPPED": "The current backup has been stoped succesfully"
 }
