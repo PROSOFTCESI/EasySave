@@ -30,7 +30,7 @@ Lancez `EasySave.exe` depuis votre répertoire d'installation. Une interface en 
 
 ### Création d'une sauvegarde
 
-1. Sélectionnez **1 - Créer un travail de sauvegarde** dans le menu principal.
+1. Sur l'interface graphqiue
 2. Remplissez les informations demandées :
    - **Nom du travail de sauvegarde** : entrez un nom pour identifier la sauvegarde.
    - **Répertoire source** : indiquez le chemin absolu du dossier ou des fichiers à sauvegarder.
