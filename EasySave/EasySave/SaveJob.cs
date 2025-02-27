@@ -192,9 +192,16 @@ public abstract class SaveJob : INotifyPropertyChanged
     {
         if (!CanRun)
         {
-            throw new BusinessSoftwareRunningException();
+            Logger.GetInstance().Log(new
+            {
+                type = "Info",
+                SaveJobName = Name,
+                Time = DateTime.Now,
+                action = "Pause Due to Business Software"
+            });
+            Pause();
         }
-        if (Paused)
+        if (Paused || !CanRun)
         {
             State = StateJsonReader.PausedState;
             StateJsonReader.GetInstance().UpdateJob(Name, new JobStateJsonDefinition
