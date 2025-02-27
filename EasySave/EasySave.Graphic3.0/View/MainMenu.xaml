@@ -22,25 +22,52 @@
         <!-- Barre supérieure avec le titre et le bouton paramètres -->
         <DockPanel Grid.Row="0" Margin="10">
             <!-- Titre centré -->
-            <Label Content="EasySave 3.0" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" DockPanel.Dock="Top"/>
-
+            <Label Content="EasySave 3.0" 
+                   FontSize="24" 
+                   FontWeight="Bold" 
+                   HorizontalAlignment="Center" 
+                   DockPanel.Dock="Top"
+                   Foreground="{StaticResource DarkTextBrush}" />
             <!-- Bouton paramètres (en haut à droite) -->
-            <Button Content="⚙" FontSize="16" Padding="10,5" HorizontalAlignment="Right"
-                    Click="SettingsButton_Click" Width="35" Height="35"/>
+            <Button Content="⚙" 
+                    FontSize="16" 
+                    Padding="10,5" 
+                    HorizontalAlignment="Right"
+                    Click="SettingsButton_Click" 
+                    Width="35" 
+                    Height="35"
+                    Style="{StaticResource ModernButtonStyle}"/>
         </DockPanel>
 
         <!-- Section des boutons "+" et "⟳" en haut à gauche -->
         <DockPanel Grid.Row="1" Margin="10">
             <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                <Button Content="+" FontWeight="Bold" FontSize="20" Margin="5" Padding="10,5"
-                        Click="CreateButton_Click" Width="35" Height="40"/>
-                <Button Content="⟳" FontWeight="Bold" FontSize="20" Margin="5" Padding="10,5"
-                        Click="RefreshButton_Click" Width="35" Height="40"/>
+                <Button Content="+" 
+                        FontWeight="Bold" 
+                        FontSize="20" 
+                        Margin="5" 
+                        Padding="10,5"
+                        Click="CreateButton_Click" 
+                        Width="35" 
+                        Height="40"
+                        Style="{StaticResource ModernButtonStyle}"/>
+                <Button Content="⟳" 
+                        FontWeight="Bold" 
+                        FontSize="20" 
+                        Margin="5" 
+                        Padding="10,5"
+                        Click="RefreshButton_Click" 
+                        Width="35" 
+                        Height="40"
+                        Style="{StaticResource ModernButtonStyle}"/>
             </StackPanel>
         </DockPanel>
 
         <!-- Liste des éléments affichés verticalement -->
-        <ListBox Grid.Row="2" x:Name="ItemList" ItemsSource="{Binding AvailableSaveJobs}" Height="400">
+        <ListBox Grid.Row="2" 
+                 x:Name="ItemList" 
+                 ItemsSource="{Binding AvailableSaveJobs}" 
+                 Height="400">
             <!-- Organisation des items en colonne verticale -->
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -51,26 +78,49 @@
             <!-- Template pour chaque élément -->
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Border BorderThickness="1" BorderBrush="Gray" Padding="10" Margin="5" HorizontalAlignment="Center">
+                    <Border BorderThickness="1" 
+                            BorderBrush="{StaticResource DarkControlBorderBrush}" 
+                            Padding="10" 
+                            Margin="5" 
+                            HorizontalAlignment="Center"
+                            CornerRadius="{StaticResource ControlCornerRadius}">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
                             <!-- Nom de la sauvegarde -->
-                            <TextBlock Text="{Binding Name}" FontSize="18" FontWeight="Bold" Width="150"/>
-
+                            <TextBlock Text="{Binding Name}" 
+                                       FontSize="18" 
+                                       FontWeight="Bold" 
+                                       Width="150"/>
                             <!-- Chemins source et destination -->
                             <StackPanel Orientation="Vertical" Width="300">
-                                <TextBlock Text="{Binding SourcePath}" FontSize="12"/>
-                                <TextBlock Text="{Binding TargetPath}" FontSize="12"/>
+                                <TextBlock Text="{Binding SourcePath}" 
+                                           FontSize="12"/>
+                                <TextBlock Text="{Binding TargetPath}" 
+                                           FontSize="12"/>
                             </StackPanel>
-
                             <!-- Barre de progression -->
-                            <ProgressBar Width="200" Height="10"
-                                         Value="{Binding Progression, TargetNullValue=0}" VerticalAlignment="Center"/>
-
+                            <ProgressBar Width="200" 
+                                         Height="10"
+                                         Value="{Binding Progression, TargetNullValue=0}" 
+                                         VerticalAlignment="Center"/>
                             <!-- Boutons d'actions -->
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
-                                <Button Content="⏯" Margin="5" Padding="5" Click="Play_Click"/>
-                                <Button Content="◼" Margin="5" Padding="5" Click="Stop_Click"/>
-                                <Button Content="🗑️" Margin="5" Padding="5" Click="Delete_Click"/>
+                            <StackPanel Orientation="Horizontal" 
+                                        HorizontalAlignment="Right" 
+                                        Margin="10">
+                                <Button Content="⏯" 
+                                        Margin="5" 
+                                        Padding="5" 
+                                        Click="Play_Click"
+                                        Style="{StaticResource ModernButtonStyle}"/>
+                                <Button Content="◼" 
+                                        Margin="5" 
+                                        Padding="5" 
+                                        Click="Stop_Click"
+                                        Style="{StaticResource ModernButtonStyle}"/>
+                                <Button Content="🗑️" 
+                                        Margin="5" 
+                                        Padding="5" 
+                                        Click="Delete_Click"
+                                        Style="{StaticResource ModernButtonStyle}"/>
                             </StackPanel>
                         </StackPanel>
                     </Border>

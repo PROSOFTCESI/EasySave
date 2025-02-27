@@ -8,7 +8,7 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Settings">
 
-    <Grid Margin="20">
+    <Grid Margin="20" >
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -16,48 +16,53 @@
         </Grid.RowDefinitions>
         <TextBlock x:Name="TitleTextBlock"
        FontSize="20" FontWeight="Bold"
+       Foreground="White"
        HorizontalAlignment="Center" Margin="0,0,0,20"/>
         <ScrollViewer Grid.Row="1">
             <StackPanel HorizontalAlignment="Center" MaxWidth="600" Cursor="">
 
-                <TextBlock x:Name="NameLabel" FontWeight="Bold" Text="Nom :"/>
-                <TextBox x:Name="NameTextBox" Margin="0,5,0,15" MinWidth="300"/>
+                <TextBlock x:Name="NameLabel" FontWeight="Bold" Text="Nom :" Foreground="White"/>
+                <TextBox x:Name="NameTextBox" Margin="0,5,0,15" MinWidth="300"  Foreground="White"/>
 
-                <TextBlock x:Name="KeyLabel" FontWeight="Bold" Text="Clé de chiffrement :"/>
-                <TextBlock x:Name="KeyIntLabel" FontWeight="Bold" FontSize="10" Text="Attention : Les fichiers chiffrés avec cette clé ne seront plus déchiffrables si vous ne sauvegardez pas cette clé !"/>
-                <TextBox x:Name="KeyTextBox" Margin="0,5,0,15" MinWidth="300"/>
+                <TextBlock x:Name="KeyLabel" FontWeight="Bold" Text="Clé de chiffrement :" Foreground="White"/>
+                <TextBlock x:Name="KeyIntLabel" FontWeight="Bold" FontSize="10" Text="Attention : Les fichiers chiffrés avec cette clé ne seront plus déchiffrables si vous ne sauvegardez pas cette clé !" Foreground="White"/>
+                <TextBox x:Name="KeyTextBox" Margin="0,5,0,15" MinWidth="300"  Foreground="White"/>
 
-                <TextBlock x:Name="ExtentionsLabel" FontWeight="Bold" Text="Liste des extentions des fichiers à chiffer :"/>
-                <TextBlock x:Name="ExtentionsIntLabel" FontWeight="Bold" FontSize="10" Text="Saisir les extentions en les séparant par des espaces ex : .txt .pdf"/>
-                <TextBox x:Name="ExtentionsTextBox" Margin="0,5,0,15" MinWidth="300"/>
+                <TextBlock x:Name="ExtentionsLabel" FontWeight="Bold" Text="Liste des extentions des fichiers à chiffer :" Foreground="White"/>
+                <TextBlock x:Name="ExtentionsIntLabel" FontWeight="Bold" FontSize="10" Text="Saisir les extentions en les séparant par des espaces ex : .txt .pdf" Foreground="White"/>
+                <TextBox x:Name="ExtentionsTextBox" Margin="0,5,0,15" MinWidth="300"  Foreground="White"/>
 
-                <TextBlock x:Name="BusinessSoftwareLabel" FontWeight="Bold" Text="Liste des applications métiers :"/>
-                <TextBlock x:Name="BusinessSoftwareIntLabel" FontWeight="Bold" FontSize="10" Text="Renseigner le nom des applications séparés par des espaces"/>
-                <TextBox x:Name="BusinessSoftwareTextBox" Margin="0,5,0,15" MinWidth="300"/>
+                <TextBlock x:Name="BusinessSoftwareLabel" FontWeight="Bold" Text="Liste des applications métiers :" Foreground="White"/>
+                <TextBlock x:Name="BusinessSoftwareIntLabel" FontWeight="Bold" FontSize="10" Text="Renseigner le nom des applications séparés par des espaces" Foreground="White"/>
+                <TextBox x:Name="BusinessSoftwareTextBox" Margin="0,5,0,15" MinWidth="300"  Foreground="White"/>
 
                 <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center" Margin="0,20,0,0">
-                    <Button x:Name="LangageButton" Width="200" Margin="5" Content="Changer de langue" Click="Langage_Click"/>
-                    <Button x:Name="SettingsButton" Width="200" Margin="5" Content="Ouvrir le fichier de paramètres" Click="OpenSettings"/>
+                    <Button x:Name="LangageButton" Width="200" Margin="5" Content="Changer de langue" Click="Langage_Click"
+                            Style="{StaticResource ModernButtonStyle}" Foreground="White" />
+                    <Button x:Name="SettingsButton" Width="200" Margin="5" Content="Ouvrir le fichier de paramètres" Click="OpenSettings"
+                            Style="{StaticResource ModernButtonStyle}" Foreground="White" />
                 </StackPanel>
 
-                <TextBlock x:Name="MaxSizeLabel" FontWeight="Bold" Text="Taille maximale des fichiers à sauvegarder en parallèle (MB) :"/>
-                <TextBlock x:Name="MaxSizeIntLabel" FontWeight="Bold" FontSize="10" Text="Renseignez la taille maximale des fichiers à sauvegarder en parallèles en MB"/>
-                <TextBox x:Name="MaxSizeTextBox" Margin="0,5,0,15" MinWidth="300"/>
+                <TextBlock x:Name="MaxSizeLabel" FontWeight="Bold" Text="Taille maximale des fichiers à sauvegarder en parallèle (MB) :" Foreground="White"/>
+                <TextBlock x:Name="MaxSizeIntLabel" FontWeight="Bold" FontSize="10" Text="Renseignez la taille maximale des fichiers à sauvegarder en parallèles en MB" Foreground="White"/>
+                <TextBox x:Name="MaxSizeTextBox" Margin="0,5,0,15" MinWidth="300"  Foreground="White"/>
 
-                <TextBlock x:Name="PriorityFilesLabel" FontWeight="Bold" Text="Liste des extensions des fichiers à sauvegarder en priorité :"/>
-                <TextBlock x:Name="PriorityFilesIntLabel" FontWeight="Bold" FontSize="10" Text="Saisir les extentions en les séparant par des espaces ex : .txt .pdf"/>
-                <TextBox x:Name="PriorityFilesTextBox" Margin="0,5,0,15" MinWidth="300"/>
+                <TextBlock x:Name="PriorityFilesLabel" FontWeight="Bold" Text="Liste des extensions des fichiers à sauvegarder en priorité :" Foreground="White"/>
+                <TextBlock x:Name="PriorityFilesIntLabel" FontWeight="Bold" FontSize="10" Text="Saisir les extentions en les séparant par des espaces ex : .txt .pdf" Foreground="White"/>
+                <TextBox x:Name="PriorityFilesTextBox" Margin="0,5,0,15" MinWidth="300"  Foreground="White"/>
 
-                <TextBlock x:Name="LogFormatLabel" FontWeight="Bold" Text="Format de Logs :"/>
+                <TextBlock x:Name="LogFormatLabel" FontWeight="Bold" Text="Format de Logs :" Foreground="White"/>
                 <StackPanel Orientation="Vertical" Margin="0,5,0,15">
-                    <RadioButton x:Name="JsonButton" IsChecked="True" Content="Json"/>
-                    <RadioButton x:Name="XmlButton" Content="XML"/>
+                    <RadioButton x:Name="JsonButton" IsChecked="True" Content="Json" Foreground="White" />
+                    <RadioButton x:Name="XmlButton" Content="XML" Foreground="White" />
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>
         <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center" Margin="0,20,0,0">
-            <Button x:Name="SaveButton" Width="AUTO" Margin="5" Content="Sauvegarder" Click="Save_Click"/>
-            <Button x:Name="BackButton" Width="100" Margin="5" Content="Retour" Click="GoBack_Click"/>
+            <Button x:Name="SaveButton" Width="AUTO" Margin="5" Content="Sauvegarder" Click="Save_Click"
+                    Style="{StaticResource ModernButtonStyle}" Foreground="White" />
+            <Button x:Name="BackButton" Width="100" Margin="5" Content="Retour" Click="GoBack_Click"
+                    Style="{StaticResource ModernButtonStyle}" Foreground="White" />
         </StackPanel>
     </Grid>
 </Page>

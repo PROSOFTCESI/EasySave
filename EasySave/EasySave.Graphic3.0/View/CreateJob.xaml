@@ -14,27 +14,29 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBlock x:Name="TitleTextBlock"
+        <TextBlock x:Name="TitleTextBlock" Foreground="White"
            FontSize="20" FontWeight="Bold"
            HorizontalAlignment="Center" Margin="0,0,0,20"/>
         <ScrollViewer Grid.Row="1">
             <StackPanel HorizontalAlignment="Center" MaxWidth="600">
-                <TextBlock x:Name="JobNameLabel" FontWeight="Bold" Text="Nom du travail :"/>
-                <TextBox x:Name="JobNameTextBox" Margin="0,5,0,15" MinWidth="300"/>
-                <TextBlock x:Name="SourcePathLabel" FontWeight="Bold" Text="Répertoire source :"/>
-                <TextBox x:Name="SourcePathTextBox" Margin="0,5,0,15" MinWidth="300"/>
-                <TextBlock x:Name="DestinationPathLabel" FontWeight="Bold" Text="Répertoire cible :"/>
-                <TextBox x:Name="DestinationPathTextBox" Margin="0,5,0,15" MinWidth="300"/>
-                <TextBlock x:Name="SaveTypeLabel" FontWeight="Bold" Text="Type de sauvegarde :"/>
+                <TextBlock x:Name="JobNameLabel" FontWeight="Bold" Text="Nom du travail :" Foreground="White"/>
+                <TextBox x:Name="JobNameTextBox" Margin="0,5,0,15" MinWidth="300" Foreground="White"/>
+                <TextBlock x:Name="SourcePathLabel" FontWeight="Bold" Text="Répertoire source :" Foreground="White"/>
+                <TextBox x:Name="SourcePathTextBox" Margin="0,5,0,15" MinWidth="300" Foreground="White"/>
+                <TextBlock x:Name="DestinationPathLabel" FontWeight="Bold" Text="Répertoire cible :" Foreground="White"/>
+                <TextBox x:Name="DestinationPathTextBox" Margin="0,5,0,15" MinWidth="300" Foreground="White"/>
+                <TextBlock x:Name="SaveTypeLabel" FontWeight="Bold" Text="Type de sauvegarde :" Foreground="White"/>
                 <StackPanel Orientation="Vertical" Margin="0,5,0,15">
-                    <RadioButton x:Name="FullSaveRadioButton" IsChecked="True" Content="Sauvegarde complète"/>
-                    <RadioButton x:Name="DifferentialSaveRadioButton" Content="Sauvegarde différentielle"/>
+                    <RadioButton x:Name="FullSaveRadioButton" IsChecked="True" Content="Sauvegarde complète" Foreground="White"/>
+                    <RadioButton x:Name="DifferentialSaveRadioButton" Content="Sauvegarde différentielle" Foreground="White"/>
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>
         <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center" Margin="0,20,0,0">
-            <Button x:Name="CreateButton" Width="100" Margin="5" Content="Créer" Click="CreateJob_Click"/>
-            <Button x:Name="BackButton" Width="100" Margin="5" Content="Retour" Click="GoBack_Click"/>
+            <Button x:Name="CreateButton" Width="Auto" Margin="5" Content="Créer" Click="CreateJob_Click"
+                    Style="{StaticResource ModernButtonStyle}"/>
+            <Button x:Name="BackButton" Width="100" Margin="5" Content="Retour" Click="GoBack_Click"
+                    Style="{StaticResource ModernButtonStyle}"/>
         </StackPanel>
     </Grid>
 </Page>
