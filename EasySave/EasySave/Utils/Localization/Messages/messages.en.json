@@ -28,6 +28,7 @@
   "ASK_SAVE_JOB_TO_DELETE_MESSAGE": "Enter the number of the backup job to delete.\nNote: Only the target directory will be deleted; the source directory will remain unchanged",
   "SAVE_JOB_DELETED_SUCCESSFULLY": "The backup job '{0}' was deleted successfully!",
   "SAVE_JOB_DELETION_FAILED_MESSAGE": "An error occurred while deleting the backup job...",
+  "SAVE_JOB_STOPPED": "The current backup has been stoped succesfully",
   "UNKNOWN_ERROR_MESSAGE": "An unknown error occurred...",
   "NO_SAVE_JOB_MESSAGE": "No save job found",
   "FULL_SAVE_JOB_TITLE": "Full save",
