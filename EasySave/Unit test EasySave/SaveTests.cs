@@ -28,9 +28,9 @@ public class SaveTests
 
 
     }
-    private string CreateFakeInformationFolder()
+    private string CreateFakeInformationFolder(string folderName = "Fake Folder for test")
     {
-        string path = Path.Combine(Path.GetTempPath(), "EasySaveTestTemp", "Fake Folder for test");
+        string path = Path.Combine(Path.GetTempPath(), "EasySaveTestTemp", folderName);
         if (IsPathExist(path)) { Directory.Delete(path,true); }
         Directory.CreateDirectory(path);
         CreateFakeFile(Path.Combine(path, "Temporary.txt"));
@@ -180,5 +180,24 @@ public class SaveTests
         Assert.False(IsPathExist(TargetPath));
         Cleanup();
     }
+
+    [Fact]
+    public void MultriprocessingFullSave()
+    {
+        Cleanup();
+        string SourcePath = CreateFakeInformationFolder();
+        string TargetPath = Path.Combine(Path.GetTempPath(), "EasySaveDiffTestTemp");
+        
+
+        var DifferentialSave = new FullSave("TestSave", SourcePath, TargetPath);
+      
+        CreateFakeFile(Path.Combine(SourcePath, "NewFileToSee.data"));
+        JobManager.Instance.NewProcess(DifferentialSave, saveAction.Create);
+        JobManager.Instance.NewProcess(DifferentialSave, saveAction.Save);
+        JobManager.Instance.NewProcess(DifferentialSave, saveAction.Delete);
+        JobManager.Instance.WaitAllTaskFinished();
+        Cleanup();
+    }
+
 
 }

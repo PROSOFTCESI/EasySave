@@ -58,6 +58,8 @@ namespace EasySave.Utils
             newContent.selectedCulture = "fr-FR";
             newContent.logFormat = "json";
             newContent.businessSoftwares = "CalculatorApp";
+            newContent.maxSizeTransferMB = "200";
+            newContent.priorityFilesToTransfer = "";
 
             string json = JsonConvert.SerializeObject(newContent, Formatting.Indented);
             File.WriteAllText(FilePath, json);
@@ -78,5 +80,7 @@ namespace EasySave.Utils
         public string extensionsToEncrypt { get; set; }
         public string logFormat { get; set; }
         public string businessSoftwares { get; set; }
+        public string maxSizeTransferMB { get; set; }
+        public string priorityFilesToTransfer { get; set; }
     }
 }

@@ -9,6 +9,9 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CryptoSoftLib;
 using EasySave.CustomExceptions;
+using EasySave.Utils;
+using Newtonsoft.Json;
+using EasySave.Utils.JobStates;
 
 namespace EasySave
 {
@@ -24,106 +27,65 @@ namespace EasySave
 
         //METHODS
 
-        public string GetLastFullSavePath()
-        {           
-
-            Regex regex = new Regex(@"^FullSave_(\d{2}_\d{2}_\d{4}-\d{2}_\d{2}_\d{2})$");
-
-            var latestSave = Directory.GetDirectories(TargetPath)
-                .Select(Path.GetFileName)
-                .Where(name => regex.IsMatch(name))
-                .Select(name => new { Name = name, Date = DateTime.ParseExact(name.Substring(9), "dd_MM_yyyy-HH_mm_ss", null) })
-                .OrderByDescending(entry => entry.Date)
-                .FirstOrDefault();
-
-            return latestSave?.Name;
-        }
         
-
-        private void CreateDifferentialSave(string source, string fullsave, string diffsave)
-        {
-            CheckIfCanRun();            
-
-            DirectoryInfo sourceDir = new DirectoryInfo(source);
-
-            FileInfo[] sourceFiles = sourceDir.GetFiles();
-
-            //Copy New and modified Files
-            foreach(FileInfo sFile in sourceFiles)
-            {
-                CheckIfCanRun();
-                if (Directory.Exists(fullsave))
-                {
-                    DirectoryInfo fullsaveDir = new DirectoryInfo(fullsave);
-                    FileInfo[] fullsaveFiles = fullsaveDir.GetFiles();
-                    string savedFile = Path.Combine(fullsave, sFile.Name);
-
-                    if (!File.Exists(savedFile) || File.GetLastWriteTime(sFile.FullName) > File.GetLastWriteTime(savedFile))
-                    {
-                        if (!Directory.Exists(diffsave))
-                            Directory.CreateDirectory(diffsave);
-
-                        Copyfile(diffsave, sFile);
-
-                    }
-                }
-                else //directory is new
-                {
-                    Directory.CreateDirectory(diffsave);
-
-                    Copyfile(diffsave, sFile);                    
-                }
-            }
-            // new Dir DDD not in FS. 
-
-            // Recursivity
-            foreach(DirectoryInfo dir in sourceDir.GetDirectories())
-            {                
-
-                CreateDifferentialSave(Path.Combine(source, dir.Name), Path.Combine(fullsave, dir.Name), Path.Combine(diffsave, dir.Name));
-            }    
-        }
-
-        private void Copyfile(string diffsave,FileInfo sFile)
-        {
-            string newS = Path.Combine(diffsave, sFile.Name);
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            sFile.CopyTo(newS);
-            stopwatch.Stop(); 
-
-            Stopwatch stopwatchCrypt = Stopwatch.StartNew();
-            bool isEncrypted = CryptoSoft.EncryptDecryptFile(newS);
-            stopwatchCrypt.Stop();
-
-            var test = Logger.GetInstance();
-            Logger.GetInstance().Log(
-            new
-            {
-                SaveJobName = Name,
-                FileSource = SourcePath + "/" + sFile,
-                FileTarget = TargetPath + "/" + sFile,
-                FileSize = sFile.Length,
-                Time = DateTime.Now,
-                FileCryptTime = isEncrypted ? stopwatchCrypt.ElapsedMilliseconds : 0,
-                FileTransferTime = stopwatch.ElapsedMilliseconds
-            });
-        }
+       
 
         public override bool Save()
         {
-            string fullSave = Path.Combine(TargetPath, GetLastFullSavePath());
-            string diffsave = Path.Combine(TargetPath, "DiffenrentialSave_" + DateTime.Now.ToString("dd_MM_yyyy-HH_mm_ss"));
-            Directory.CreateDirectory(diffsave);
-            CreateDifferentialSave(SourcePath, fullSave, diffsave);
-            Logger.GetInstance().Log(
-               new
-               {
-                   Type = "Update",
-                   Time = DateTime.Now,
-                   statut = "Success",
-                   Name,
-               }
-           );
+            NameLastSave = "DifferentialSave_" + DateTime.Now.ToString("dd_MM_yyyy-HH_mm_ss");
+
+            CheckIfCanRun();
+
+            if (SourcePath == TargetPath)
+            {
+                Logger.GetInstance().Log(
+                       new
+                       {
+                           Statue = "Error",
+                           Message = "Source path and Target path can't be equal"
+                       });
+                throw new ArgumentException("Source path and Target path can't be equal");
+            }
+
+            // Create Target Directory
+            Directory.CreateDirectory(TargetPath);
+
+            StateJsonReader.GetInstance().AddJob(this);
+
+            var state = StateJsonReader.GetInstance().GetJob(Name);
+            state.NameLastSave = NameLastSave;
+            StateJsonReader.GetInstance().UpdateJob(Name, state);
+            string saveTargetPath = Path.Combine(TargetPath, NameLastSave);
+
+            // Get information about the source directory
+            var dir = new DirectoryInfo(SourcePath);
+
+            // Check if the source directory exists
+            if (!dir.Exists)
+            {
+                Logger.GetInstance().Log(
+                     new
+                     {
+                         Statue = "Error",
+                         Message = $"Source directory not found: {dir.FullName}"
+                     });
+                throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
+            }
+
+            // Create the destination directory
+            string jsonSaved = Path.Combine(TargetPath, Path.Combine(GetLastSavePath(), ".fileStructure.json"));
+
+            
+            Directory.CreateDirectory(saveTargetPath);
+
+            string jsonPath = FileStructureJson.GetInstance().CreateDiffenretialFileStructure(SourcePath, saveTargetPath, jsonSaved);
+
+            FileStructureJson.GetInstance().GetAdvancement(jsonPath);
+            // Copy Files
+            CopyFiles(jsonPath, saveTargetPath);
+            //EncryptFiles
+            EncryptFiles(jsonPath, saveTargetPath, true);
+
             return true;
         }
 

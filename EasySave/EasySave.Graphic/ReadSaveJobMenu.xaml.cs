@@ -25,7 +25,6 @@ namespace EasySave.Graphic
 
 
         private readonly Messages messages = Messages.GetInstance();
-        private readonly List<string> saveJobs;
 
         public ReadSaveJobMenu()
         {
@@ -34,9 +33,7 @@ namespace EasySave.Graphic
             UpdateTitle.Text = messages.GetMessage("READ_SAVE_JOBS_MENU_LABEL");
             BackButton.Content = messages.GetMessage("BACK");
 
-            List<SaveJob> saveJobs = StateJsonReader.GetInstance().GetJobs(true);
-
-            SaveJobsListBox.ItemsSource = saveJobs;
+            SaveJobsListBox.ItemsSource = SaveJob.Instances;
         }
         private void GoBack_Click(object sender, RoutedEventArgs e)
         {
